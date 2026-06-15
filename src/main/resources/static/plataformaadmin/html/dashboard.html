@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Shidell Admin</title>
+  <meta name="description" content="Panel de control del sistema educativo Shidell">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/shared.css">
+  <style>
+    /* ── Curso mini card ── */
+    .course-mini-card {
+      display:flex; align-items:center; gap:14px; padding:14px 16px;
+      background:var(--color-bg-elevated); border:1px solid var(--border-color);
+      border-radius:var(--border-radius-md); transition:all var(--transition-fast);
+    }
+    .course-mini-card:hover { border-color:var(--border-strong); transform:translateY(-1px); }
+    .course-mini-icon {
+      width:42px; height:42px; border-radius:var(--border-radius-sm);
+      display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;
+    }
+    .course-mini-info { flex:1; min-width:0; }
+    .course-mini-info strong { display:block; font-size:13px; font-weight:700; color:var(--text-primary); }
+    .course-mini-info span   { font-size:12px; color:var(--text-secondary); }
+    .course-mini-meta        { margin-top:4px; }
+
+    /* ── Welcome banner ── */
+    .welcome-banner {
+      background: linear-gradient(135deg, #1a1f35 0%, #0f172a 100%);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius-xl); padding: 28px 32px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; position: relative; overflow: hidden;
+    }
+    .welcome-banner::before {
+      content:''; position:absolute; top:-40px; right:-40px;
+      width:200px; height:200px;
+      background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .welcome-banner h1 { font-size:22px; font-weight:800; }
+    .welcome-banner p  { font-size:14px; color:var(--text-secondary); margin-top:5px; }
+    .welcome-time      { font-size:13px; color:var(--primary); font-weight:600; margin-top:6px; }
+  </style>
+</head>
+<body>
+<div class="app-shell" id="app-shell">
+  <!-- Sidebar inyectado por JS -->
+  <div class="main-content" id="main-content">
+    <!-- Topbar inyectado por JS -->
+    <main class="page-content">
+
+      <!-- Welcome Banner -->
+      <div class="welcome-banner" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; background: var(--gradient-primary); border: none; padding: 40px; box-shadow: 0 15px 40px var(--primary-glow); border-radius: var(--border-radius-xl);">
+        <div style="position: relative; z-index: 1;">
+          <h1 style="font-size: 32px; color: white;">¡Bienvenido de nuevo, Admin! ✨</h1>
+          <p style="color: rgba(255,255,255,0.8); font-size: 16px; margin-top: 10px;">Tu panel de control está listo. Tienes nuevos usuarios y mensajes por revisar.</p>
+          <div class="welcome-time" id="current-time" style="color: white; opacity: 0.9; background: rgba(255,255,255,0.15); display: inline-block; padding: 6px 14px; border-radius: 10px; margin-top: 16px; font-weight: 500;"></div>
+        </div>
+        <div class="d-flex gap-16" style="position: relative; z-index: 1;">
+          <a href="usuarios.html" class="btn" style="background: white; color: var(--primary);"><i class="ph ph-users-three"></i> Usuarios</a>
+          <a href="cursos.html" class="btn" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px);"><i class="ph ph-book-open"></i> Cursos</a>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="grid-4 stagger-grid mb-32" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+        <div class="kpi-card" style="--kpi-bg: var(--primary-light); --kpi-color2: var(--primary);">
+          <div class="kpi-top">
+            <div class="kpi-icon"><i class="ph-fill ph-users-three"></i></div>
+          </div>
+          <div class="kpi-value"><span id="kpi-usuarios">—</span></div>
+          <div class="kpi-label">Usuarios Totales</div>
+        </div>
+        <div class="kpi-card" style="--kpi-bg: var(--cyan-light); --kpi-color2: var(--cyan);">
+          <div class="kpi-top">
+            <div class="kpi-icon"><i class="ph-fill ph-student"></i></div>
+          </div>
+          <div class="kpi-value"><span id="kpi-estudiantes">—</span></div>
+          <div class="kpi-label">Estudiantes</div>
+        </div>
+        <div class="kpi-card" style="--kpi-bg: var(--purple-light); --kpi-color2: var(--purple);">
+          <div class="kpi-top">
+            <div class="kpi-icon"><i class="ph-fill ph-chalkboard-teacher"></i></div>
+          </div>
+          <div class="kpi-value"><span id="kpi-docentes">—</span></div>
+          <div class="kpi-label">Docentes</div>
+        </div>
+        <div class="kpi-card" style="--kpi-bg: var(--green-light); --kpi-color2: var(--green);">
+          <div class="kpi-top">
+            <div class="kpi-icon"><i class="ph-fill ph-users"></i></div>
+          </div>
+          <div class="kpi-value"><span id="kpi-padres">—</span></div>
+          <div class="kpi-label">Padres</div>
+        </div>
+        <div class="kpi-card" style="--kpi-bg: var(--yellow-light); --kpi-color2: var(--yellow);">
+          <div class="kpi-top">
+            <div class="kpi-icon"><i class="ph-fill ph-book-open"></i></div>
+          </div>
+          <div class="kpi-value"><span id="kpi-cursos">—</span></div>
+          <div class="kpi-label">Cursos Activos</div>
+        </div>
+        <div class="kpi-card" style="--kpi-bg: var(--red-light); --kpi-color2: var(--red);">
+          <div class="kpi-top">
+            <div class="kpi-icon"><i class="ph-fill ph-chat-centered-text"></i></div>
+          </div>
+          <div class="kpi-value"><span id="kpi-mensajes">—</span></div>
+          <div class="kpi-label">Mensajes Enviados</div>
+        </div>
+      </div>
+
+      <!-- Contenido principal -->
+      <div class="d-flex gap-24" style="align-items:flex-start;flex-wrap:wrap">
+        <!-- Usuarios recientes -->
+        <div class="card" style="flex:2;min-width:320px">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Usuarios recientes</div>
+              <div class="card-subtitle">Últimos usuarios registrados</div>
+            </div>
+            <a href="usuarios.html" class="btn btn-secondary btn-sm">Ver todos</a>
+          </div>
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Usuario</th>
+                  <th>Rol</th>
+                  <th>Sección</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="recent-users-body">
+                <tr><td colspan="4" class="text-center" style="padding:30px">
+                  <div class="spinner"></div>
+                </td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Cursos -->
+        <div class="card" style="flex:1;min-width:280px">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Cursos</div>
+              <div class="card-subtitle">Últimos cursos registrados</div>
+            </div>
+            <a href="cursos.html" class="btn btn-secondary btn-sm">Ver todos</a>
+          </div>
+          <div id="courses-grid" class="d-flex flex-col gap-8"></div>
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="card mt-24">
+        <div class="card-header">
+          <div class="card-title">Acciones rápidas</div>
+        </div>
+        <div class="d-flex gap-12 flex-wrap">
+          <a href="usuarios.html" class="btn btn-secondary">
+            <i class="ph ph-user-plus"></i>Nuevo usuario
+          </a>
+          <a href="cursos.html" class="btn btn-secondary">
+            <i class="ph ph-plus"></i>Nuevo curso
+          </a>
+          <a href="asistencia.html" class="btn btn-secondary">
+            <i class="ph ph-calendar-check"></i>Ver asistencia
+          </a>
+          <a href="calificaciones.html" class="btn btn-secondary">
+            <i class="ph ph-exam"></i>Ver calificaciones
+          </a>
+          <a href="reportes.html" class="btn btn-secondary">
+            <i class="ph ph-chart-line-up"></i>Generar reporte
+          </a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/dashboard.js"></script>
+<script>
+  // Reloj en tiempo real
+  function updateClock() {
+    const el = document.getElementById('current-time');
+    if (el) {
+      const now = new Date();
+      el.textContent = now.toLocaleDateString('es-PE', {
+        weekday:'long', year:'numeric', month:'long', day:'numeric'
+      }) + ' — ' + now.toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' });
+    }
+  }
+  updateClock();
+  setInterval(updateClock, 60000);
+</script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

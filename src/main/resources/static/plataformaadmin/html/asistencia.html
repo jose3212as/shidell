@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asistencia — Shidell Admin</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/shared.css">
+</head>
+<body>
+<div class="app-shell" id="app-shell">
+  <div class="main-content" id="main-content">
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Asistencia</h1>
+          <p>Consulta y registra la asistencia de estudiantes por curso y fecha</p>
+        </div>
+      </div>
+
+      <!-- Selectores -->
+      <div class="card mb-20">
+        <div class="d-flex gap-16 items-center flex-wrap">
+          <div class="d-flex flex-col gap-8" style="flex:2;min-width:200px">
+            <label class="form-label">Curso</label>
+            <select class="form-control form-select" id="curso-select">
+              <option value="">Cargando cursos...</option>
+            </select>
+          </div>
+          <div class="d-flex flex-col gap-8" style="flex:1;min-width:160px">
+            <label class="form-label">Fecha</label>
+            <input class="form-control" id="fecha-picker" type="date">
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid-4 mb-20" style="grid-template-columns:repeat(5,1fr)">
+        <div class="card" style="padding:14px;text-align:center">
+          <div class="text-2xl font-black text-primary" id="stat-total">—</div>
+          <div class="text-xs text-muted mt-4">Total</div>
+        </div>
+        <div class="card" style="padding:14px;text-align:center">
+          <div class="text-2xl font-black" style="color:var(--green)" id="stat-presente">—</div>
+          <div class="text-xs text-muted mt-4">Presentes</div>
+        </div>
+        <div class="card" style="padding:14px;text-align:center">
+          <div class="text-2xl font-black" style="color:var(--red)" id="stat-ausente">—</div>
+          <div class="text-xs text-muted mt-4">Ausentes</div>
+        </div>
+        <div class="card" style="padding:14px;text-align:center">
+          <div class="text-2xl font-black" style="color:var(--yellow)" id="stat-tarde">—</div>
+          <div class="text-xs text-muted mt-4">Tarde</div>
+        </div>
+        <div class="card" style="padding:14px;text-align:center">
+          <div class="text-2xl font-black text-primary" id="stat-pct">—</div>
+          <div class="text-xs text-muted mt-4">% Asistencia</div>
+        </div>
+      </div>
+
+      <!-- Tabla asistencia -->
+      <div class="card">
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Estudiante</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="asistencia-tbody">
+              <tr><td colspan="5">
+                <div class="empty-state">
+                  <i class="ph ph-calendar-check"></i>
+                  <h3>Selecciona un curso y fecha</h3>
+                  <p>Los estudiantes y su asistencia aparecerán aquí.</p>
+                </div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/asistencia.js"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

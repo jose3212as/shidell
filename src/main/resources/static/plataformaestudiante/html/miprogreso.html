@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Mi Progreso</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
+    <link rel="stylesheet" href="../css/progreso.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="ph-fill ph-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Estudiante</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="portalestudiante.html" class="nav-item">
+                    <i class="ph ph-house"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="miscursos.html" class="nav-item">
+                    <i class="ph ph-book-open"></i>
+                    <span>Mis cursos</span>
+                </a>
+                <a href="tareas.html" class="nav-item">
+                    <i class="ph ph-clipboard-text"></i>
+                    <span>Tareas</span>
+                </a>
+                <a href="calificaciones.html" class="nav-item">
+                    <i class="ph ph-star"></i>
+                    <span>Calificaciones</span>
+                </a>
+                <a href="calendario.html" class="nav-item">
+                    <i class="ph ph-calendar-blank"></i>
+                    <span>Calendario</span>
+                </a>
+                <a href="mensajes.html" class="nav-item">
+                    <i class="ph ph-chat-circle-dots"></i>
+                    <span>Mensajes</span>
+                </a>
+                <a href="miprogreso.html" class="nav-item active">
+                    <i class="ph ph-shield-check"></i>
+                    <span>Mi progreso</span>
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <i class="ph ph-gear"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="greeting">
+                    <h1>¡Hola, Estudiante! 👋</h1>
+                    <p id="user-academic-info">Cargando información académica...</p>
+                </div>
+                
+                <div class="topbar-actions">
+                    
+                    <button class="notification-btn">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge"></span>
+                    </button>
+                    
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name">Estudiante</span>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span></a>
+                        </div>
+                        <div class="avatar">
+                            <i class="ph-fill ph-user" style="font-size: 24px; color: var(--primary);"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                
+                <!-- Top Stats Row -->
+                <div class="progreso-stats-row">
+                    <!-- Promedio General -->
+                    <div class="p-stat-card">
+                        <div class="p-stat-header">
+                            <div class="p-stat-icon bg-blue-light text-blue"><i class="ph ph-trend-up"></i></div>
+                            <div class="p-stat-info">
+                                <span class="label">Promedio general</span>
+                                <div class="value" id="progreso-promedio">0.0 <span>/ 20</span></div>
+                                <span class="p-stat-badge bg-green-light" style="color: var(--green);" id="progreso-badge">Muy bueno</span>
+                            </div>
+                        </div>
+                        <div class="p-stat-footer">
+                            <span class="left">Promedio actual</span>
+                            <span class="right up" id="progreso-mejora-puntos">+0.0 <i class="ph ph-arrow-up"></i></span>
+                        </div>
+                    </div>
+
+                    <!-- Cursos Aprobados (Podemos dejarlo estático o dinámico) -->
+                    <div class="p-stat-card">
+                        <div class="p-stat-header">
+                            <div class="p-stat-icon bg-green-light text-green"><i class="ph ph-graduation-cap"></i></div>
+                            <div class="p-stat-info">
+                                <span class="label">Cursos en curso</span>
+                                <div class="value" id="progreso-cursos">4 <span>/ 4</span></div>
+                            </div>
+                        </div>
+                        <div class="p-stat-progress">
+                            <div class="p-progress-bar-bg"><div class="p-progress-bar-fill bg-green" id="progreso-cursos-bar" style="width: 0%;"></div></div>
+                        </div>
+                        <div class="p-stat-footer" style="border:none; padding-top:4px;">
+                            <span class="left" style="font-weight: 600; color: var(--text-primary);"><span id="progreso-cursos-pct">0</span>% <span style="font-weight: 500; color: var(--text-secondary);">del total</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Tareas Completadas -->
+                    <div class="p-stat-card">
+                        <div class="p-stat-header">
+                            <div class="p-stat-icon bg-purple-light" style="color: var(--purple);"><i class="ph ph-clipboard-text"></i></div>
+                            <div class="p-stat-info">
+                                <span class="label">Tareas completadas</span>
+                                <div class="value" id="progreso-tareas-count">0 <span>/ 0</span></div>
+                            </div>
+                        </div>
+                        <div class="p-stat-progress">
+                            <div class="p-progress-bar-bg"><div class="p-progress-bar-fill bg-purple" id="progreso-tareas-bar" style="width: 0%;"></div></div>
+                        </div>
+                        <div class="p-stat-footer" style="border:none; padding-top:4px;">
+                            <span class="left" style="font-weight: 600; color: var(--text-primary);"><span id="progreso-tareas-pct">0</span>% <span style="font-weight: 500; color: var(--text-secondary);">del total</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Horas de estudio -->
+                    <div class="p-stat-card">
+                        <div class="p-stat-header">
+                            <div class="p-stat-icon bg-blue-light text-blue"><i class="ph ph-clock"></i></div>
+                            <div class="p-stat-info">
+                                <span class="label">Horas de estudio</span>
+                                <div class="value" id="progreso-horas">0.0 <span>h</span></div>
+                                <span class="p-stat-subtext">esta semana</span>
+                            </div>
+                        </div>
+                        <div class="p-stat-footer">
+                            <span class="left">vs. semana anterior</span>
+                            <span class="right up" id="progreso-horas-comparacion">Datos del API</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Row -->
+                <div class="progreso-middle-row">
+                    
+                    <!-- Progreso por curso -->
+                    <div class="p-panel">
+                        <h3>Progreso por curso</h3>
+                        
+                        <div class="p-course-list" id="progresoCursosLista">
+                            <p style="color: var(--text-secondary); font-size: 14px;">Cargando cursos...</p>
+                        </div>
+
+                        <a href="miscursos.html" class="view-link">Ver todos los cursos <i class="ph ph-arrow-right"></i></a>
+                    </div>
+
+                    <!-- Racha de estudio -->
+                    <div class="p-panel p-racha-panel">
+                        <h3>Racha de estudio 🔥</h3>
+                        
+                        <div class="racha-ring">
+                            <div class="racha-inner">
+                                <span class="num" id="racha-valor">12</span>
+                                <span class="lbl">días</span>
+                            </div>
+                        </div>
+
+                        <div class="racha-msg">Cargando racha...</div>
+
+                        <div class="racha-days">
+                            <div class="racha-day"><span>L</span><div class="check pending"><i class="ph ph-check"></i></div></div>
+                            <div class="racha-day"><span>M</span><div class="check pending"><i class="ph ph-check"></i></div></div>
+                            <div class="racha-day"><span>M</span><div class="check pending"><i class="ph ph-check"></i></div></div>
+                            <div class="racha-day"><span>J</span><div class="check pending"><i class="ph ph-check"></i></div></div>
+                            <div class="racha-day"><span>V</span><div class="check pending"><i class="ph ph-check"></i></div></div>
+                            <div class="racha-day"><span>S</span><div class="check pending"><i class="ph ph-check"></i></div></div>
+                            <div class="racha-day"><span>D</span><div class="check pending"><i class="ph ph-check"></i></div></div>
+                        </div>
+
+                        <div class="racha-footer" id="racha-mejor">Mejor racha: 18 días</div>
+                    </div>
+
+                    <!-- Logros recientes -->
+                    <div class="p-panel p-logros-panel">
+                        <div class="p-panel-header">
+                            <h3>Logros recientes</h3>
+                            <span id="logrosOrigen">Datos del estudiante</span>
+                        </div>
+                        
+                        <div class="p-logros-list" id="logrosLista">
+                            <p style="color: var(--text-secondary); font-size: 14px;">Cargando logros...</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Banner -->
+                <div class="p-bottom-banner">
+                    <div class="p-banner-content">
+                        <h3>Tu crecimiento académico</h3>
+                        <p id="progreso-mejora-texto">Cargando crecimiento académico desde el API...</p>
+                        <button class="btn-outline-blue">Ver reporte detallado</button>
+                    </div>
+
+                    <div class="p-banner-graphic">
+                        <div class="student-chart" id="student-chart" aria-label="Tendencia de progreso"></div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+<script>window.__shidellProgresoPage = true;</script>
+<script src="../js/app.js?v=apiestudiante20260512i"></script>
+<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
+<script>
+    let progresoUser = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        progresoUser = await window.shidellSession?.obtenerUsuario();
+        prepararUsuarioProgreso();
+        cargarProgresoReal();
+    });
+
+    function prepararUsuarioProgreso() {
+        if (!progresoUser) return;
+        document.querySelectorAll('.user-name').forEach(el => {
+            el.textContent = [progresoUser.nombres, progresoUser.apellidos].filter(Boolean).join(' ').trim() || 'Estudiante';
+        });
+        document.querySelector('.greeting h1').textContent = `¡Hola, ${progresoUser.nombres || 'Estudiante'}!`;
+    }
+
+    async function cargarProgresoReal() {
+        if (!progresoUser?.id) {
+            document.getElementById('progresoCursosLista').innerHTML = '<p style="color: var(--text-secondary); font-size: 14px;">Inicia sesión para cargar tu progreso.</p>';
+            document.getElementById('logrosLista').innerHTML = '<p style="color: var(--text-secondary); font-size: 14px;">No se encontró una sesión activa.</p>';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/progreso/estudiante/${progresoUser.id}`);
+            if (!res.ok) throw new Error('No se pudo cargar el progreso');
+            const data = await res.json();
+            renderStatsProgreso(data);
+            renderCursosProgreso(normalizarCursosProgreso(data.progresoPorCurso || []));
+            renderRacha(data);
+            renderLogros(data.logrosRecientes || []);
+            renderTendencia(data.tendenciaProgreso || []);
+        } catch (err) {
+            console.error(err);
+            document.getElementById('progresoCursosLista').innerHTML = '<p style="color: var(--red); font-size: 14px;">No se pudo cargar el progreso.</p>';
+            document.getElementById('logrosLista').innerHTML = '<p style="color: var(--red); font-size: 14px;">No se pudieron cargar los logros.</p>';
+        }
+    }
+
+    function renderStatsProgreso(data) {
+        const promedio = Number(data.promedioGeneral || 0);
+        const totalTareas = Number(data.tareasTotales || 0);
+        const tareasCompletadas = Number(data.tareasCompletadas || 0);
+        const cursosTotales = Number(data.cursosTotales || 0);
+        const cursosActivos = Number(data.cursosActivos || cursosTotales);
+        const tareasPct = totalTareas ? Math.round(tareasCompletadas / totalTareas * 100) : 0;
+        const cursosPct = cursosTotales ? Math.round(cursosActivos / cursosTotales * 100) : 0;
+        const asistenciaPct = Number(data.asistenciaPorcentaje || 0);
+        const mejora = Number(data.mejoradoPuntos || 0);
+        const horasSemana = Number(data.horasEstudioSemana || 0);
+
+        document.getElementById('progreso-promedio').innerHTML = `${promedio.toFixed(1)} <span>/ 20</span>`;
+        actualizarBadge(promedio);
+        document.getElementById('progreso-mejora-puntos').innerHTML = `${mejora >= 0 ? '+' : ''}${mejora.toFixed(1)} <i class="ph ph-arrow-up"></i>`;
+        document.getElementById('progreso-cursos').innerHTML = `${cursosActivos} <span>/ ${cursosTotales}</span>`;
+        document.getElementById('progreso-cursos-bar').style.width = `${cursosPct}%`;
+        document.getElementById('progreso-cursos-pct').textContent = cursosPct;
+        document.getElementById('progreso-tareas-count').innerHTML = `${tareasCompletadas} <span>/ ${totalTareas}</span>`;
+        document.getElementById('progreso-tareas-bar').style.width = `${tareasPct}%`;
+        document.getElementById('progreso-tareas-pct').textContent = tareasPct;
+        document.getElementById('progreso-horas').innerHTML = `${horasSemana.toFixed(1)} <span>h</span>`;
+        document.getElementById('progreso-horas-comparacion').innerHTML = `${asistenciaPct}% asistencia`;
+        document.getElementById('progreso-mejora-texto').innerHTML = `Datos calculados con el API del estudiante: promedio <strong>${promedio.toFixed(1)}/20</strong>, asistencia <strong>${asistenciaPct}%</strong> y <strong>${tareasCompletadas}/${totalTareas}</strong> tareas entregadas.`;
+    }
+
+    function actualizarBadge(promedio) {
+        const badge = document.getElementById('progreso-badge');
+        badge.classList.remove('bg-green-light', 'bg-blue-light', 'bg-yellow-light', 'bg-red-light');
+
+        if (promedio >= 17) {
+            badge.textContent = 'Excelente';
+            badge.classList.add('bg-green-light');
+            badge.style.color = 'var(--green)';
+        } else if (promedio >= 14) {
+            badge.textContent = 'Muy bueno';
+            badge.classList.add('bg-blue-light');
+            badge.style.color = 'var(--blue)';
+        } else if (promedio >= 11) {
+            badge.textContent = 'Regular';
+            badge.classList.add('bg-yellow-light');
+            badge.style.color = 'var(--yellow)';
+        } else if (promedio > 0) {
+            badge.textContent = 'Necesita mejorar';
+            badge.classList.add('bg-red-light');
+            badge.style.color = 'var(--red)';
+        } else {
+            badge.textContent = 'Sin notas';
+            badge.classList.add('bg-blue-light');
+            badge.style.color = 'var(--blue)';
+        }
+    }
+
+    function renderCursosProgreso(cursos) {
+        const lista = document.getElementById('progresoCursosLista');
+        if (!cursos.length) {
+            lista.innerHTML = '<p style="color: var(--text-secondary); font-size: 14px;">Aún no tienes cursos asignados.</p>';
+            return;
+        }
+
+        lista.innerHTML = cursos.map(curso => {
+            const color = colorSeguro(curso.color);
+            const icono = curso.icono || 'ph-book-open';
+            const porcentaje = limitar(Number(curso.porcentaje || 0), 0, 100);
+            return `
+                <div class="p-course-item">
+                    <div class="p-course-icon bg-${color}-light" style="color: var(--${color}, var(--primary));"><i class="ph-fill ${icono}"></i></div>
+                    <div class="p-course-name">${escapeHtml(limpiarTexto(curso.nombre || 'Curso'))}</div>
+                    <div class="p-course-bar-container"><div class="p-course-bar-fill bg-${color}" style="width: ${porcentaje}%;"></div></div>
+                    <div class="p-course-pct">${porcentaje}%</div>
+                </div>`;
+        }).join('');
+    }
+
+    function normalizarCursosProgreso(cursos) {
+        const mapa = new Map();
+
+        (Array.isArray(cursos) ? cursos : []).forEach(item => {
+            const base = item.curso && typeof item.curso === 'object'
+                ? { ...item.curso, ...item }
+                : { ...item };
+            const nombre = limpiarTexto(base.nombre || 'Curso');
+            const id = base.id || base.curso?.id || nombre;
+            const key = quitarAcentos(nombre).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() || String(id);
+            const porcentaje = limitar(Number(base.porcentaje || 0), 0, 100);
+            const curso = {
+                id,
+                nombre,
+                icono: base.icono || base.curso?.icono || 'ph-book-open',
+                color: colorSeguro(base.color || base.curso?.color),
+                porcentaje
+            };
+
+            if (!mapa.has(key) || porcentaje > Number(mapa.get(key).porcentaje || 0)) {
+                mapa.set(key, curso);
+            }
+        });
+
+        return [...mapa.values()];
+    }
+
+    function renderRacha(data) {
+        const racha = Number(data.rachaDias || 0);
+        document.getElementById('racha-valor').textContent = racha;
+        document.querySelector('.racha-msg').textContent = racha > 0
+            ? 'Racha basada en asistencia registrada'
+            : 'Aún no hay asistencia registrada';
+        document.getElementById('racha-mejor').textContent = `Mejor racha: ${Number(data.mejorRacha || 0)} días`;
+        document.querySelector('.racha-ring').style.background = `conic-gradient(var(--green) 0% ${limitar(racha * 10, 0, 100)}%, var(--bg-main) ${limitar(racha * 10, 0, 100)}% 100%)`;
+
+        const dias = Array.isArray(data.diasSemana) ? data.diasSemana : [];
+        const contenedor = document.querySelector('.racha-days');
+        if (!dias.length) return;
+
+        contenedor.innerHTML = dias.map(dia => `
+            <div class="racha-day">
+                <span>${dia.label}</span>
+                <div class="check ${dia.asistio ? 'done' : 'pending'}"><i class="ph ph-check"></i></div>
+            </div>
+        `).join('');
+    }
+
+    function renderLogros(logros) {
+        const lista = document.getElementById('logrosLista');
+        if (!logros.length) {
+            lista.innerHTML = '<p style="color: var(--text-secondary); font-size: 14px;">Aún no hay logros disponibles.</p>';
+            return;
+        }
+
+        lista.innerHTML = logros.map(logro => {
+            const color = colorSeguro(logro.color);
+            const iconClass = color === 'yellow'
+                ? 'p-logro-icon text-white'
+                : `p-logro-icon bg-${color} text-white`;
+            const style = color === 'yellow' ? ' style="background: var(--yellow);"' : '';
+            return `
+                <div class="p-logro-item">
+                    <div class="${iconClass}"${style}><i class="ph-fill ${logro.icono || 'ph-trophy'}"></i></div>
+                    <div class="p-logro-info">
+                        <h4>${escapeHtml(limpiarTexto(logro.titulo || 'Logro'))}</h4>
+                        <p>${escapeHtml(limpiarTexto(logro.descripcion || ''))}</p>
+                    </div>
+                    <div class="p-logro-time">${escapeHtml(limpiarTexto(logro.tiempo || 'Según datos'))}</div>
+                </div>`;
+        }).join('');
+    }
+
+    function renderTendencia(puntos) {
+        const chart = document.getElementById('student-chart');
+        if (!chart) return;
+
+        if (!puntos.length) {
+            chart.innerHTML = '<p>No hay suficientes datos para graficar.</p>';
+            return;
+        }
+
+        chart.innerHTML = puntos.map(punto => {
+            const porcentaje = limitar(Number(punto.porcentaje || 0), 0, 100);
+            return `
+                <div class="student-chart-bar" title="${escapeHtml(punto.label || '')}: ${escapeHtml(punto.valor ?? porcentaje)}">
+                    <span style="height:${porcentaje}%"></span>
+                    <small>${escapeHtml(String(punto.label || ''))}</small>
+                </div>`;
+        }).join('');
+    }
+
+    function colorSeguro(color) {
+        return ['blue', 'green', 'purple', 'yellow', 'red', 'orange'].includes(color) ? color : 'blue';
+    }
+
+    function limitar(valor, min, max) {
+        return Math.max(min, Math.min(max, valor));
+    }
+
+    function limpiarTexto(texto) {
+        let valor = String(texto || '');
+        for (let i = 0; i < 3 && /[\u00C3\u00C2]/.test(valor); i++) {
+            try {
+                const decodificado = decodeURIComponent(escape(valor));
+                if (decodificado === valor) break;
+                valor = decodificado;
+            } catch (error) {
+                break;
+            }
+        }
+        return valor;
+    }
+
+    function quitarAcentos(texto) {
+        return String(texto || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+</script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>
+
+

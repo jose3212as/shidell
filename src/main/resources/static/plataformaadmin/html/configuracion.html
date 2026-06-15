@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuración — Shidell Admin</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/shared.css">
+  <style>
+    .config-section { margin-bottom: 28px; }
+    .config-row {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 0; border-bottom:1px solid var(--border-color);
+    }
+    .config-row:last-child { border-bottom:none; }
+    .config-row-info h4 { font-size:14px; font-weight:600; }
+    .config-row-info p  { font-size:12px; color:var(--text-secondary); margin-top:3px; }
+    .toggle {
+      width:48px; height:26px; background:var(--color-bg-input); border-radius:13px;
+      position:relative; cursor:pointer; transition:background var(--transition-base);
+      border:none; flex-shrink:0;
+    }
+    .toggle.on { background:var(--primary); }
+    .toggle::after {
+      content:''; position:absolute; width:20px; height:20px;
+      background:white; border-radius:50%; top:3px; left:3px;
+      transition:transform var(--transition-base);
+    }
+    .toggle.on::after { transform:translateX(22px); }
+    .info-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .info-item { padding:14px 16px; background:var(--color-bg-elevated); border-radius:var(--border-radius-md); }
+    .info-item label { font-size:11px; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:1px; }
+    .info-item span  { display:block; font-size:14px; font-weight:600; color:var(--text-primary); margin-top:4px; }
+  </style>
+</head>
+<body>
+<div class="app-shell" id="app-shell">
+  <div class="main-content" id="main-content">
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Configuración</h1>
+          <p>Parámetros del sistema educativo Shidell</p>
+        </div>
+      </div>
+
+      <div class="d-flex gap-20 flex-wrap" style="align-items:flex-start">
+        <!-- Izquierda -->
+        <div style="flex:2;min-width:320px">
+
+          <!-- Información del sistema -->
+          <div class="card config-section">
+            <div class="card-header"><div class="card-title"><i class="ph ph-info" style="margin-right:8px"></i>Información del sistema</div></div>
+            <div class="info-grid" id="system-info">
+              <div class="info-item"><label>Sistema</label><span>Shidell Educativo</span></div>
+              <div class="info-item"><label>Versión</label><span>2.0.0</span></div>
+              <div class="info-item"><label>Año académico</label><span>2026</span></div>
+              <div class="info-item"><label>Backend</label><span>Spring Boot / Java</span></div>
+              <div class="info-item"><label>Total usuarios</label><span id="si-usuarios">Cargando...</span></div>
+              <div class="info-item"><label>Total cursos</label><span id="si-cursos">Cargando...</span></div>
+            </div>
+          </div>
+
+          <!-- Parámetros académicos -->
+          <div class="card config-section">
+            <div class="card-header"><div class="card-title"><i class="ph ph-graduation-cap" style="margin-right:8px"></i>Parámetros académicos (Perú)</div></div>
+            <div class="config-row">
+              <div class="config-row-info">
+                <h4>Niveles disponibles</h4>
+                <p>Primaria (1°–6°) y Secundaria (1°–5°)</p>
+              </div>
+              <div class="d-flex gap-6">
+                <span class="badge badge-primary badge-no-dot">Primaria</span>
+                <span class="badge badge-cyan badge-no-dot">Secundaria</span>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="config-row-info">
+                <h4>Escala de calificación</h4>
+                <p>Sistema vigesimal (0 – 20)</p>
+              </div>
+              <span class="badge badge-green badge-no-dot">0 – 20 puntos</span>
+            </div>
+            <div class="config-row">
+              <div class="config-row-info">
+                <h4>Semanas lectivas</h4>
+                <p>36 semanas por año escolar</p>
+              </div>
+              <span class="badge badge-yellow badge-no-dot">36 semanas</span>
+            </div>
+            <div class="config-row">
+              <div class="config-row-info">
+                <h4>Turnos</h4>
+                <p>Mañana y Tarde</p>
+              </div>
+              <div class="d-flex gap-6">
+                <span class="badge badge-gray badge-no-dot">Mañana</span>
+                <span class="badge badge-gray badge-no-dot">Tarde</span>
+              </div>
+            </div>
+            <div class="config-row">
+              <div class="config-row-info">
+                <h4>Inicio año 2026</h4>
+                <p>16 de Marzo 2026 — 4 bimestres</p>
+              </div>
+              <span class="badge badge-purple badge-no-dot">Mar 16 – Dic 20</span>
+            </div>
+          </div>
+
+          <!-- Roles del sistema -->
+          <div class="card config-section">
+            <div class="card-header"><div class="card-title"><i class="ph ph-users" style="margin-right:8px"></i>Roles del sistema</div></div>
+            <div class="config-row">
+              <div class="d-flex items-center gap-12">
+                <div class="avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">A</div>
+                <div class="config-row-info"><h4>Administrador</h4><p>Acceso total al sistema</p></div>
+              </div>
+              <span class="badge badge-primary">Full Access</span>
+            </div>
+            <div class="config-row">
+              <div class="d-flex items-center gap-12">
+                <div class="avatar" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)">D</div>
+                <div class="config-row-info"><h4>Docente</h4><p>Gestiona cursos, asistencia y calificaciones</p></div>
+              </div>
+              <span class="badge badge-purple">Plataforma Docente</span>
+            </div>
+            <div class="config-row">
+              <div class="d-flex items-center gap-12">
+                <div class="avatar" style="background:linear-gradient(135deg,#06b6d4,#6366f1)">E</div>
+                <div class="config-row-info"><h4>Estudiante</h4><p>Ve cursos, tareas, calificaciones</p></div>
+              </div>
+              <span class="badge badge-cyan">Plataforma Estudiante</span>
+            </div>
+            <div class="config-row">
+              <div class="d-flex items-center gap-12">
+                <div class="avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4)">P</div>
+                <div class="config-row-info"><h4>Padre de Familia</h4><p>Monitorea el progreso de sus hijos</p></div>
+              </div>
+              <span class="badge badge-green">Plataforma Padre</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Derecha: Perfil admin + links -->
+        <div style="flex:1;min-width:260px">
+          <!-- Perfil admin -->
+          <div class="card config-section">
+            <div class="card-header"><div class="card-title"><i class="ph ph-user-circle" style="margin-right:8px"></i>Mi perfil</div></div>
+            <div class="d-flex flex-col items-center gap-12 p-16" style="text-align:center" id="admin-profile">
+              <div class="avatar avatar-lg" id="admin-avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">A</div>
+              <div>
+                <strong id="admin-name">Administrador</strong>
+                <div class="text-sm text-muted mt-4" id="admin-email">—</div>
+                <span class="badge badge-primary mt-8">Administrador</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accesos rápidos plataformas -->
+          <div class="card config-section">
+            <div class="card-header"><div class="card-title"><i class="ph ph-link" style="margin-right:8px"></i>Otras plataformas</div></div>
+            <div class="d-flex flex-col gap-8">
+              <a href="/plataformaestudiante/html/portalestudiante.html" class="btn btn-secondary w-full">
+                <i class="ph ph-student"></i>Plataforma Estudiante
+              </a>
+              <a href="/plataformadocente/html/portaldocente.html" class="btn btn-secondary w-full">
+                <i class="ph ph-chalkboard-teacher"></i>Plataforma Docente
+              </a>
+              <a href="/plataformapadres/html/portalpadres.html" class="btn btn-secondary w-full">
+                <i class="ph ph-users"></i>Plataforma Padres
+              </a>
+            </div>
+          </div>
+
+          <!-- Herramientas admin -->
+          <div class="card config-section">
+            <div class="card-header"><div class="card-title"><i class="ph ph-wrench" style="margin-right:8px"></i>Herramientas</div></div>
+            <div class="d-flex flex-col gap-8">
+              <button class="btn btn-secondary w-full" onclick="testApi()">
+                <i class="ph ph-plug"></i>Probar conexión API
+              </button>
+              <button class="btn btn-danger w-full" onclick="Auth.logout()">
+                <i class="ph ph-sign-out"></i>Cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+  initShared('Configuración', 'Admin / Configuración del sistema');
+
+  // Cargar perfil admin
+  const user = Auth.getUser();
+  if (user) {
+    const name = `${user.nombres||''} ${user.apellidos||''}`.trim() || 'Admin';
+    const init = name[0].toUpperCase();
+    document.getElementById('admin-name').textContent  = name;
+    document.getElementById('admin-email').textContent = user.email || '—';
+    document.getElementById('admin-avatar').textContent= init;
+  }
+
+  // Cargar stats del sistema
+  try {
+    const stats = await API.admin.stats();
+    document.getElementById('si-usuarios').textContent = stats.totalUsuarios || 0;
+    document.getElementById('si-cursos').textContent   = stats.totalCursos   || 0;
+  } catch {
+    document.getElementById('si-usuarios').textContent = 'Error';
+    document.getElementById('si-cursos').textContent   = 'Error';
+  }
+});
+
+async function testApi() {
+  try {
+    const stats = await API.admin.stats();
+    Toast.success('API conectada', `${stats.totalUsuarios} usuarios · ${stats.totalCursos} cursos`);
+  } catch (e) {
+    Toast.error('Error de conexión', e.message);
+  }
+}
+</script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

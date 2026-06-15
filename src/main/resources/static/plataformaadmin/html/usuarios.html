@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usuarios — Shidell Admin</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/shared.css">
+</head>
+<body>
+<div class="app-shell" id="app-shell">
+  <div class="main-content" id="main-content">
+    <main class="page-content">
+
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Gestión de Usuarios</h1>
+          <p>Administra docentes, estudiantes y padres de familia del sistema</p>
+        </div>
+        <div class="page-header-right">
+          <button class="btn btn-primary" onclick="openCreateModal()">
+            <i class="ph ph-user-plus"></i>Nuevo usuario
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI mini -->
+      <div class="grid-4 stagger-grid mb-32" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+        <div class="kpi-card" style="padding: 20px; --kpi-bg: var(--primary-light); --kpi-color2: var(--primary);">
+          <div class="kpi-icon" style="width: 40px; height: 40px; font-size: 20px;"><i class="ph-fill ph-users-three"></i></div>
+          <div class="kpi-value" style="font-size: 28px;"><span id="count-todos">—</span></div>
+          <div class="kpi-label">Total Usuarios</div>
+        </div>
+        <div class="kpi-card" style="padding: 20px; --kpi-bg: var(--cyan-light); --kpi-color2: var(--cyan);">
+          <div class="kpi-icon" style="width: 40px; height: 40px; font-size: 20px;"><i class="ph-fill ph-student"></i></div>
+          <div class="kpi-value" style="font-size: 28px;"><span id="count-estudiante">—</span></div>
+          <div class="kpi-label">Estudiantes</div>
+        </div>
+        <div class="kpi-card" style="padding: 20px; --kpi-bg: var(--purple-light); --kpi-color2: var(--purple);">
+          <div class="kpi-icon" style="width: 40px; height: 40px; font-size: 20px;"><i class="ph-fill ph-chalkboard-teacher"></i></div>
+          <div class="kpi-value" style="font-size: 28px;"><span id="count-docente">—</span></div>
+          <div class="kpi-label">Docentes</div>
+        </div>
+        <div class="kpi-card" style="padding: 20px; --kpi-bg: var(--green-light); --kpi-color2: var(--green);">
+          <div class="kpi-icon" style="width: 40px; height: 40px; font-size: 20px;"><i class="ph-fill ph-users"></i></div>
+          <div class="kpi-value" style="font-size: 28px;"><span id="count-padre">—</span></div>
+          <div class="kpi-label">Padres</div>
+        </div>
+        <div class="kpi-card" style="padding: 20px; --kpi-bg: var(--yellow-light); --kpi-color2: var(--yellow);">
+          <div class="kpi-icon" style="width: 40px; height: 40px; font-size: 20px;"><i class="ph-fill ph-shield-check"></i></div>
+          <div class="kpi-value" style="font-size: 28px;"><span id="count-administrador">—</span></div>
+          <div class="kpi-label">Admins</div>
+        </div>
+      </div>
+
+      <!-- Tabla principal -->
+      <div class="card">
+        <div class="toolbar">
+          <div class="toolbar-search">
+            <i class="ph ph-magnifying-glass"></i>
+            <input type="text" placeholder="Buscar por nombre, email..." id="user-search">
+          </div>
+          <div class="filter-tabs">
+            <button class="filter-tab active" data-rol="TODOS">Todos</button>
+            <button class="filter-tab" data-rol="ESTUDIANTE">Estudiantes</button>
+            <button class="filter-tab" data-rol="DOCENTE">Docentes</button>
+            <button class="filter-tab" data-rol="PADRE">Padres</button>
+            <button class="filter-tab" data-rol="ADMINISTRADOR">Admins</button>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Rol</th>
+                <th>Sección</th>
+                <th>Turno</th>
+                <th>Padre/Tutor</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="7" class="text-center" style="padding:40px">
+                <div class="spinner spinner-lg" style="margin:0 auto"></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal Usuario -->
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Nuevo Usuario</span>
+      <button class="modal-close" onclick="closeModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <form id="user-form">
+      <div class="modal-body">
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Nombres <span class="required">*</span></label>
+            <input class="form-control" id="f-nombres" placeholder="Ej: Juan Carlos" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Apellidos <span class="required">*</span></label>
+            <input class="form-control" id="f-apellidos" placeholder="Ej: Pérez García" required>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Correo electrónico <span class="required">*</span></label>
+            <input class="form-control" id="f-email" type="email" placeholder="correo@shidell.edu" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Rol <span class="required">*</span></label>
+            <select class="form-control form-select" id="f-rol" required>
+              <option value="">Seleccionar rol</option>
+              <option value="ADMINISTRADOR">Administrador</option>
+              <option value="DOCENTE">Docente</option>
+              <option value="ESTUDIANTE">Estudiante</option>
+              <option value="PADRE">Padre de Familia</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Campos académicos (solo ESTUDIANTE) -->
+        <div id="academic-fields" style="display:none">
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Nivel</label>
+              <select class="form-control form-select" id="f-nivel">
+                <option value="">Seleccionar</option>
+                <option value="PRIMARIA">Primaria</option>
+                <option value="SECUNDARIA">Secundaria</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Grado</label>
+              <select class="form-control form-select" id="f-grado">
+                <option value="">Seleccionar</option>
+                <option value="1">1°</option><option value="2">2°</option>
+                <option value="3">3°</option><option value="4">4°</option>
+                <option value="5">5°</option><option value="6">6°</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Sección</label>
+              <select class="form-control form-select" id="f-seccion">
+                <option value="">Seleccionar</option>
+                <option value="A">A</option><option value="B">B</option>
+                <option value="C">C</option><option value="D">D</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Turno</label>
+              <select class="form-control form-select" id="f-turno">
+                <option value="">Seleccionar</option>
+                <option value="MAÑANA">Mañana</option>
+                <option value="TARDE">Tarde</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Padre de familia (solo ESTUDIANTE) -->
+        <div id="padre-field" style="display:none">
+          <div class="form-group">
+            <label class="form-label">Padre/Apoderado</label>
+            <select class="form-control form-select" id="f-padre">
+              <option value="">Sin asignar</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" id="f-password-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-control" id="f-password" type="password" placeholder="Dejar vacío para no cambiar">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-submit">
+          <i class="ph ph-floppy-disk"></i>Crear usuario
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/usuarios.js"></script>
+<script>
+  function populateParentsSelect() {
+    const sel = document.getElementById('f-padre');
+    if (sel && typeof allParents !== 'undefined') {
+      sel.innerHTML = '<option value="">Sin asignar</option>';
+      allParents.forEach(p => {
+        const o = document.createElement('option');
+        o.value = p.id;
+        o.textContent = `${p.nombres||''} ${p.apellidos||''}`.trim();
+        sel.appendChild(o);
+      });
+    }
+  }
+</script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

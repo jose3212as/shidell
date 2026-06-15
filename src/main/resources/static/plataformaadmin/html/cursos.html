@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cursos — Shidell Admin</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/shared.css">
+  <style>
+    .cursos-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:18px; }
+    .curso-card  { background:var(--color-bg-card); border:1px solid var(--border-color); border-radius:var(--border-radius-lg); overflow:hidden; transition:all var(--transition-base); }
+    .curso-card:hover { border-color:var(--border-strong); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+    .curso-card-top { display:flex; align-items:center; justify-content:space-between; padding:16px 16px 14px; }
+    .curso-icon { width:44px; height:44px; border-radius:var(--border-radius-sm); display:flex; align-items:center; justify-content:center; font-size:22px; }
+    .curso-actions { display:flex; gap:4px; }
+    .curso-card-body { padding:0 16px 16px; }
+    .curso-name { font-size:15px; font-weight:700; color:var(--text-primary); }
+    .curso-prof { border-top:1px solid var(--border-color); padding-top:10px; }
+  </style>
+</head>
+<body>
+<div class="app-shell" id="app-shell">
+  <div class="main-content" id="main-content">
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Gestión de Cursos</h1>
+          <p>Crea y administra los cursos del sistema educativo</p>
+        </div>
+        <div class="page-header-right">
+          <button class="btn btn-primary" onclick="openCreateCurso()">
+            <i class="ph ph-plus"></i>Nuevo curso
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI mini -->
+      <div class="d-flex gap-16 mb-24">
+        <div class="kpi-card" style="flex:1;padding:16px;--kpi-bg:var(--yellow-light);--kpi-color2:var(--yellow)">
+          <div class="kpi-icon" style="width:36px;height:36px;font-size:18px"><i class="ph-fill ph-book-open"></i></div>
+          <div class="kpi-value" style="font-size:22px"><span id="total-cursos">—</span></div>
+          <div class="kpi-label">Cursos totales</div>
+        </div>
+        <div class="kpi-card" style="flex:1;padding:16px;--kpi-bg:var(--purple-light);--kpi-color2:var(--purple)">
+          <div class="kpi-icon" style="width:36px;height:36px;font-size:18px"><i class="ph-fill ph-chalkboard-teacher"></i></div>
+          <div class="kpi-value" style="font-size:22px"><span id="cursos-con-docente">—</span></div>
+          <div class="kpi-label">Con docente asignado</div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="toolbar mb-20">
+        <div class="toolbar-search">
+          <i class="ph ph-magnifying-glass"></i>
+          <input type="text" placeholder="Buscar curso..." id="curso-search">
+        </div>
+      </div>
+
+      <!-- Grid de cursos -->
+      <div class="cursos-grid" id="cursos-grid">
+        <div class="empty-state"><div class="spinner spinner-lg"></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal Curso -->
+<div class="modal-overlay hidden" id="curso-modal-overlay">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <span class="modal-title" id="curso-modal-title">Nuevo Curso</span>
+      <button class="modal-close" onclick="closeCursoModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <form id="curso-form">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Nombre del curso <span class="required">*</span></label>
+          <input class="form-control" id="fc-nombre" placeholder="Ej: Matemáticas" required>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Nivel</label>
+            <select class="form-control form-select" id="fc-nivel">
+              <option value="">Seleccionar</option>
+              <option value="PRIMARIA">Primaria</option>
+              <option value="SECUNDARIA">Secundaria</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Grado</label>
+            <select class="form-control form-select" id="fc-grado">
+              <option value="">Seleccionar</option>
+              <option value="1">1°</option><option value="2">2°</option>
+              <option value="3">3°</option><option value="4">4°</option>
+              <option value="5">5°</option><option value="6">6°</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Sección</label>
+            <select class="form-control form-select" id="fc-seccion">
+              <option value="">Seleccionar</option>
+              <option value="A">A</option><option value="B">B</option>
+              <option value="C">C</option><option value="D">D</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Docente</label>
+            <select class="form-control form-select" id="f-profesor">
+              <option value="">Sin asignar</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Ícono</label>
+            <select class="form-control form-select" id="fc-icono">
+              <option value="">Seleccionar</option>
+              <option value="ph-calculator">Calculadora</option>
+              <option value="ph-flask">Ciencias</option>
+              <option value="ph-book-open">Lectura</option>
+              <option value="ph-code">Programación</option>
+              <option value="ph-globe">Geografía</option>
+              <option value="ph-music-notes">Música</option>
+              <option value="ph-paint-brush">Arte</option>
+              <option value="ph-atom">Física</option>
+              <option value="ph-brain">Psicología</option>
+              <option value="ph-dna">Biología</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Color</label>
+            <select class="form-control form-select" id="fc-color">
+              <option value="">Seleccionar</option>
+              <option value="purple">Morado</option>
+              <option value="blue">Azul</option>
+              <option value="green">Verde</option>
+              <option value="yellow">Amarillo</option>
+              <option value="red">Rojo</option>
+              <option value="cyan">Cian</option>
+              <option value="orange">Naranja</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Día de la semana</label>
+            <select class="form-control form-select" id="fc-dia">
+              <option value="">Sin definir</option>
+              <option value="1">Lunes</option><option value="2">Martes</option>
+              <option value="3">Miércoles</option><option value="4">Jueves</option>
+              <option value="5">Viernes</option>
+            </select>
+          </div>
+          <div></div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Hora inicio</label>
+            <input class="form-control" id="fc-hora-inicio" type="time">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Hora fin</label>
+            <input class="form-control" id="fc-hora-fin" type="time">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeCursoModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btn-curso-submit">
+          <i class="ph ph-floppy-disk"></i>Crear curso
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/cursos.js"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Calificaciones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="ph-fill ph-users"></i></div>
+            <div class="logo-text"><h2>Shidell</h2><p>Portal Padres</p></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="portalpadres.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
+            <a href="calificaciones.html" class="nav-item active"><i class="ph ph-star"></i><span>Calificaciones</span></a>
+            <a href="asistencia.html" class="nav-item"><i class="ph ph-calendar-check"></i><span>Asistencia</span></a>
+            <a href="tareas.html" class="nav-item"><i class="ph ph-clipboard-text"></i><span>Tareas</span></a>
+            <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
+            <a href="configuracion.html" class="nav-item"><i class="ph ph-gear"></i><span>Configuración</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="btn-logout"><i class="ph ph-sign-out"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="topbar">
+            <div class="greeting">
+                <h1>Calificaciones</h1>
+                <p>Historial de notas de <span id="hijo-nombre-topbar">tu hijo/a</span></p>
+            </div>
+            <div class="topbar-actions">
+                <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
+                <div class="top-user-info">
+                    <div class="user-details">
+                        <span class="user-name padre-nombre">Padre</span>
+                        <a href="configuracion.html" class="user-action">Ver perfil <i class="ph ph-caret-right"></i></a>
+                    </div>
+                    <div class="avatar"><i class="ph-fill ph-user" style="font-size:24px; color:var(--primary);"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Card hijo -->
+            <div class="hijo-selector">
+                <div class="hijo-info">
+                    <div class="hijo-avatar" id="hijo-avatar">??</div>
+                    <div class="hijo-datos">
+                        <h2 id="hijo-nombre">Cargando...</h2>
+                        <p id="hijo-info">Nivel · Grado · Sección</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumen promedio -->
+            <div class="stats-row" style="grid-template-columns: repeat(3,1fr);">
+                <div class="stat-item">
+                    <div class="stat-top">
+                        <div class="stat-icon-circle bg-teal-light"><i class="ph ph-chart-bar"></i></div>
+                        <span class="stat-val" id="promedio-general">—</span>
+                    </div>
+                    <div><p class="stat-label">Promedio general</p></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-top">
+                        <div class="stat-icon-circle bg-green-light"><i class="ph ph-check-circle"></i></div>
+                        <span class="stat-val" id="cursos-aprobados">—</span>
+                    </div>
+                    <div><p class="stat-label">Cursos aprobados</p></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-top">
+                        <div class="stat-icon-circle bg-red-light"><i class="ph ph-warning"></i></div>
+                        <span class="stat-val" id="cursos-riesgo">—</span>
+                    </div>
+                    <div><p class="stat-label">Cursos en riesgo (&lt;11)</p></div>
+                </div>
+            </div>
+
+            <!-- Tabla completa -->
+            <div class="main-panel">
+                <div class="panel-top">
+                    <h3 class="panel-title"><i class="ph ph-star"></i> Todas las calificaciones</h3>
+                </div>
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Evaluación</th>
+                            <th>Nota</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="calificaciones-full">
+                        <tr><td colspan="5" style="padding:20px; color:#94a3b8; text-align:center;">Cargando calificaciones...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="../js/app.js"></script>
+<script>
+// Página de calificaciones completa
+document.addEventListener('DOMContentLoaded', async () => {
+    // app.js ya inicializa el hijo; escuchamos cuando el hijo esté listo
+    window.addEventListener('hijo-cargado', async (e) => {
+        const hijo = e.detail;
+        document.getElementById('hijo-nombre-topbar').textContent = hijo.nombres || 'tu hijo/a';
+        await cargarCalifCompletas(hijo);
+    });
+});
+
+async function cargarCalifCompletas(hijo) {
+    const tbody = document.getElementById('calificaciones-full');
+    try {
+        const res  = await fetch(`/api/calificaciones/estudiante/${hijo.id}`);
+        if (!res.ok) throw new Error('No se pudo cargar calificaciones');
+        const payload = await res.json();
+        const cals = Array.isArray(payload) ? payload : (payload.evaluaciones || []);
+
+        if (cals.length === 0) {
+            document.getElementById('promedio-general').textContent = Number(payload.promedioGeneral || 0).toFixed(1);
+            document.getElementById('cursos-aprobados').textContent = payload.cursosAprobados || 0;
+            document.getElementById('cursos-riesgo').textContent = Math.max(0, (payload.cursosTotales || 0) - (payload.cursosAprobados || 0));
+            tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; color:#94a3b8; text-align:center;">Sin calificaciones registradas.</td></tr>';
+            return;
+        }
+
+        const promedio = Number(payload.promedioGeneral ?? (cals.reduce((s,c) => s + nota20(c), 0) / cals.length)).toFixed(1);
+        const cursos = Array.isArray(payload.cursos) ? payload.cursos : [];
+        const aprobados = Number(payload.cursosAprobados ?? cursos.filter(c => Number(c.promedio || 0) >= 11).length);
+        const riesgo = cursos.length
+            ? cursos.filter(c => Number(c.promedio || 0) > 0 && Number(c.promedio || 0) < 11).length
+            : cals.filter(c => nota20(c) < 11).length;
+        document.getElementById('promedio-general').textContent  = promedio;
+        document.getElementById('cursos-aprobados').textContent = aprobados;
+        document.getElementById('cursos-riesgo').textContent    = riesgo;
+
+        tbody.innerHTML = '';
+        cals.forEach(c => {
+            const nota  = nota20(c);
+            const grade = nota >= 17 ? 'a' : nota >= 14 ? 'b' : nota >= 11 ? 'c' : 'd';
+            const estado = nota >= 11 ? '<span style="color:var(--green);font-weight:600;">Aprobado</span>' : '<span style="color:var(--red);font-weight:600;">En riesgo</span>';
+            const fecha  = c.fecha ? new Date(`${c.fecha}T00:00:00`).toLocaleDateString('es-PE') : '—';
+            tbody.innerHTML += `
+                <tr>
+                    <td>${c.tarea?.curso?.nombre || c.curso?.nombre || '—'}</td>
+                    <td>${c.tarea?.titulo || c.actividad || 'Evaluación'}</td>
+                    <td><span class="grade-badge grade-${grade}">${nota.toFixed(1)}</span></td>
+                    <td>${estado}</td>
+                    <td style="color:var(--text-secondary); font-size:13px;">${fecha}</td>
+                </tr>`;
+        });
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color:#ef4444; padding:16px;">Error al cargar.</td></tr>';
+    }
+}
+
+function nota20(calificacion) {
+    return Number(calificacion.nota20 ?? calificacion.nota ?? 0);
+}
+</script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

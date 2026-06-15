@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Asistencia</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="ph-fill ph-users"></i></div>
+            <div class="logo-text"><h2>Shidell</h2><p>Portal Padres</p></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="portalpadres.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
+            <a href="calificaciones.html" class="nav-item"><i class="ph ph-star"></i><span>Calificaciones</span></a>
+            <a href="asistencia.html" class="nav-item active"><i class="ph ph-calendar-check"></i><span>Asistencia</span></a>
+            <a href="tareas.html" class="nav-item"><i class="ph ph-clipboard-text"></i><span>Tareas</span></a>
+            <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
+            <a href="configuracion.html" class="nav-item"><i class="ph ph-gear"></i><span>Configuración</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="btn-logout"><i class="ph ph-sign-out"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="topbar">
+            <div class="greeting">
+                <h1>Asistencia</h1>
+                <p>Registro de asistencia escolar</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
+                <div class="top-user-info">
+                    <div class="user-details">
+                        <span class="user-name padre-nombre">Padre</span>
+                        <a href="configuracion.html" class="user-action">Ver perfil <i class="ph ph-caret-right"></i></a>
+                    </div>
+                    <div class="avatar"><i class="ph-fill ph-user" style="font-size:24px; color:var(--primary);"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Card hijo -->
+            <div class="hijo-selector">
+                <div class="hijo-info">
+                    <div class="hijo-avatar" id="hijo-avatar">??</div>
+                    <div class="hijo-datos">
+                        <h2 id="hijo-nombre">Cargando...</h2>
+                        <p id="hijo-info"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row" style="grid-template-columns: repeat(3,1fr);">
+                <div class="stat-item">
+                    <div class="stat-top">
+                        <div class="stat-icon-circle bg-green-light"><i class="ph ph-check-circle"></i></div>
+                        <span class="stat-val" id="dias-presente">—</span>
+                    </div>
+                    <p class="stat-label">Días presente</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-top">
+                        <div class="stat-icon-circle bg-red-light"><i class="ph ph-x-circle"></i></div>
+                        <span class="stat-val" id="dias-ausente">—</span>
+                    </div>
+                    <p class="stat-label">Días ausente</p>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-top">
+                        <div class="stat-icon-circle bg-teal-light"><i class="ph ph-percent"></i></div>
+                        <span class="stat-val" id="pct-asistencia">—</span>
+                    </div>
+                    <p class="stat-label">Porcentaje asistencia</p>
+                </div>
+            </div>
+
+            <!-- Barra visual + tabla -->
+            <div class="main-panel">
+                <div class="panel-top">
+                    <h3 class="panel-title"><i class="ph ph-calendar-check"></i> Detalle por día</h3>
+                </div>
+                <div id="asist-resumen" style="margin-bottom:24px;"></div>
+                <div id="asistencia-tabla">
+                    <p style="color:#94a3b8; text-align:center; padding:20px;">Cargando...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="../js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('hijo-cargado', async (e) => {
+        const hijo = e.detail;
+        try {
+            const res  = await fetch(`/api/asistencia/estudiante/${hijo.id}`);
+            if (!res.ok) { document.getElementById('asistencia-tabla').innerHTML = '<p style="color:#94a3b8; text-align:center;">Sin datos de asistencia.</p>'; return; }
+            const data = await res.json();
+
+            const total = data.length;
+            const pres  = data.filter(a => a.asistio || ['PRESENTE', 'TARDE', 'JUSTIFICADO'].includes(normalizarEstado(a.estado))).length;
+            const aus   = data.filter(a => !a.asistio && !['PRESENTE', 'TARDE', 'JUSTIFICADO'].includes(normalizarEstado(a.estado))).length;
+            const pct   = total > 0 ? Math.round(pres/total*100) : 0;
+
+            document.getElementById('dias-presente').textContent = pres;
+            document.getElementById('dias-ausente').textContent  = aus;
+            document.getElementById('pct-asistencia').textContent = pct + '%';
+
+            document.getElementById('asist-resumen').innerHTML = `
+                <div class="asist-bar-wrap" style="height:12px; margin-bottom:8px;">
+                    <div class="asist-bar-fill" style="width:${pct}%;"></div>
+                </div>
+                <p style="font-size:13px; color:var(--text-secondary);">${pres} registros con asistencia de ${total} clases registradas</p>
+            `;
+
+            const tabla = document.getElementById('asistencia-tabla');
+            if (!data.length) {
+                tabla.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:20px;">Aún no hay asistencia registrada para este hijo.</p>';
+                return;
+            }
+            tabla.innerHTML = `
+                <table class="grades-table">
+                    <thead><tr><th>Fecha</th><th>Curso</th><th>Estado</th></tr></thead>
+                    <tbody>${data.map(a => `
+                        <tr>
+                            <td>${new Date(a.fecha).toLocaleDateString('es-PE', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}</td>
+                            <td>${a.curso?.nombre || 'Clase registrada'}</td>
+                            <td>${estadoAsistencia(a)}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>`;
+        } catch (e) {
+            document.getElementById('asistencia-tabla').innerHTML = '<p style="color:#ef4444; text-align:center;">Error al cargar asistencia.</p>';
+        }
+    });
+});
+
+function normalizarEstado(estado) {
+    return String(estado || 'AUSENTE').trim().toUpperCase();
+}
+
+function estadoAsistencia(registro) {
+    const estado = normalizarEstado(registro.estado);
+    const estilos = {
+        PRESENTE: ['var(--green)', 'ph-check-circle', 'Asistió'],
+        TARDE: ['#f59e0b', 'ph-clock-countdown', 'Llegó tarde'],
+        JUSTIFICADO: ['var(--primary)', 'ph-note-pencil', 'Falta justificada'],
+        AUSENTE: ['var(--red)', 'ph-x-circle', 'No asistió']
+    };
+    const [color, icono, texto] = estilos[estado] || estilos.AUSENTE;
+    return `<span style="color:${color};font-weight:700;"><i class="ph ${icono}"></i> ${texto}</span>`;
+}
+</script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

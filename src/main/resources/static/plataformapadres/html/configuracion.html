@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Configuración</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .config-card { background: white; border-radius: 20px; padding: 32px; border: 1px solid var(--border-color-dark); }
+        .config-section { margin-bottom: 32px; }
+        .config-section h3 { font-size: 16px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .config-field { margin-bottom: 18px; }
+        .config-field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
+        .config-field input { width: 100%; padding: 12px 16px; border: 1px solid var(--border-color-dark); border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; }
+        .config-field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(13,148,136,0.1); }
+        .config-field input[readonly] { background: var(--bg-main); color: var(--text-secondary); }
+        .btn-save { background: var(--primary); color: white; border: none; padding: 12px 32px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .btn-save:hover { background: var(--primary-hover); transform: translateY(-1px); }
+        .profile-banner { background: linear-gradient(135deg, var(--primary), #0f766e); border-radius: 20px; padding: 32px; display: flex; align-items: center; gap: 24px; color: white; margin-bottom: 24px; }
+        .profile-avatar-big { width: 80px; height: 80px; background: rgba(255,255,255,0.2); border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; border: 3px solid rgba(255,255,255,0.4); }
+        .profile-avatar-big img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .photo-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+        .btn-photo { border: 1px solid rgba(255,255,255,0.45); background: rgba(255,255,255,0.12); color: white; border-radius: 10px; padding: 9px 14px; font-size: 13px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-photo:hover { background: rgba(255,255,255,0.2); }
+        .btn-photo.danger { border-color: rgba(254,226,226,0.65); color: #fee2e2; }
+        .save-status { font-size: 13px; font-weight: 600; color: var(--text-secondary); align-self: center; }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="ph-fill ph-users"></i></div>
+            <div class="logo-text"><h2>Shidell</h2><p>Portal Padres</p></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="portalpadres.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
+            <a href="calificaciones.html" class="nav-item"><i class="ph ph-star"></i><span>Calificaciones</span></a>
+            <a href="asistencia.html" class="nav-item"><i class="ph ph-calendar-check"></i><span>Asistencia</span></a>
+            <a href="tareas.html" class="nav-item"><i class="ph ph-clipboard-text"></i><span>Tareas</span></a>
+            <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
+            <a href="configuracion.html" class="nav-item active"><i class="ph ph-gear"></i><span>Configuración</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="btn-logout"><i class="ph ph-sign-out"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="topbar">
+            <div class="greeting">
+                <h1>Configuración</h1>
+                <p>Administra tu perfil y preferencias</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
+                <div class="top-user-info">
+                    <div class="user-details"><span class="user-name padre-nombre">Padre</span></div>
+                    <div class="avatar"><i class="ph-fill ph-user-circle" style="font-size:32px;"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+
+            <!-- Banner del perfil -->
+            <div class="profile-banner">
+                <div class="profile-avatar-big" id="perfil-avatar">??</div>
+                <div>
+                    <h2 class="padre-nombre" style="font-size:24px; font-weight:700; margin-bottom:4px;">Padre</h2>
+                    <p style="opacity:0.85;" id="perfil-email">—</p>
+                    <p style="opacity:0.7; font-size:13px; margin-top:4px;">Padre de Familia</p>
+                    <div class="photo-actions">
+                        <label class="btn-photo" for="cfg-foto">
+                            <i class="ph ph-camera"></i> Cambiar foto
+                        </label>
+                        <button type="button" class="btn-photo danger" id="btn-quitar-foto">
+                            <i class="ph ph-trash"></i> Quitar
+                        </button>
+                        <input type="file" id="cfg-foto" accept="image/png,image/jpeg,image/webp" hidden>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-card">
+                <div class="config-section">
+                    <h3><i class="ph ph-user"></i> Información personal</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div class="config-field">
+                            <label>Nombres</label>
+                            <input type="text" id="cfg-nombres" placeholder="Nombres">
+                        </div>
+                        <div class="config-field">
+                            <label>Apellidos</label>
+                            <input type="text" id="cfg-apellidos" placeholder="Apellidos">
+                        </div>
+                    </div>
+                    <div class="config-field">
+                        <label>Correo electrónico</label>
+                        <input type="email" id="cfg-email" readonly>
+                    </div>
+                    <div class="config-field">
+                        <label>Teléfono</label>
+                        <input type="tel" id="cfg-telefono" placeholder="Ej: 987 654 321">
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3><i class="ph ph-lock"></i> Seguridad</h3>
+                    <div class="config-field">
+                        <label>Contraseña actual</label>
+                        <input type="password" id="cfg-pass-actual" placeholder="••••••••">
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                        <div class="config-field">
+                            <label>Nueva contraseña</label>
+                            <input type="password" id="cfg-pass-nueva" placeholder="••••••••">
+                        </div>
+                        <div class="config-field">
+                            <label>Confirmar contraseña</label>
+                            <input type="password" id="cfg-pass-confirm" placeholder="••••••••">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display:flex; gap:12px;">
+                    <button class="btn-save" onclick="guardarCambios()">
+                        <i class="ph ph-floppy-disk"></i> Guardar cambios
+                    </button>
+                    <button style="padding:12px 24px; border:1px solid var(--border-color-dark); border-radius:12px; background:white; cursor:pointer; font-size:14px; font-weight:600;" onclick="window.location.href='portalpadres.html'">
+                        Cancelar
+                    </button>
+                    <span class="save-status" id="save-status"></span>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="../js/app.js"></script>
+<script>
+let padreConfig = null;
+let fotoPerfilTemporal = '';
+
+document.addEventListener('DOMContentLoaded', () => {
+    padreConfig = JSON.parse(localStorage.getItem('shidell_user') || '{}');
+    fotoPerfilTemporal = primeraFotoValida(padreConfig.fotoPerfil, padreConfig.foto_perfil);
+    llenarFormulario(padreConfig);
+    configurarFotoPerfil();
+    refrescarDatosPerfil();
+});
+
+function llenarFormulario(padre) {
+    if (!padre?.id) return;
+    document.getElementById('cfg-nombres').value = padre.nombres || '';
+    document.getElementById('cfg-apellidos').value = padre.apellidos || '';
+    document.getElementById('cfg-email').value = padre.email || '';
+    document.getElementById('perfil-email').textContent = padre.email || '';
+    document.querySelectorAll('.padre-nombre').forEach(el => {
+        el.textContent = `${padre.nombres || ''} ${padre.apellidos || ''}`.trim() || 'Padre';
+    });
+    pintarPreviewFoto();
+}
+
+function configurarFotoPerfil() {
+    const input = document.getElementById('cfg-foto');
+    const quitar = document.getElementById('btn-quitar-foto');
+    input?.addEventListener('change', async () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        try {
+            fotoPerfilTemporal = await procesarFotoPerfil(file);
+            pintarPreviewFoto();
+            setStatus('Foto lista. Guarda los cambios para publicarla.');
+        } catch (e) {
+            setStatus(e.message || 'No se pudo procesar la imagen.');
+        } finally {
+            input.value = '';
+        }
+    });
+    quitar?.addEventListener('click', () => {
+        fotoPerfilTemporal = '';
+        pintarPreviewFoto();
+        setStatus('La foto se quitará al guardar.');
+    });
+}
+
+async function refrescarDatosPerfil() {
+    if (!padreConfig?.id) return;
+    try {
+        const res = await fetch(`/api/users/${padreConfig.id}`);
+        if (!res.ok) return;
+        const fresh = await res.json();
+        padreConfig = { ...padreConfig, ...fresh, sessionToken: padreConfig.sessionToken };
+        fotoPerfilTemporal = primeraFotoValida(fresh.fotoPerfil, fresh.foto_perfil, fotoPerfilTemporal);
+        localStorage.setItem('shidell_user', JSON.stringify(padreConfig));
+        llenarFormulario(padreConfig);
+    } catch (e) {
+        console.warn('No se pudo refrescar configuración:', e);
+    }
+}
+
+async function guardarCambios() {
+    if (!padreConfig?.id) return;
+    const nombres = document.getElementById('cfg-nombres').value.trim();
+    const apellidos = document.getElementById('cfg-apellidos').value.trim();
+    if (!nombres || !apellidos) {
+        setStatus('Completa nombres y apellidos.');
+        return;
+    }
+    setStatus('Guardando...');
+    try {
+        const res = await fetch(`/api/users/${padreConfig.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                nombres,
+                apellidos,
+                fotoPerfil: fotoPerfilTemporal || ''
+            })
+        });
+        if (!res.ok) throw new Error('No se pudo guardar el perfil.');
+        const actualizado = await res.json();
+        padreConfig = { ...padreConfig, ...actualizado, sessionToken: padreConfig.sessionToken };
+        localStorage.setItem('shidell_user', JSON.stringify(padreConfig));
+        llenarFormulario(padreConfig);
+        if (typeof renderAvatarPadre === 'function') renderAvatarPadre(padreConfig);
+        setStatus('Perfil actualizado.');
+    } catch (e) {
+        setStatus(e.message || 'Error al guardar.');
+    }
+}
+
+function pintarPreviewFoto() {
+    const iniciales = (((padreConfig?.nombres || '?')[0] || '?') + ((padreConfig?.apellidos || '?')[0] || '?')).toUpperCase();
+    const persona = { ...padreConfig, fotoPerfil: fotoPerfilTemporal };
+    const avatar = document.getElementById('perfil-avatar');
+    if (typeof renderAvatarEnContenedor === 'function') {
+        renderAvatarEnContenedor(avatar, persona, iniciales);
+    } else {
+        avatar.textContent = iniciales;
+    }
+}
+
+function procesarFotoPerfil(file) {
+    if (!file.type.startsWith('image/')) throw new Error('Selecciona una imagen válida.');
+    if (file.size > 5 * 1024 * 1024) throw new Error('La imagen debe pesar menos de 5 MB.');
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+        reader.onload = () => {
+            const img = new Image();
+            img.onerror = () => reject(new Error('No se pudo cargar la imagen.'));
+            img.onload = () => {
+                const size = 384;
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const side = Math.min(img.width, img.height);
+                const sx = (img.width - side) / 2;
+                const sy = (img.height - side) / 2;
+                ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
+                resolve(canvas.toDataURL('image/jpeg', 0.84));
+            };
+            img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function setStatus(texto) {
+    const el = document.getElementById('save-status');
+    if (el) el.textContent = texto || '';
+}
+</script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

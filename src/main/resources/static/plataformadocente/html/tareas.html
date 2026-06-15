@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Tareas y Materiales</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/tareas.css?v=20260518">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="ph-fill ph-chalkboard-teacher"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Docente</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="portaldocente.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
+                <a href="misclases.html" class="nav-item"><i class="ph ph-presentation-chart"></i><span>Mis Clases</span></a>
+                <a href="tareas.html" class="nav-item active"><i class="ph ph-notebook"></i><span>Tareas</span></a>
+                <a href="estudiantes.html" class="nav-item"><i class="ph ph-users"></i><span>Estudiantes</span></a>
+                <a href="calificaciones.html" class="nav-item"><i class="ph ph-check-square"></i><span>Calificaciones</span></a>
+                <a href="calendario.html" class="nav-item"><i class="ph ph-calendar"></i><span>Calendario</span></a>
+                <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
+                <a href="reportes.html" class="nav-item nav-bottom-start"><i class="ph ph-chart-bar"></i><span>Reportes</span></a>
+                <a href="configuracion.html" class="nav-item"><i class="ph ph-gear"></i><span>Configuración</span></a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="greeting">
+                    <h1>Tareas y materiales</h1>
+                    <p id="teacher-context">Cargando datos del docente...</p>
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name" id="user-name-label">Cargando...</span>
+                            <span class="user-role" id="user-role-label">Docente</span>
+                        </div>
+                        <div class="user-dropdown">
+                            <div class="avatar"><i class="ph-fill ph-user-circle" style="font-size:32px;"></i></div>
+                            <i class="ph ph-caret-down dropdown-icon"></i>
+                            <div class="dropdown-menu">
+                                <a href="/login.html" id="btn-logout" class="dropdown-item">
+                                    <i class="ph ph-sign-out"></i><span>Cerrar sesión</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area tasks-workspace">
+
+                <!-- Hero Banner -->
+                <section class="tasks-hero">
+                    <div class="tasks-hero-main">
+                        <span>Panel docente</span>
+                        <h2 id="teacher-welcome">Organiza actividades por curso</h2>
+                        <p id="teacher-summary">Gestiona tareas, materiales y entregas desde los cursos asignados a tu cuenta.</p>
+                    </div>
+                    <div class="tasks-hero-actions">
+                        <button class="btn-primary" id="btn-new-task-hero" type="button">
+                            <i class="ph ph-plus-circle"></i> Nueva tarea
+                        </button>
+                        <button class="btn-secondary" id="btn-new-material-hero" type="button">
+                            <i class="ph ph-upload-simple"></i> Subir material
+                        </button>
+                    </div>
+                </section>
+
+                <!-- Metrics Row -->
+                <section class="tasks-metrics" aria-label="Resumen de tareas">
+                    <article>
+                        <i class="ph ph-books"></i>
+                        <div><strong id="metric-courses">0</strong><span>Cursos activos</span></div>
+                    </article>
+                    <article>
+                        <i class="ph ph-list-checks"></i>
+                        <div><strong id="metric-tasks">0</strong><span>Tareas publicadas</span></div>
+                    </article>
+                    <article>
+                        <i class="ph ph-folder-open"></i>
+                        <div><strong id="metric-materials">0</strong><span>Materiales</span></div>
+                    </article>
+                    <article>
+                        <i class="ph ph-tray"></i>
+                        <div><strong id="metric-pending">0</strong><span>Pendientes</span></div>
+                    </article>
+                </section>
+
+                <!-- Filter Bar -->
+                <section class="main-panel task-controls-panel">
+                    <div class="task-control">
+                        <label for="filter-course">Curso</label>
+                        <select id="filter-course">
+                            <option value="">Todos los cursos</option>
+                        </select>
+                    </div>
+                    <div class="task-control">
+                        <label for="filter-priority">Prioridad</label>
+                        <select id="filter-priority">
+                            <option value="">Todas</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </div>
+                    <div class="task-control task-search">
+                        <label for="filter-search">Buscar</label>
+                        <div>
+                            <i class="ph ph-magnifying-glass"></i>
+                            <input type="search" id="filter-search" placeholder="Título, descripción o curso">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ── TAB NAVIGATION ───────────────────────────────────────── -->
+                <div class="tasks-tab-bar">
+                    <button class="tasks-tab active" data-tab="tareas" id="tab-tareas">
+                        <i class="ph ph-list-checks"></i> Tareas
+                        <span class="tab-badge" id="tasks-count-label">0</span>
+                    </button>
+                    <button class="tasks-tab" data-tab="materiales" id="tab-materiales">
+                        <i class="ph ph-folder-open"></i> Materiales
+                        <span class="tab-badge" id="materials-count-label">0</span>
+                    </button>
+                </div>
+
+                <!-- ── CREAR / EDITAR TAREA FORM (collapsible) ─────────────── -->
+                <div class="main-panel task-form-panel" id="task-form-panel" style="display:none;">
+                    <div class="panel-header">
+                        <h3 class="panel-title" id="task-form-panel-title">
+                            <i class="ph ph-plus-circle"></i> Crear Nueva Actividad
+                        </h3>
+                        <button class="btn-secondary" id="btn-cancel-task" type="button">
+                            <i class="ph ph-x"></i> Cancelar
+                        </button>
+                    </div>
+                    <form id="task-form" class="teacher-form">
+                        <div class="form-field span-2">
+                            <label for="task-title">Título de la tarea</label>
+                            <input type="text" id="task-title" placeholder="Ej: Ensayo sobre el cambio climático" required>
+                        </div>
+
+                        <div class="form-field span-2">
+                            <label for="task-description">Descripción detallada</label>
+                            <textarea id="task-description" placeholder="Escribe aquí las instrucciones de la tarea..."></textarea>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-course">Curso</label>
+                            <select id="task-course" required>
+                                <option value="">Selecciona un curso...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-priority">Prioridad</label>
+                            <select id="task-priority">
+                                <option value="Baja">Baja</option>
+                                <option value="Media" selected>Media</option>
+                                <option value="Alta">Alta</option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-start-date">Fecha de inicio</label>
+                            <input type="date" id="task-start-date" required>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="task-deadline">Fecha de entrega</label>
+                            <input type="date" id="task-deadline" required>
+                        </div>
+
+                        <div class="form-field file-field">
+                            <label>Guía PDF (opcional)</label>
+                            <div class="file-drop">
+                                <i class="ph ph-file-pdf"></i>
+                                <input type="file" id="task-file" accept=".pdf">
+                                <p id="file-name-label">Seleccionar PDF...</p>
+                            </div>
+                        </div>
+
+                        <div class="form-field submit-field">
+                            <button type="submit" class="btn-primary" id="task-submit-btn">
+                                <i class="ph ph-paper-plane-tilt"></i> Guardar y publicar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- ── TAB: TAREAS ──────────────────────────────────────────── -->
+                <div class="tab-content" id="tab-content-tareas">
+                    <div class="main-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="ph ph-list-checks"></i> Tareas creadas</h3>
+                            <button class="btn-primary" id="btn-new-task" type="button">
+                                <i class="ph ph-plus"></i> Nueva tarea
+                            </button>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tarea</th>
+                                        <th>Curso</th>
+                                        <th>Entrega</th>
+                                        <th>Prioridad</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tasks-table-body">
+                                    <tr>
+                                        <td colspan="6" style="text-align:center; padding:40px;">
+                                            No has creado tareas todavía.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── TAB: MATERIALES ─────────────────────────────────────── -->
+                <div class="tab-content" id="tab-content-materiales" style="display:none;">
+                    <!-- Material upload form -->
+                    <div class="main-panel" id="material-form-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="ph ph-upload-simple"></i> Publicar material</h3>
+                        </div>
+                        <form id="material-form" class="teacher-form compact-form">
+                            <div class="form-field">
+                                <label for="material-course">Curso</label>
+                                <select id="material-course" required>
+                                    <option value="">Selecciona un curso...</option>
+                                </select>
+                            </div>
+                            <div class="form-field">
+                                <label for="material-title">Título del material</label>
+                                <input type="text" id="material-title" placeholder="Ej: Guía semana 3" required>
+                            </div>
+                            <div class="form-field span-2">
+                                <label for="material-description">Descripción</label>
+                                <textarea id="material-description" placeholder="Resumen del recurso o indicaciones para la clase..."></textarea>
+                            </div>
+                            <div class="form-field file-field">
+                                <label>Archivo</label>
+                                <div class="file-drop">
+                                    <i class="ph ph-paperclip"></i>
+                                    <input type="file" id="material-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.png,.jpg,.jpeg">
+                                    <p id="material-file-label">Seleccionar archivo...</p>
+                                </div>
+                            </div>
+                            <div class="form-field submit-field">
+                                <button type="submit" class="btn-primary" id="material-submit-btn">
+                                    <i class="ph ph-upload-simple"></i> Publicar material
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Materials table -->
+                    <div class="main-panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title"><i class="ph ph-folder-open"></i> Materiales publicados</h3>
+                        </div>
+                        <div class="table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Material</th>
+                                        <th>Curso</th>
+                                        <th>Fecha</th>
+                                        <th>Archivo</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="materials-table-body">
+                                    <tr>
+                                        <td colspan="4" style="text-align:center; padding:28px;">Cargando materiales...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /content-area -->
+
+            <!-- Toast feedback -->
+            <div id="feedback-toast" class="feedback-toast" style="display:none;"></div>
+
+            <!-- Footer -->
+            <div class="teacher-footer" style="padding:20px 48px; font-size:11px; color:var(--text-tertiary); border-top:1px solid var(--border-color-dark); display:flex; justify-content:space-between;">
+                <span>Shidell Portal Docente v1.0</span>
+                <span id="server-status">Estado: Conectando...</span>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Ver Entregas -->
+    <div id="modal-submissions" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-task-title">Entregas de Tarea</h3>
+                <button onclick="closeSubmissionsModal()" class="modal-close-btn" type="button">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <div id="submissions-list" class="modal-body">
+                <p style="text-align:center; padding:20px;">Cargando entregas...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Calificar Entrega -->
+    <div id="modal-grade" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="max-width:420px;">
+            <div class="modal-header">
+                <h3>Calificar Entrega</h3>
+                <button onclick="closeGradeModal()" class="modal-close-btn" type="button">
+                    <i class="ph ph-x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="grade-form">
+                    <input type="hidden" id="grade-submission-id">
+                    <div class="form-field" style="margin-bottom:16px;">
+                        <label for="grade-value" style="display:block; margin-bottom:8px; font-weight:600;">Nota (0–20)</label>
+                        <input type="number" id="grade-value" min="0" max="20" step="0.1"
+                               style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-color-dark); font:inherit;"
+                               required>
+                    </div>
+                    <div class="form-field" style="margin-bottom:20px;">
+                        <label for="grade-comment" style="display:block; margin-bottom:8px; font-weight:600;">Comentario</label>
+                        <textarea id="grade-comment"
+                                  style="width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--border-color-dark); min-height:80px; font:inherit; resize:vertical;"></textarea>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:10px;">
+                        <button type="button" class="btn-secondary" onclick="closeGradeModal()">Cancelar</button>
+                        <button type="submit" class="btn-primary"><i class="ph ph-check"></i> Guardar Nota</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/tareas.js?v=20260518"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+
+</html>

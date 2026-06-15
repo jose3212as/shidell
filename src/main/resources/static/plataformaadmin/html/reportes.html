@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes — Shidell Admin</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/shared.css">
+</head>
+<body>
+<div class="app-shell" id="app-shell">
+  <div class="main-content" id="main-content">
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Reportes y Analytics</h1>
+          <p>Análisis general del sistema educativo Shidell</p>
+        </div>
+        <div class="page-header-right">
+          <button class="btn btn-secondary" onclick="exportarCSV()">
+            <i class="ph ph-download-simple"></i>Exportar CSV
+          </button>
+          <button class="btn btn-primary" onclick="loadReporteGeneral()">
+            <i class="ph ph-arrows-clockwise"></i>Actualizar
+          </button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="grid-4 mb-24">
+        <div class="kpi-card stagger-item" style="--kpi-bg:var(--primary-light);--kpi-color2:var(--primary)">
+          <div class="kpi-icon"><i class="ph-fill ph-users-three"></i></div>
+          <div class="kpi-value" style="font-size:28px"><span id="r-usuarios">—</span></div>
+          <div class="kpi-label">Usuarios totales</div>
+        </div>
+        <div class="kpi-card stagger-item" style="--kpi-bg:var(--cyan-light);--kpi-color2:var(--cyan)">
+          <div class="kpi-icon"><i class="ph-fill ph-student"></i></div>
+          <div class="kpi-value" style="font-size:28px"><span id="r-estudiantes">—</span></div>
+          <div class="kpi-label">Estudiantes</div>
+        </div>
+        <div class="kpi-card stagger-item" style="--kpi-bg:var(--purple-light);--kpi-color2:var(--purple)">
+          <div class="kpi-icon"><i class="ph-fill ph-chalkboard-teacher"></i></div>
+          <div class="kpi-value" style="font-size:28px"><span id="r-docentes">—</span></div>
+          <div class="kpi-label">Docentes</div>
+        </div>
+        <div class="kpi-card stagger-item" style="--kpi-bg:var(--yellow-light);--kpi-color2:var(--yellow)">
+          <div class="kpi-icon"><i class="ph-fill ph-book-open"></i></div>
+          <div class="kpi-value" style="font-size:28px"><span id="r-cursos">—</span></div>
+          <div class="kpi-label">Cursos activos</div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-20 mb-20 flex-wrap">
+        <!-- Distribución por rol -->
+        <div class="card" style="flex:1;min-width:280px">
+          <div class="card-header">
+            <div class="card-title">Usuarios por rol</div>
+          </div>
+          <div id="dist-rol"><div class="spinner" style="margin:20px auto"></div></div>
+        </div>
+        <!-- Distribución por grado -->
+        <div class="card" style="flex:1;min-width:280px">
+          <div class="card-header">
+            <div class="card-title">Estudiantes por sección</div>
+          </div>
+          <div id="dist-grado"><div class="spinner" style="margin:20px auto"></div></div>
+        </div>
+      </div>
+
+      <!-- Tabla docentes -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Docentes y sus cursos</div>
+        </div>
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Docente</th>
+                <th>Cursos asignados</th>
+                <th>Cursos</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="docentes-tbody">
+              <tr><td colspan="4" class="text-center" style="padding:30px">
+                <div class="spinner" style="margin:0 auto"></div>
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/reportes.js"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

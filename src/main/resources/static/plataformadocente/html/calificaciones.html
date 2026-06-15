@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Calificaciones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="ph-fill ph-chalkboard-teacher"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Docente</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="portaldocente.html" class="nav-item">
+                    <i class="ph ph-house"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="misclases.html" class="nav-item">
+                    <i class="ph ph-presentation-chart"></i>
+                    <span>Mis Clases</span>
+                </a>
+                <a href="tareas.html" class="nav-item">
+                    <i class="ph ph-notebook"></i>
+                    <span>Tareas</span>
+                </a>
+                <a href="estudiantes.html" class="nav-item">
+                    <i class="ph ph-users"></i>
+                    <span>Estudiantes</span>
+                </a>
+                <a href="calificaciones.html" class="nav-item active">
+                    <i class="ph ph-check-square"></i>
+                    <span>Calificaciones</span>
+                </a>
+                <a href="calendario.html" class="nav-item">
+                    <i class="ph ph-calendar"></i>
+                    <span>Calendario</span>
+                </a>
+                <a href="mensajes.html" class="nav-item">
+                    <i class="ph ph-chat-circle-dots"></i>
+                    <span>Mensajes</span>
+                </a>
+                <a href="reportes.html" class="nav-item nav-bottom-start"><i class="ph ph-chart-bar"></i><span>Reportes</span></a>
+                <a href="configuracion.html" class="nav-item"><i class="ph ph-gear"></i><span>Configuración</span></a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="greeting">
+                    <h1>Registro de Calificaciones</h1>
+                    <p id="teacher-context">Cargando datos del docente...</p>
+                </div>
+
+                <div class="topbar-actions">
+                    <button class="notification-btn">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge"></span>
+                    </button>
+
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name" id="user-name-label">Cargando...</span>
+                            <span class="user-role" id="user-role-label">Docente</span>
+                        </div>
+                        <div class="user-dropdown">
+                            <div class="avatar" id="profile-avatar">
+                                <i class="ph-fill ph-user-circle" style="font-size: 32px;"></i>
+                            </div>
+                            <i class="ph ph-caret-down dropdown-icon"></i>
+                            
+                            <div class="dropdown-menu">
+                                <a href="/login.html" id="btn-logout" class="dropdown-item">
+                                    <i class="ph ph-sign-out"></i>
+                                    <span>Cerrar Sesión</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area grades-workspace">
+                <section class="grades-hero">
+                    <div>
+                        <span>Panel docente</span>
+                        <h2 id="grades-title">Calificaciones por curso</h2>
+                        <p id="grades-summary">Selecciona un curso asignado al docente y registra notas sobre estudiantes reales del API.</p>
+                    </div>
+                    <button class="btn-primary" id="btn-focus-grades" type="button"><i class="ph ph-check-square"></i> Registrar notas</button>
+                </section>
+
+                <section class="grades-metrics">
+                    <article><i class="ph ph-books"></i><div><strong id="metric-courses">0</strong><span>Cursos</span></div></article>
+                    <article><i class="ph ph-users-three"></i><div><strong id="metric-students">0</strong><span>Estudiantes</span></div></article>
+                    <article><i class="ph ph-clipboard-text"></i><div><strong id="metric-evals">0</strong><span>Evaluaciones</span></div></article>
+                    <article><i class="ph ph-chart-line-up"></i><div><strong id="metric-average">--</strong><span>Promedio</span></div></article>
+                </section>
+
+                <div class="main-panel grades-panel" id="grades-panel">
+                    <div class="panel-header grades-toolbar">
+                        <div class="grade-control">
+                            <label>Curso</label>
+                            <select id="course-selector">
+                                <option value="">Elige un curso...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="grade-control">
+                            <label>Tipo de evaluación</label>
+                            <select id="evaluation-type">
+                                <option value="">Elige qué calificar...</option>
+                                <optgroup label="Exámenes (Perú - 4 por Bimestre)">
+                                    <option value="EXAMEN_B1">Examen Bimestre 1 (B1)</option>
+                                    <option value="EXAMEN_B2">Examen Bimestre 2 (B2)</option>
+                                    <option value="EXAMEN_B3">Examen Bimestre 3 (B3)</option>
+                                    <option value="EXAMEN_B4">Examen Bimestre 4 (B4)</option>
+                                </optgroup>
+                                <optgroup label="Tareas Dinámicas" id="tasks-optgroup">
+                                    <!-- Se cargará dinámicamente -->
+                                </optgroup>
+                                <option value="MANUAL">-- Otro (Escribir manualmente) --</option>
+                            </select>
+                        </div>
+                        
+                        <div id="manual-activity-container" class="grade-control" style="display: none;">
+                            <label>Nombre de la actividad</label>
+                            <input type="text" id="activity-name" placeholder="Ej: Práctica Calificada 1">
+                        </div>
+                        
+                        <div class="grade-control save-control">
+                            <button class="btn-primary" id="btn-save-grades">
+                                <i class="ph ph-floppy-disk"></i> Guardar Calificaciones
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="course-grade-summary" id="course-grade-summary">
+                        <span>Curso no seleccionado</span>
+                        <strong>Elige un curso para ver alumnos, tareas y notas existentes.</strong>
+                    </div>
+
+                    <div id="grading-content">
+                        <div id="no-course-msg" style="text-align: center; padding: 60px; color: var(--text-tertiary);">
+                            <i class="ph ph-selection-all" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                            <p>Por favor, selecciona un curso para cargar la lista de estudiantes.</p>
+                        </div>
+
+                        <table class="data-table" id="grading-table" style="display: none;">
+                            <thead>
+                                <tr>
+                                    <th>Estudiante</th>
+                                    <th>Correo Electrónico</th>
+                                    <th>Promedio actual</th>
+                                    <th style="width: 200px; text-align: center;">Calificación (0-20)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="grading-table-body">
+                                <!-- Filas generadas dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toast / Feedback (Simple alert) -->
+            <div id="feedback-toast" style="position: fixed; bottom: 24px; right: 24px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); display: none; z-index: 2000; animation: slideUp 0.3s ease;">
+                ¡Calificaciones guardadas con éxito!
+            </div>
+
+            <!-- Footer Debug -->
+            <div style="padding: 20px 48px; font-size: 11px; color: var(--text-tertiary); border-top: 1px solid var(--border-color-dark); display: flex; justify-content: space-between;">
+                <span>Shidell Portal Docente v1.0</span>
+                <span id="server-status">Estado: Conectando...</span>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .grades-workspace { gap: 20px; }
+        .grades-hero { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:28px; border-radius:8px; background:#111827; color:white; box-shadow:0 16px 34px rgba(15,23,42,.13); }
+        .grades-hero span { color:#a7f3d0; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; }
+        .grades-hero h2 { margin:8px 0; font-size:28px; letter-spacing:0; }
+        .grades-hero p { color:rgba(255,255,255,.76); }
+        .grades-hero .btn-primary { background:white; color:var(--primary); display:inline-flex; align-items:center; gap:8px; }
+        .grades-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:16px; }
+        .grades-metrics article { display:flex; align-items:center; gap:14px; min-height:102px; padding:20px; border-radius:8px; background:white; border:1px solid var(--border-color-dark); }
+        .grades-metrics i { width:44px; height:44px; display:grid; place-items:center; border-radius:8px; color:var(--primary); background:var(--primary-light); font-size:23px; }
+        .grades-metrics strong { display:block; font-size:28px; line-height:1; }
+        .grades-metrics span { display:block; margin-top:6px; color:var(--text-secondary); font-size:13px; font-weight:700; }
+        .grades-panel { border-radius:8px; }
+        .grades-toolbar { display:grid; grid-template-columns:minmax(220px,.9fr) minmax(260px,1fr) minmax(230px,1fr) auto; gap:14px; align-items:end; }
+        .grade-control { display:flex; flex-direction:column; gap:7px; min-width:0; }
+        .grade-control label { color:var(--text-secondary); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.03em; }
+        .grade-control select, .grade-control input { width:100%; min-height:44px; padding:11px 12px; border:1px solid var(--border-color-dark); border-radius:8px; background:white; font:inherit; outline:none; }
+        .grade-control select:focus, .grade-control input:focus { border-color:var(--primary); box-shadow:0 0 0 3px rgba(79,70,229,.1); }
+        .save-control .btn-primary { min-height:44px; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
+        .course-grade-summary { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:-6px 0 18px; padding:14px 16px; border:1px solid var(--border-color-dark); border-radius:8px; background:var(--bg-main); color:var(--text-secondary); }
+        .course-grade-summary strong { color:var(--text-primary); }
+        #profile-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+        @media (max-width:1180px) { .grades-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); } .grades-toolbar { grid-template-columns:1fr 1fr; } }
+        @media (max-width:760px) { .grades-hero { flex-direction:column; align-items:flex-start; } .grades-metrics, .grades-toolbar { grid-template-columns:1fr; } }
+    </style>
+
+    <script src="../js/calificaciones.js?v=api20260508"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+
+</html>
+

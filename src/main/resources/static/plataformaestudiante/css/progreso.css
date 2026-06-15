@@ -1,0 +1,538 @@
+/* =========================================
+   progreso.css — Estilos exclusivos de Mi Progreso
+   ========================================= */
+
+/* ---------- Layout Grids ---------- */
+.progreso-stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+    margin-top: 16px;
+}
+
+@media (max-width: 1200px) {
+    .progreso-stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .progreso-stats-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.progreso-middle-row {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1.2fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 1200px) {
+    .progreso-middle-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- Stat Cards ---------- */
+.p-stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    border: 1px solid var(--border-color-dark);
+    display: flex;
+    flex-direction: column;
+}
+
+.p-stat-header {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.p-stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.p-stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.p-stat-info .label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.p-stat-info .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    line-height: 1.2;
+}
+
+.p-stat-info .value span {
+    font-size: 14px;
+    color: var(--text-tertiary);
+    font-weight: 600;
+}
+
+.p-stat-badge {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 4px;
+    width: fit-content;
+}
+
+.p-stat-subtext {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
+/* Progress bar inside stat card */
+.p-stat-progress {
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+
+.p-progress-bar-bg {
+    width: 100%;
+    height: 6px;
+    background: var(--bg-main);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.p-progress-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
+.p-stat-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.p-stat-footer .left {
+    color: var(--text-tertiary);
+}
+
+.p-stat-footer .right {
+    font-weight: 600;
+}
+
+.p-stat-footer .right.up {
+    color: var(--green);
+}
+
+/* ---------- Progreso por curso ---------- */
+.p-panel {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border-color-dark);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+.p-panel h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.p-course-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+}
+
+.p-course-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.p-course-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.p-course-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.p-course-bar-container {
+    width: 60px;
+    height: 6px;
+    background: var(--bg-main);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.p-course-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+}
+
+.p-course-pct {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    width: 32px;
+    text-align: right;
+}
+
+.view-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: var(--primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.view-link:hover {
+    text-decoration: underline;
+}
+
+/* ---------- Racha de estudio ---------- */
+.p-racha-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.racha-ring {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 16px 0;
+    border-radius: 50%;
+    background: conic-gradient(var(--green) 0% 70%, var(--bg-main) 70% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.racha-ring::before {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: white;
+    border-radius: 50%;
+}
+
+.racha-inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.racha-inner .num {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.racha-inner .lbl {
+    font-size: 14px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.racha-msg {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.racha-days {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.racha-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.racha-day span {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.racha-day .check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.racha-day .check.done {
+    background: var(--green);
+    color: white;
+}
+
+.racha-day .check.pending {
+    background: transparent;
+    border: 2px solid var(--border-color);
+    color: var(--border-color);
+}
+
+.racha-footer {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+/* ---------- Logros recientes ---------- */
+.p-logros-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.p-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.p-panel-header h3 {
+    margin-bottom: 0;
+}
+
+.p-panel-header a {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.p-panel-header span {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+}
+
+.p-logros-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.p-logro-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.p-logro-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.p-logro-info {
+    flex: 1;
+}
+
+.p-logro-info h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.p-logro-info p {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.p-logro-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+/* ---------- Bottom Banner ---------- */
+.p-bottom-banner {
+    background: var(--blue-light);
+    border-radius: 20px;
+    padding: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+@media (max-width: 768px) {
+    .p-bottom-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 24px;
+    }
+}
+
+.p-banner-content {
+    max-width: 400px;
+    position: relative;
+    z-index: 2;
+}
+
+.p-banner-content h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.p-banner-content p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.btn-outline-blue {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-outline-blue:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.p-banner-graphic {
+    position: absolute;
+    right: 32px;
+    bottom: -10px;
+    width: 300px;
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .p-banner-graphic {
+        position: relative;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.student-chart {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    padding: 10px 8px 0;
+}
+
+.student-chart p {
+    align-self: center;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.student-chart-bar {
+    flex: 1;
+    min-width: 34px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+}
+
+.student-chart-bar span {
+    width: 100%;
+    min-height: 6px;
+    border-radius: 6px 6px 0 0;
+    background: linear-gradient(180deg, #2563eb, #38bdf8);
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+}
+
+.student-chart-bar small {
+    width: 100%;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 800;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

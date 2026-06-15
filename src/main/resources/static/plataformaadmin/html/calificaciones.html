@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calificaciones — Shidell Admin</title>
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <link rel="stylesheet" href="../css/animations.css">
+  <link rel="stylesheet" href="../css/layout.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <link rel="stylesheet" href="../css/shared.css">
+</head>
+<body>
+<div class="app-shell" id="app-shell">
+  <div class="main-content" id="main-content">
+    <main class="page-content">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h1>Calificaciones</h1>
+          <p>Consulta las notas y rendimiento académico de cada estudiante</p>
+        </div>
+      </div>
+
+      <!-- Selector -->
+      <div class="card mb-20">
+        <div class="d-flex gap-16 items-center">
+          <div style="flex:1">
+            <label class="form-label">Estudiante</label>
+            <select class="form-control form-select mt-8" id="est-select">
+              <option value="">Seleccionar estudiante...</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder -->
+      <div id="calif-placeholder" class="empty-state" style="min-height:300px">
+        <i class="ph ph-exam" style="font-size:52px;color:var(--text-tertiary)"></i>
+        <h3>Selecciona un estudiante</h3>
+        <p>Sus calificaciones aparecerán aquí</p>
+      </div>
+
+      <!-- Loading -->
+      <div id="calif-loading" style="display:none;min-height:200px" class="empty-state">
+        <div class="spinner spinner-lg"></div>
+        <p>Cargando calificaciones...</p>
+      </div>
+
+      <!-- Main content -->
+      <div id="calif-main" style="display:none">
+        <!-- KPIs -->
+        <div class="grid-4 mb-24">
+          <div class="kpi-card" style="--kpi-bg:var(--primary-light);--kpi-color2:var(--primary)">
+            <div class="kpi-icon"><i class="ph-fill ph-exam"></i></div>
+            <div class="kpi-value" style="font-size:28px"><span id="calif-promedio">—</span></div>
+            <div class="kpi-label">Promedio general / 20</div>
+          </div>
+          <div class="kpi-card" style="--kpi-bg:var(--green-light);--kpi-color2:var(--green)">
+            <div class="kpi-icon"><i class="ph-fill ph-check-circle"></i></div>
+            <div class="kpi-value" style="font-size:28px"><span id="calif-aprobados">—</span></div>
+            <div class="kpi-label">Cursos aprobados</div>
+          </div>
+          <div class="kpi-card" style="--kpi-bg:var(--yellow-light);--kpi-color2:var(--yellow)">
+            <div class="kpi-icon"><i class="ph-fill ph-clipboard-text"></i></div>
+            <div class="kpi-value" style="font-size:28px"><span id="calif-total-ev">—</span></div>
+            <div class="kpi-label">Evaluaciones</div>
+          </div>
+          <div class="kpi-card" style="--kpi-bg:var(--cyan-light);--kpi-color2:var(--cyan)">
+            <div class="kpi-icon"><i class="ph-fill ph-book-open"></i></div>
+            <div class="kpi-value" style="font-size:28px"><span id="calif-cursos">—</span></div>
+            <div class="kpi-label">Cursos totales</div>
+          </div>
+        </div>
+
+        <div class="d-flex gap-20" style="align-items:flex-start;flex-wrap:wrap">
+          <!-- Tabla de evaluaciones -->
+          <div class="card" style="flex:2;min-width:320px">
+            <div class="card-header">
+              <div class="card-title">Evaluaciones</div>
+            </div>
+            <div class="table-wrapper">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Actividad</th>
+                    <th>Curso</th>
+                    <th>Nota / 20</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                  </tr>
+                </thead>
+                <tbody id="calif-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Resumen por curso -->
+          <div class="card" style="flex:1;min-width:250px">
+            <div class="card-header">
+              <div class="card-title">Promedio por curso</div>
+            </div>
+            <div id="calif-cursos-list"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="../js/config.js"></script>
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/shared.js"></script>
+<script src="../js/calificaciones.js"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

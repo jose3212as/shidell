@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Portal Estudiante</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="ph-fill ph-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Estudiante</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="portalestudiante.html" class="nav-item active">
+                    <i class="ph ph-house"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="miscursos.html" class="nav-item">
+                    <i class="ph ph-book-open"></i>
+                    <span>Mis cursos</span>
+                </a>
+                <a href="tareas.html" class="nav-item">
+                    <i class="ph ph-clipboard-text"></i>
+                    <span>Tareas</span>
+                </a>
+                <a href="calificaciones.html" class="nav-item">
+                    <i class="ph ph-star"></i>
+                    <span>Calificaciones</span>
+                </a>
+                <a href="calendario.html" class="nav-item">
+                    <i class="ph ph-calendar-blank"></i>
+                    <span>Calendario</span>
+                </a>
+                <a href="mensajes.html" class="nav-item">
+                    <i class="ph ph-chat-circle-dots"></i>
+                    <span>Mensajes</span>
+                </a>
+                <a href="miprogreso.html" class="nav-item">
+                    <i class="ph ph-shield-check"></i>
+                    <span>Mi progreso</span>
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <i class="ph ph-gear"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="greeting">
+                    <h1>¡Hola, Estudiante! 👋</h1>
+                    <p id="user-academic-info">Cargando información académica...</p>
+                </div>
+
+                <div class="topbar-actions">
+
+                    <button class="notification-btn">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge"></span>
+                    </button>
+
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name">Estudiante</span>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span></a>
+                        </div>
+                        <div class="avatar">
+                            <i class="ph-fill ph-user" style="font-size: 24px; color: var(--primary);"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <!-- Stats Row -->
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <div class="stat-top">
+                            <div class="stat-icon-circle bg-blue-light">
+                                <i class="ph ph-book-open"></i>
+                            </div>
+                            <span class="stat-val" id="dashboard-cursos">0</span>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Cursos inscritos</p>
+                            <a href="miscursos.html" class="stat-footer-link">Ver cursos <i
+                                    class="ph ph-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-top">
+                            <div class="stat-icon-circle bg-green-light">
+                                <i class="ph ph-clipboard-text"></i>
+                            </div>
+                            <span class="stat-val" id="dashboard-tareas">0</span>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Tareas pendientes</p>
+                            <a href="tareas.html" class="stat-footer-link">Ver tareas <i
+                                    class="ph ph-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-top">
+                            <div class="stat-icon-circle bg-purple-light">
+                                <i class="ph ph-clock"></i>
+                            </div>
+                            <span class="stat-val" id="dashboard-horas">0</span>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Horas de estudio esta semana</p>
+                            <a href="miprogreso.html" class="stat-footer-link">Ver reporte <i class="ph ph-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="stat-item">
+                        <div class="stat-top">
+                            <div class="stat-icon-circle bg-yellow-light">
+                                <i class="ph ph-star"></i>
+                            </div>
+                            <span class="stat-val" id="dashboard-promedio">0.0</span>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Promedio general</p>
+                            <a href="calificaciones.html" class="stat-footer-link">Ver calificaciones <i
+                                    class="ph ph-arrow-right"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two-Panel Row -->
+                <div class="panels-row">
+                    <!-- Próximas Clases -->
+                    <div class="main-panel">
+                        <div class="panel-top">
+                            <h3 class="panel-title"><i class="ph ph-calendar-blank"></i> Próximas clases</h3>
+                            <a href="calendario.html" class="panel-link">Ver todas <i class="ph ph-arrow-right"></i></a>
+                        </div>
+                        <div class="panel-list" id="upcomingClassesList">
+                            <div class="panel-item">
+                                <div class="item-main">
+                                    <h4 class="item-title">Cargando clases...</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tareas Pendientes -->
+                    <div class="main-panel">
+                        <div class="panel-top">
+                            <h3 class="panel-title"><i class="ph ph-check-square"></i> Tareas pendientes</h3>
+                            <a href="tareas.html" class="panel-link">Ver todas <i class="ph ph-arrow-right"></i></a>
+                        </div>
+                        <div class="panel-list" id="taskList">
+                            <!-- Las tareas se cargarán dinámicamente -->
+                            <div class="task-item placeholder">
+                                <div class="task-main">
+                                    <h4 class="item-title">Cargando tareas...</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages Section -->
+                <div class="messages-row">
+                    <div class="panel-top">
+                        <h3 class="panel-title"><i class="ph ph-chat-centered-text"></i> Mensajes recientes</h3>
+                        <a href="mensajes.html" class="panel-link">Ver todos <i class="ph ph-arrow-right"></i></a>
+                    </div>
+                    <div id="messageList">
+                        <!-- Los mensajes se cargarán dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Banner Inferior -->
+                <div class="home-banner">
+                    <div class="banner-left-img">
+                        <img src="https://img.icons8.com/color/144/books.png" alt="books">
+                    </div>
+                    <div class="banner-center">
+                        <p class="banner-quote" id="home-banner-title"><i class="ph-fill ph-chart-line-up"></i> Cargando tu avance...</p>
+                        <span class="banner-author" id="home-banner-text">Tu resumen se actualiza con tus cursos, tareas y notas reales.</span>
+                    </div>
+                    <div class="banner-right-img">
+                        <img src="https://img.icons8.com/color/144/graduation-cap.png" alt="grad">
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script src="../js/app.js?v=apiestudiante20260512i"></script>
+<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+
+</html>

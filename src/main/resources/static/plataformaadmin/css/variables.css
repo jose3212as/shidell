@@ -1,0 +1,99 @@
+/* =========================================================
+   SHIDELL ADMIN — DESIGN TOKENS
+   Fuente única de verdad para todos los valores de diseño
+   ========================================================= */
+
+:root {
+  /* ── Core Palette (Light Theme) ────────────────────────── */
+  --color-bg:           #f8fafc;
+  --color-bg-elevated:  #f1f5f9;
+  --color-bg-card:      #ffffff;
+  --color-bg-input:     #ffffff;
+  --color-bg-hover:     #f1f5f9;
+
+  /* ── Primary Accents (Electric Indigo) ─────────────────── */
+  --primary:            #6366f1;
+  --primary-dark:       #4f46e5;
+  --primary-light:      rgba(99, 102, 241, 0.12);
+  --primary-glow:       rgba(99, 102, 241, 0.35);
+  --primary-gradient:   linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+
+  /* ── Semantic Colors ───────────────────────────────────── */
+  --purple:             #a855f7;
+  --purple-light:       rgba(168, 85, 247, 0.12);
+  --cyan:               #06b6d4;
+  --cyan-light:         rgba(6, 182, 212, 0.12);
+  --green:              #10b981;
+  --green-light:        rgba(16, 185, 129, 0.12);
+  --yellow:             #f59e0b;
+  --yellow-light:       rgba(245, 158, 11, 0.12);
+  --red:                #ef4444;
+  --red-light:          rgba(239, 68, 68, 0.12);
+  --orange:             #f97316;
+  --orange-light:       rgba(249, 115, 22, 0.12);
+
+  /* ── Typography & Text ─────────────────────────────────── */
+  --text-primary:       #0f172a;
+  --text-secondary:     #475569;
+  --text-tertiary:      #64748b;
+  --text-inverse:       #ffffff;
+
+  /* ── Borders & Glass ───────────────────────────────────── */
+  --border-color:       #e2e8f0;
+  --border-strong:      #cbd5e1;
+  --glass-bg:           rgba(255, 255, 255, 0.75);
+  --glass-border:       rgba(255, 255, 255, 0.5);
+  --glass-blur:         16px;
+
+  /* ── Shadows & Glows ───────────────────────────────────── */
+  --shadow-sm:          0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md:          0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg:          0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl:          0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+  --shadow-glow:        0 0 20px var(--primary-glow);
+
+  /* ── Sidebar (Dark Theme) ──────────────────────────────── */
+  --sidebar-bg:         #080a12;
+  --sidebar-glass-bg:   rgba(8, 10, 18, 0.85);
+  --sidebar-border:     rgba(255, 255, 255, 0.08);
+  --sidebar-text-primary:#f8fafc;
+  --sidebar-text-secondary:#94a3b8;
+  --sidebar-text-tertiary:#64748b;
+  --sidebar-hover:      rgba(255, 255, 255, 0.06);
+
+  /* ── Layout ──────────────────────────────────────────── */
+  --sidebar-width:      280px;
+  --topbar-height:      72px;
+  --content-padding:    40px;
+  --border-radius-sm:   10px;
+  --border-radius-md:   14px;
+  --border-radius-lg:   20px;
+  --border-radius-xl:   28px;
+
+  /* ── Typography ──────────────────────────────────────── */
+  --font-family:        'Outfit', 'Inter', system-ui, sans-serif;
+  --font-size-xs:       12px;
+  --font-size-sm:       13px;
+  --font-size-base:     15px;
+  --font-size-md:       17px;
+  --font-size-lg:       22px;
+  --font-size-xl:       28px;
+  --font-size-2xl:      36px;
+
+  /* ── Transitions ────────────────────────────────────── */
+  --transition-fast:    0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:    0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:    0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce:  0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ── Gradients ──────────────────────────────────────── */
+  --gradient-primary:   var(--primary-gradient);
+  --gradient-surface:   linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+  --gradient-glass:     linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.02) 100%);
+
+  /* ── Role Colors ──────────────────────────────────── */
+  --role-admin:         var(--primary);
+  --role-docente:       var(--purple);
+  --role-estudiante:    var(--cyan);
+  --role-padre:         var(--green);
+}

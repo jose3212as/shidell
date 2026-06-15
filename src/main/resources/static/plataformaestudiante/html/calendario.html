@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Calendario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505f">
+    <link rel="stylesheet" href="../css/calendario.css">
+    <style>
+        @keyframes spin {
+            from {
+                transform: rotate(0)
+            }
+
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px)
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0)
+            }
+        }
+
+        /* Calendar cells */
+        .cal-cell {
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .cal-cell:hover:not(.other-month) {
+            background: var(--primary-light, #eef2ff) !important;
+        }
+
+        .cal-cell.selected {
+            background: var(--primary-light, #eef2ff) !important;
+            outline: 2px solid var(--primary);
+        }
+
+        /* Event chips inside cell */
+        .chip {
+            font-size: 11px;
+            line-height: 1.25;
+            border-radius: 6px;
+            padding: 4px 6px;
+            margin-top: 1px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: normal;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .chip-clase {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .chip-examen {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .chip-tarea {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* Day detail panel */
+        #dayPanel {
+            display: none;
+            animation: slideIn .2s ease;
+        }
+
+        #dayPanel.visible {
+            display: block;
+        }
+
+        .day-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .day-panel-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .day-panel-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text-muted);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .day-panel-close:hover {
+            background: var(--bg-body);
+        }
+
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border-left: 3px solid;
+        }
+
+        .timeline-item.clase {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+
+        .timeline-item.examen {
+            background: #f5f3ff;
+            border-color: #7c3aed;
+        }
+
+        .timeline-item.tarea {
+            background: #fffbeb;
+            border-color: #f59e0b;
+        }
+
+        .tl-time {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 48px;
+            margin-top: 2px;
+        }
+
+        .tl-body h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 0 0 2px;
+        }
+
+        .tl-body p {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .tl-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 4px;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .badge-clase {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-examen {
+            background: #ede9fe;
+            color: #5b21b6;
+        }
+
+        .badge-tarea {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .no-events {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-muted);
+        }
+
+        .no-events i {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 8px;
+            opacity: .4;
+        }
+
+        /* Resumen widget */
+        .resumen-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .resumen-row:last-child {
+            border-bottom: none;
+        }
+
+        .resumen-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .course-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 0 18px;
+        }
+
+        .course-pill {
+            border: 1px solid var(--border-color-dark, #e5e7eb);
+            background: #fff;
+            border-radius: 999px;
+            padding: 7px 11px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .course-pill.active {
+            color: var(--primary);
+            border-color: rgba(79, 70, 229, .32);
+            background: var(--primary-light, #eef2ff);
+        }
+
+        .course-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: var(--primary);
+            flex: 0 0 auto;
+        }
+
+        .course-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid var(--border-color, #eef2f7);
+        }
+
+        .course-card:last-child {
+            border-bottom: 0;
+        }
+
+        .course-card-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 19px;
+        }
+
+        .course-card-body {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .course-card-body h4 {
+            margin: 0 0 2px;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .course-card-body p {
+            margin: 0;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .course-card-count {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-primary);
+            background: var(--bg-main, #f8fafc);
+            border-radius: 999px;
+            padding: 4px 9px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon"><i class="ph-fill ph-graduation-cap"></i></div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Estudiante</p>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="portalestudiante.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
+                <a href="miscursos.html" class="nav-item"><i class="ph ph-book-open"></i><span>Mis cursos</span></a>
+                <a href="tareas.html" class="nav-item"><i class="ph ph-clipboard-text"></i><span>Tareas</span></a>
+                <a href="calificaciones.html" class="nav-item"><i class="ph ph-star"></i><span>Calificaciones</span></a>
+                <a href="calendario.html" class="nav-item active"><i
+                        class="ph ph-calendar-blank"></i><span>Calendario</span></a>
+                <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
+                <a href="miprogreso.html" class="nav-item"><i class="ph ph-shield-check"></i><span>Mi
+                        progreso</span></a>
+                <a href="configuracion.html" class="nav-item"><i class="ph ph-gear"></i><span>Configuración</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-wrapper">
+            <header class="topbar">
+                <div class="greeting">
+                    <h1>¡Hola, Estudiante! 👋</h1>
+                    <p>Tus clases, tareas y exámenes en un solo lugar.</p>
+                </div>
+                <div class="topbar-actions">
+                    <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name">Estudiante</span>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver
+                                    perfil <i class="ph ph-caret-right"></i></span></a>
+                        </div>
+                        <div class="avatar"><i class="ph-fill ph-user" style="font-size:24px;color:var(--primary);"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <div class="calendario-layout">
+
+                    <!-- Left: Calendar grid -->
+                    <div class="calendar-panel">
+                        <div class="calendar-title">
+                            <h2 id="calTitulo">Calendario</h2>
+                        </div>
+
+                        <div class="calendar-header">
+                            <div class="calendar-controls">
+                                <button class="btn-hoy" id="btnHoy">Hoy</button>
+                                <div class="nav-arrows">
+                                    <button class="nav-arrow" id="btnPrev"><i class="ph ph-caret-left"></i></button>
+                                    <button class="nav-arrow" id="btnNext"><i class="ph ph-caret-right"></i></button>
+                                </div>
+                                <button class="month-dropdown" id="mesLabel">Cargando... <i
+                                        class="ph ph-caret-down"></i></button>
+                            </div>
+                            <div class="calendar-controls">
+                                <div style="position:relative;">
+                                    <button class="btn-filter" id="btnFiltro"><i class="ph ph-faders"></i> Filtros <i
+                                            class="ph ph-caret-down"></i></button>
+                                    <div id="filtroMenu"
+                                        style="display:none;position:absolute;right:0;top:40px;background:white;border:1px solid var(--border);border-radius:10px;padding:10px;z-index:200;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.12);">
+                                        <label
+                                            style="display:flex;align-items:center;gap:8px;padding:5px;cursor:pointer;font-size:13px;"><input
+                                                type="checkbox" value="CLASE" checked> 🔵 Clases</label>
+                                        <label
+                                            style="display:flex;align-items:center;gap:8px;padding:5px;cursor:pointer;font-size:13px;"><input
+                                                type="checkbox" value="EXAMEN" checked> 🔴 Exámenes</label>
+                                        <label
+                                            style="display:flex;align-items:center;gap:8px;padding:5px;cursor:pointer;font-size:13px;"><input
+                                                type="checkbox" value="TAREA" checked> 🟡 Tareas</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="course-strip" id="courseStrip"></div>
+
+                        <div class="calendar-grid">
+                            <div class="calendar-days-header">
+                                <div class="day-name">LUN</div>
+                                <div class="day-name">MAR</div>
+                                <div class="day-name">MIÉ</div>
+                                <div class="day-name">JUE</div>
+                                <div class="day-name">VIE</div>
+                                <div class="day-name">SÁB</div>
+                                <div class="day-name" style="color:var(--red);">DOM</div>
+                            </div>
+                            <div class="calendar-body" id="calendarBody">
+                                <div style="padding:40px;text-align:center;color:var(--text-muted);">
+                                    <i class="ph ph-spinner"
+                                        style="font-size:28px;animation:spin 1s linear infinite;display:block;margin-bottom:8px;"></i>
+                                    Cargando eventos...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="calendar-legend">
+                            <div class="legend-item">
+                                <div class="dot bg-blue"></div> Clases
+                            </div>
+                            <div class="legend-item">
+                                <div class="dot" style="background:var(--purple,#7c3aed);"></div> Exámenes
+                            </div>
+                            <div class="legend-item">
+                                <div class="dot bg-yellow"></div> Tareas
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Widgets -->
+                    <div class="calendar-widgets">
+
+                        <!-- Panel detalle del día (aparece al hacer clic) -->
+                        <div class="widget-panel" id="dayPanel">
+                            <div class="day-panel-header">
+                                <h3 id="dayPanelTitle">Selecciona un día</h3>
+                                <button class="day-panel-close" id="dayPanelClose"><i class="ph ph-x"></i></button>
+                            </div>
+                            <div class="timeline" id="dayTimeline"></div>
+                        </div>
+
+                        <div class="widget-panel">
+                            <div class="widget-header">
+                                <h3>Mis cursos en calendario</h3>
+                            </div>
+                            <div id="courseList">
+                                <p style="color:var(--text-muted);font-size:14px;">Cargando cursos...</p>
+                            </div>
+                        </div>
+
+                        <!-- Próximos eventos -->
+                        <div class="widget-panel" id="proximosPanel">
+                            <div class="widget-header">
+                                <h3>Próximos eventos</h3>
+                            </div>
+                            <div class="events-list" id="proximosEventos">
+                                <p style="color:var(--text-muted);font-size:14px;">Cargando...</p>
+                            </div>
+                        </div>
+
+                        <!-- Resumen del mes -->
+                        <div class="widget-panel">
+                            <div class="widget-header">
+                                <h3>Resumen del mes</h3>
+                            </div>
+                            <div class="summary-grid">
+                                <div class="summary-box"
+                                    style="background:var(--purple-light,#ede9fe);border-color:rgba(124,58,237,.2);">
+                                    <div class="summary-icon" style="color:var(--purple,#7c3aed);"><i
+                                            class="ph ph-exam"></i></div>
+                                    <div class="summary-val" id="sumExamenes">0</div>
+                                    <div class="summary-lbl">Exámenes</div>
+                                </div>
+                                <div class="summary-box"
+                                    style="background:var(--green-light);border-color:rgba(16,185,129,.2);">
+                                    <div class="summary-icon text-green"><i class="ph ph-check-square"></i></div>
+                                    <div class="summary-val" id="sumTareas">0</div>
+                                    <div class="summary-lbl">Tareas</div>
+                                </div>
+                                <div class="summary-box"
+                                    style="background:var(--blue-light);border-color:rgba(59,130,246,.2);">
+                                    <div class="summary-icon text-blue"><i class="ph ph-book-open"></i></div>
+                                    <div class="summary-val" id="sumClases">0</div>
+                                    <div class="summary-lbl">Clases</div>
+                                </div>
+                                <div class="summary-box"
+                                    style="background:var(--yellow-light);border-color:rgba(245,158,11,.2);">
+                                    <div class="summary-icon text-yellow"><i class="ph ph-flag"></i></div>
+                                    <div class="summary-val" id="sumTotal">0</div>
+                                    <div class="summary-lbl">Total</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ── Session ───────────────────────────────────────────────────────────────────
+        let user = {};
+
+        // ── State ─────────────────────────────────────────────────────────────────────
+        let allEventos = [];
+        let allCursos = [];
+        let calendarioData = null;
+        let viewYear, viewMonth;
+        let tiposFiltro = new Set(['CLASE', 'EXAMEN', 'TAREA']);
+        let cursosFiltro = new Set();
+        let selectedDate = null;
+
+        const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+        const DIAS_SEMANA = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+
+        // ── Init ──────────────────────────────────────────────────────────────────────
+        window.addEventListener('DOMContentLoaded', async () => {
+            user = await window.shidellSession?.obtenerUsuario() || {};
+            document.querySelectorAll('.user-name').forEach(el => el.textContent = [user.nombres, user.apellidos].filter(Boolean).join(' ') || 'Estudiante');
+            document.querySelector('.greeting h1').textContent = `¡Hola, ${user.nombres || 'Estudiante'}!`;
+            const hoy = new Date();
+            viewYear = hoy.getFullYear();
+            viewMonth = hoy.getMonth();
+            await cargarCalendarioEstudiante();
+            renderCursos();
+            renderCalendario();
+            renderProximosEventos();
+            renderResumen();
+            configurarControles();
+        });
+
+        // ── API ───────────────────────────────────────────────────────────────────────
+        async function cargarCalendarioEstudiante() {
+            if (!user.id) {
+                calendarioData = { eventos: [], cursos: [] };
+                allEventos = [];
+                allCursos = [];
+                cursosFiltro = new Set();
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/calendario/estudiante/${user.id}`);
+                calendarioData = res.ok ? await res.json() : { eventos: [], cursos: [] };
+                if (calendarioData.estudiante) {
+                    Object.assign(user, calendarioData.estudiante);
+                }
+                allEventos = Array.isArray(calendarioData.eventos) ? calendarioData.eventos : [];
+                allCursos = Array.isArray(calendarioData.cursos) ? dedupeCursos(calendarioData.cursos) : [];
+                cursosFiltro = new Set(allCursos.map(c => String(c.id)));
+            } catch (e) {
+                console.error(e);
+                allEventos = [];
+                allCursos = [];
+                cursosFiltro = new Set();
+            }
+        }
+
+        // ── Eventos del día ───────────────────────────────────────────────────────────
+        function eventosDelDia(year, month, day) {
+            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            return allEventos.filter(ev => ev.fechaInicio === dateStr && tiposFiltro.has(ev.tipo) && cursoVisible(ev));
+        }
+
+        // ── Render grilla mes ─────────────────────────────────────────────────────────
+        function cursoVisible(ev) {
+            if (!ev.cursoId || cursosFiltro.size === 0) return true;
+            return cursosFiltro.has(String(ev.cursoId));
+        }
+
+        function colorCurso(color) {
+            const colors = {
+                purple: '#7c3aed',
+                green: '#10b981',
+                blue: '#3b82f6',
+                yellow: '#f59e0b',
+                red: '#ef4444',
+                teal: '#14b8a6'
+            };
+            return colors[color] || color || '#4f46e5';
+        }
+
+        function nombreCursoVisible(nombre) {
+            return (nombre || '')
+                .replaceAll('ÃÂ¡', 'Ã¡')
+                .replaceAll('ÃÂ­', 'Ã­')
+                .replaceAll('ÃÂ³', 'Ã³');
+        }
+
+        function dedupeCursos(cursos) {
+            const vistos = new Set();
+            return cursos.filter(curso => {
+                const key = nombreCursoVisible(curso.nombre).toLowerCase();
+                if (vistos.has(key)) return false;
+                vistos.add(key);
+                curso.nombre = nombreCursoVisible(curso.nombre);
+                return true;
+            });
+        }
+
+        function renderCursos() {
+            const strip = document.getElementById('courseStrip');
+            const list = document.getElementById('courseList');
+
+            if (!allCursos.length) {
+                strip.innerHTML = '';
+                list.innerHTML = '<p style="color:var(--text-muted);font-size:14px;">No se encontraron cursos para el estudiante actual.</p>';
+                return;
+            }
+
+            strip.innerHTML = `
+                <button class="course-pill ${cursosFiltro.size === allCursos.length ? 'active' : ''}" onclick="toggleTodosCursos()">
+                    <span class="course-dot"></span>Todos los cursos
+                </button>
+                ${allCursos.map(c => `
+                    <button class="course-pill ${cursosFiltro.has(String(c.id)) ? 'active' : ''}" onclick="toggleCurso('${c.id}')">
+                        <span class="course-dot" style="background:${colorCurso(c.color)}"></span>${c.nombre}
+                    </button>
+                `).join('')}`;
+
+            list.innerHTML = allCursos.map(c => {
+                const total = allEventos.filter(ev => String(ev.cursoId) === String(c.id)).length;
+                const docente = c.profesor || 'Docente por asignar';
+                return `
+                    <div class="course-card">
+                        <div class="course-card-icon" style="background:${colorCurso(c.color)}">
+                            <i class="ph ${c.icono || 'ph-book-open'}"></i>
+                        </div>
+                        <div class="course-card-body">
+                            <h4>${c.nombre}</h4>
+                            <p>${docente}</p>
+                        </div>
+                        <span class="course-card-count">${total}</span>
+                    </div>`;
+            }).join('');
+        }
+
+        window.toggleCurso = function (id) {
+            const key = String(id);
+            cursosFiltro.has(key) ? cursosFiltro.delete(key) : cursosFiltro.add(key);
+            renderCursos();
+            renderCalendario();
+            renderProximosEventos();
+            renderResumen();
+        };
+
+        window.toggleTodosCursos = function () {
+            cursosFiltro = cursosFiltro.size === allCursos.length
+                ? new Set()
+                : new Set(allCursos.map(c => String(c.id)));
+            renderCursos();
+            renderCalendario();
+            renderProximosEventos();
+            renderResumen();
+        };
+
+        function renderCalendario() {
+            document.getElementById('mesLabel').innerHTML = `${MESES[viewMonth]} ${viewYear} <i class="ph ph-caret-down"></i>`;
+            document.getElementById('calTitulo').textContent = `${MESES[viewMonth]} ${viewYear}`;
+
+            const hoy = new Date();
+            const primerDia = new Date(viewYear, viewMonth, 1).getDay(); // 0=Dom
+            const diasMes = new Date(viewYear, viewMonth + 1, 0).getDate();
+            const diasMesAnt = new Date(viewYear, viewMonth, 0).getDate();
+            const offset = primerDia === 0 ? 6 : primerDia - 1;
+            const searchInput = document.getElementById('searchInput');
+            const q = searchInput ? searchInput.value.toLowerCase() : '';
+
+            let totalCells = offset + diasMes;
+            if (totalCells % 7) totalCells = Math.ceil(totalCells / 7) * 7;
+
+            let html = '';
+            for (let i = 0; i < totalCells; i++) {
+                const dayNum = i - offset + 1;
+                const isOther = dayNum < 1 || dayNum > diasMes;
+                const display = isOther ? (dayNum < 1 ? diasMesAnt + dayNum : dayNum - diasMes) : dayNum;
+                const dow = i % 7; // 0=Lun … 6=Dom
+                const isWeekend = dow >= 5;
+                const isToday = !isOther && dayNum === hoy.getDate() && viewMonth === hoy.getMonth() && viewYear === hoy.getFullYear();
+                const isSelected = !isOther && selectedDate &&
+                    selectedDate.d === dayNum && selectedDate.m === viewMonth && selectedDate.y === viewYear;
+
+                const cls = ['cal-cell', isOther ? 'other-month' : '', isWeekend ? 'weekend' : '',
+                    isToday ? 'today' : '', isSelected ? 'selected' : ''].filter(Boolean).join(' ');
+
+                let chips = '';
+                if (!isOther) {
+                    const evs = eventosDelDia(viewYear, viewMonth, dayNum)
+                        .filter(ev => !q || `${ev.titulo} ${ev.curso || ''}`.toLowerCase().includes(q));
+                    evs.slice(0, 4).forEach(ev => {
+                        const cls2 = ev.tipo === 'CLASE' ? 'chip-clase' : ev.tipo === 'EXAMEN' ? 'chip-examen' : 'chip-tarea';
+                        const curso = ev.curso && ev.curso !== ev.titulo ? `${ev.curso}: ` : '';
+                        chips += `<span class="chip ${cls2}" title="${ev.titulo}">${ev.hora ? ev.hora + ' ' : ''}${curso}${ev.titulo}</span>`;
+                    });
+                    if (evs.length > 4) chips += `<span style="font-size:11px;color:var(--text-muted);font-weight:600;">+${evs.length - 4} más</span>`;
+                }
+
+                const clickAttr = isOther ? '' : `onclick="seleccionarDia(${viewYear},${viewMonth},${dayNum})"`;
+                html += `<div class="${cls}" ${clickAttr}><span class="cal-date">${display}</span>${chips ? '<div class="cal-events">' + chips + '</div>' : ''}</div>`;
+            }
+            document.getElementById('calendarBody').innerHTML = html;
+        }
+
+        // ── Seleccionar día ───────────────────────────────────────────────────────────
+        window.seleccionarDia = function (y, m, d) {
+            selectedDate = { y, m, d };
+            renderCalendario(); // re-render para marcar el día seleccionado
+
+            const evs = eventosDelDia(y, m, d);
+            const panel = document.getElementById('dayPanel');
+            const title = document.getElementById('dayPanelTitle');
+            const timeline = document.getElementById('dayTimeline');
+            const proxPanel = document.getElementById('proximosPanel');
+
+            const fecha = new Date(y, m, d);
+            const dow = DIAS_SEMANA[(fecha.getDay() + 6) % 7];
+            title.textContent = `${dow.charAt(0).toUpperCase() + dow.slice(1)}, ${d} de ${MESES[m]}`;
+
+            panel.classList.add('visible');
+            proxPanel.style.display = 'none';
+
+            if (evs.length === 0) {
+                timeline.innerHTML = `<div class="no-events"><i class="ph ph-calendar-blank"></i><p>No hay eventos este día</p></div>`;
+                return;
+            }
+
+            // Ordenar por hora
+            const sorted = [...evs].sort((a, b) => {
+                if (!a.hora) return 1;
+                if (!b.hora) return -1;
+                return a.hora.localeCompare(b.hora);
+            });
+
+            timeline.innerHTML = sorted.map(ev => {
+                const tipoCls = ev.tipo === 'CLASE' ? 'clase' : ev.tipo === 'EXAMEN' ? 'examen' : 'tarea';
+                const badgeCls = `badge-${tipoCls}`;
+                const tipoLabel = ev.tipo === 'CLASE' ? 'Clase' : ev.tipo === 'EXAMEN' ? 'Examen' : 'Tarea';
+                const iconMap = { CLASE: 'ph-book-open', EXAMEN: 'ph-exam', TAREA: 'ph-clipboard-text' };
+                const horaStr = ev.hora ? ev.hora : '—';
+                const curso = ev.curso ? `<p>${ev.curso}</p>` : '';
+                const docente = ev.docente ? `<p>Docente: ${ev.docente}</p>` : '';
+
+                return `
+        <div class="timeline-item ${tipoCls}">
+            <div class="tl-time">${horaStr}</div>
+            <div class="tl-body">
+                <h4><i class="ph ${iconMap[ev.tipo]}" style="margin-right:4px;"></i>${ev.titulo}</h4>
+                ${curso}
+                ${docente}
+                <span class="tl-badge ${badgeCls}">${tipoLabel}</span>
+            </div>
+        </div>`;
+            }).join('');
+        };
+
+        // ── Cerrar panel día ──────────────────────────────────────────────────────────
+        document.getElementById('dayPanelClose').onclick = () => {
+            document.getElementById('dayPanel').classList.remove('visible');
+            document.getElementById('proximosPanel').style.display = '';
+            selectedDate = null;
+            renderCalendario();
+        };
+
+        // ── Próximos eventos ──────────────────────────────────────────────────────────
+        function renderProximosEventos() {
+            const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+            const proximos = allEventos
+                .filter(ev => ev.fechaInicio && tiposFiltro.has(ev.tipo) && cursoVisible(ev) && new Date(ev.fechaInicio + 'T00:00:00') >= hoy)
+                .sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio))
+                .slice(0, 5);
+
+            const el = document.getElementById('proximosEventos');
+            if (!proximos.length) {
+                el.innerHTML = '<p style="color:var(--text-muted);font-size:14px;padding:8px 0;">No hay próximos eventos.</p>';
+                return;
+            }
+            const iconMap = { CLASE: 'ph-book-open', EXAMEN: 'ph-exam', TAREA: 'ph-clipboard-text' };
+            const colorMap = { CLASE: 'bg-blue-light text-blue', EXAMEN: 'bg-purple-light', TAREA: 'bg-yellow-light text-yellow' };
+
+            el.innerHTML = proximos.map(ev => {
+                const fecha = new Date(ev.fechaInicio + 'T00:00:00');
+                const str = fecha.toLocaleDateString('es-PE', { day: 'numeric', month: 'long' });
+                const icon = iconMap[ev.tipo] || 'ph-calendar-blank';
+                const color = colorMap[ev.tipo] || '';
+                const exColor = ev.tipo === 'EXAMEN' ? 'color:var(--purple,#7c3aed);' : '';
+                return `
+        <div class="event-row" style="cursor:pointer;" onclick="seleccionarDia(${fecha.getFullYear()},${fecha.getMonth()},${fecha.getDate()})">
+            <div class="event-icon ${color}" style="${exColor}"><i class="ph-fill ${icon}"></i></div>
+            <div class="event-info">
+                <h4>${ev.titulo}</h4>
+                <p>${ev.curso || ev.tipo}</p>
+                <div class="e-date">${str}${ev.hora ? ', ' + ev.hora : ''}</div>
+            </div>
+        </div>`;
+            }).join('');
+        }
+
+        // ── Resumen ───────────────────────────────────────────────────────────────────
+        function renderResumen() {
+            const mes = allEventos.filter(ev => {
+                if (!ev.fechaInicio) return false;
+                const d = new Date(ev.fechaInicio + 'T00:00:00');
+                return d.getFullYear() === viewYear && d.getMonth() === viewMonth && cursoVisible(ev);
+            });
+            document.getElementById('sumExamenes').textContent = mes.filter(e => e.tipo === 'EXAMEN').length;
+            document.getElementById('sumTareas').textContent = mes.filter(e => e.tipo === 'TAREA').length;
+            document.getElementById('sumClases').textContent = mes.filter(e => e.tipo === 'CLASE').length;
+            document.getElementById('sumTotal').textContent = mes.length;
+        }
+
+        // ── Controles ─────────────────────────────────────────────────────────────────
+        function configurarControles() {
+            document.getElementById('btnPrev').onclick = () => {
+                if (viewMonth-->0) { } else { viewMonth = 11; viewYear--; }
+                renderCalendario(); renderResumen();
+            };
+            document.getElementById('btnNext').onclick = () => {
+                if (viewMonth++ < 11) { } else { viewMonth = 0; viewYear++; }
+                renderCalendario(); renderResumen();
+            };
+            document.getElementById('btnHoy').onclick = () => {
+                const h = new Date(); viewYear = h.getFullYear(); viewMonth = h.getMonth();
+                renderCalendario(); renderResumen();
+            };
+
+            // Filtro
+            const btnF = document.getElementById('btnFiltro');
+            const menuF = document.getElementById('filtroMenu');
+            btnF.onclick = e => { e.stopPropagation(); menuF.style.display = menuF.style.display === 'none' ? 'block' : 'none'; };
+            document.addEventListener('click', () => { menuF.style.display = 'none'; });
+            menuF.addEventListener('click', e => e.stopPropagation());
+            menuF.querySelectorAll('input[type=checkbox]').forEach(cb => {
+                cb.onchange = () => {
+                    cb.checked ? tiposFiltro.add(cb.value) : tiposFiltro.delete(cb.value);
+                    renderCalendario(); renderProximosEventos(); renderResumen();
+                };
+            });
+
+            // Búsqueda
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.oninput = () => renderCalendario();
+            }
+        }
+    </script>
+<script src="../js/app.js?v=apiestudiante20260512i"></script>
+<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+
+</html>

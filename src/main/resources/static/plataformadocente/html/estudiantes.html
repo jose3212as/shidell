@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Mis Estudiantes</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="ph-fill ph-chalkboard-teacher"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Docente</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="portaldocente.html" class="nav-item">
+                    <i class="ph ph-house"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="misclases.html" class="nav-item">
+                    <i class="ph ph-presentation-chart"></i>
+                    <span>Mis Clases</span>
+                </a>
+                <a href="tareas.html" class="nav-item">
+                    <i class="ph ph-notebook"></i>
+                    <span>Tareas</span>
+                </a>
+                <a href="estudiantes.html" class="nav-item active">
+                    <i class="ph ph-users"></i>
+                    <span>Estudiantes</span>
+                </a>
+                <a href="calificaciones.html" class="nav-item">
+                    <i class="ph ph-check-square"></i>
+                    <span>Calificaciones</span>
+                </a>
+                <a href="calendario.html" class="nav-item">
+                    <i class="ph ph-calendar"></i>
+                    <span>Calendario</span>
+                </a>
+                <a href="mensajes.html" class="nav-item">
+                    <i class="ph ph-chat-circle-dots"></i>
+                    <span>Mensajes</span>
+                </a>
+                <a href="reportes.html" class="nav-item nav-bottom-start"><i class="ph ph-chart-bar"></i><span>Reportes</span></a>
+                <a href="configuracion.html" class="nav-item"><i class="ph ph-gear"></i><span>Configuración</span></a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="greeting">
+                    <h1>Mis Estudiantes</h1>
+                    <p>Directorio general de alumnos inscritos en tus cursos</p>
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="search-box">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" id="search-students" placeholder="Buscar por nombre, correo o curso...">
+                    </div>
+
+                    <button class="notification-btn">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge"></span>
+                    </button>
+
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name" id="user-name-label">Cargando...</span>
+                            <span class="user-role">Docente de Secundaria</span>
+                        </div>
+                        <div class="user-dropdown">
+                            <div class="avatar">
+                                <i class="ph-fill ph-user-circle" style="font-size: 32px;"></i>
+                            </div>
+                            <i class="ph ph-caret-down dropdown-icon"></i>
+                            
+                            <div class="dropdown-menu">
+                                <a href="/login.html" id="btn-logout" class="dropdown-item">
+                                    <i class="ph ph-sign-out"></i>
+                                    <span>Cerrar Sesión</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="main-panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title"><i class="ph ph-users-four"></i> Lista General de Estudiantes</h3>
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn-secondary"><i class="ph ph-export"></i> Exportar</button>
+                        </div>
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Correo Electrónico</th>
+                                <th>Curso / Materia</th>
+                                <th>Grado y Sección</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="estudiantes-table-body">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 40px;">Cargando estudiantes...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Footer Debug -->
+            <div style="padding: 20px 48px; font-size: 11px; color: var(--text-tertiary); border-top: 1px solid var(--border-color-dark); display: flex; justify-content: space-between;">
+                <span>Shidell Portal Docente v1.0</span>
+                <span id="server-status">Estado: Conectando...</span>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/estudiantes.js"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+
+</html>
+

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Tareas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="ph-fill ph-users"></i></div>
+            <div class="logo-text"><h2>Shidell</h2><p>Portal Padres</p></div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="portalpadres.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
+            <a href="calificaciones.html" class="nav-item"><i class="ph ph-star"></i><span>Calificaciones</span></a>
+            <a href="asistencia.html" class="nav-item"><i class="ph ph-calendar-check"></i><span>Asistencia</span></a>
+            <a href="tareas.html" class="nav-item active"><i class="ph ph-clipboard-text"></i><span>Tareas</span></a>
+            <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
+            <a href="configuracion.html" class="nav-item"><i class="ph ph-gear"></i><span>Configuración</span></a>
+        </nav>
+        <div class="sidebar-footer">
+            <button class="btn-logout" id="btn-logout"><i class="ph ph-sign-out"></i> Cerrar sesión</button>
+        </div>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="topbar">
+            <div class="greeting">
+                <h1>Tareas</h1>
+                <p>Tareas asignadas a tu hijo/a</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
+                <div class="top-user-info">
+                    <div class="user-details">
+                        <span class="user-name padre-nombre">Padre</span>
+                        <a href="configuracion.html" class="user-action">Ver perfil <i class="ph ph-caret-right"></i></a>
+                    </div>
+                    <div class="avatar"><i class="ph-fill ph-user" style="font-size:24px; color:var(--primary);"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Card hijo -->
+            <div class="hijo-selector">
+                <div class="hijo-info">
+                    <div class="hijo-avatar" id="hijo-avatar">??</div>
+                    <div class="hijo-datos">
+                        <h2 id="hijo-nombre">Cargando...</h2>
+                        <p id="hijo-info"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de tareas completo -->
+            <div class="main-panel">
+                <div class="panel-top">
+                    <h3 class="panel-title"><i class="ph ph-clipboard-text"></i> Todas las tareas</h3>
+                    <div style="display:flex; gap:8px;" id="filtros-tareas">
+                        <button onclick="filtrarTareas('todas')" class="item-badge bg-teal-light" style="cursor:pointer; border:none;" id="f-todas">Todas</button>
+                        <button onclick="filtrarTareas('pendiente')" class="item-badge bg-yellow-light" style="cursor:pointer; border:none;" id="f-pendiente">Pendientes</button>
+                        <button onclick="filtrarTareas('entregada')" class="item-badge bg-green-light" style="cursor:pointer; border:none;" id="f-entregada">Entregadas</button>
+                        <button onclick="filtrarTareas('vencida')" class="item-badge bg-red-light" style="cursor:pointer; border:none;" id="f-vencida">Vencidas</button>
+                    </div>
+                </div>
+                <div class="panel-list" id="tareas-full">
+                    <p style="color:#94a3b8; text-align:center;">Cargando tareas...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<script src="../js/app.js"></script>
+<script>
+let tareasData = [];
+let entregasData = [];
+
+document.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('hijo-cargado', async (e) => {
+        const hijo = e.detail;
+        if (!hijo.nivel || !hijo.grado || !hijo.seccion) return;
+        try {
+            const [rT, rE] = await Promise.all([
+                fetch(`/api/tareas/seccion?nivel=${hijo.nivel}&grado=${hijo.grado}&seccion=${hijo.seccion}`),
+                fetch(`/api/entregas/usuario/${hijo.id}`)
+            ]);
+            tareasData   = rT.ok ? await rT.json() : [];
+            entregasData = rE.ok ? await rE.json() : [];
+            filtrarTareas('todas');
+        } catch(e) { console.error(e); }
+    });
+});
+
+function filtrarTareas(filtro) {
+    const hoy = new Date(); hoy.setHours(0,0,0,0);
+    const lista = tareasData.map(t => {
+        const entregada = entregasData.find(e => e.tarea?.id === t.id);
+        const vence = new Date(t.fechaVencimiento); vence.setHours(0,0,0,0);
+        const estado = entregada ? 'entregada' : (hoy > vence ? 'vencida' : 'pendiente');
+        return { ...t, estado };
+    });
+
+    const filtradas = filtro === 'todas' ? lista : lista.filter(t => t.estado === filtro);
+    const container = document.getElementById('tareas-full');
+    container.innerHTML = '';
+
+    if (filtradas.length === 0) {
+        container.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:20px;">No hay tareas en esta categoría.</p>';
+        return;
+    }
+
+    filtradas.forEach(t => {
+        const priCol = t.prioridad === 'Alta' ? 'red' : t.prioridad === 'Media' ? 'yellow' : 'green';
+        const stCol  = t.estado === 'entregada' ? 'green' : t.estado === 'vencida' ? 'red' : 'yellow';
+        const stLbl  = t.estado === 'entregada' ? 'Entregada' : t.estado === 'vencida' ? 'Vencida' : 'Pendiente';
+        const icon   = t.curso?.icono || 'ph-clipboard-text';
+        const color  = t.curso?.color || 'blue';
+        const div = document.createElement('div');
+        div.className = 'panel-item';
+        div.innerHTML = `
+            <div class="item-icon-box bg-${color}-light"><i class="ph-fill ${icon}"></i></div>
+            <div class="item-main">
+                <h4 class="item-title">${t.titulo}</h4>
+                <div class="item-subtitle">
+                    <i class="ph ph-book-open"></i> ${t.curso?.nombre || ''}
+                    <span>·</span>
+                    <i class="ph ph-calendar-blank"></i> Vence: ${t.fechaVencimiento}
+                </div>
+            </div>
+            <span class="item-badge bg-${priCol}-light">${t.prioridad}</span>
+            <span class="item-badge bg-${stCol}-light" style="margin-left:8px;">${stLbl}</span>
+        `;
+        container.appendChild(div);
+    });
+}
+</script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

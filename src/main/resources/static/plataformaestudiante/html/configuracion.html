@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Configuracion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
+    <script src="../vendor/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
+    <link rel="stylesheet" href="../css/configuracion.css">
+</head>
+<body>
+<div class="dashboard">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-icon"><i class="ph-fill ph-graduation-cap"></i></div>
+            <div class="logo-text">
+                <h2>Shidell</h2>
+                <p>Portal Estudiante</p>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="portalestudiante.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
+            <a href="miscursos.html" class="nav-item"><i class="ph ph-book-open"></i><span>Mis cursos</span></a>
+            <a href="tareas.html" class="nav-item"><i class="ph ph-clipboard-text"></i><span>Tareas</span></a>
+            <a href="calificaciones.html" class="nav-item"><i class="ph ph-star"></i><span>Calificaciones</span></a>
+            <a href="calendario.html" class="nav-item"><i class="ph ph-calendar-blank"></i><span>Calendario</span></a>
+            <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
+            <a href="miprogreso.html" class="nav-item"><i class="ph ph-shield-check"></i><span>Mi progreso</span></a>
+            <a href="configuracion.html" class="nav-item active"><i class="ph ph-gear"></i><span>Configuracion</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-wrapper">
+        <header class="topbar">
+            <div class="greeting">
+                <h1>Configuracion</h1>
+                <p>Gestiona tu perfil, notificaciones, seguridad y cuenta.</p>
+            </div>
+            <div class="topbar-actions">
+                <button class="notification-btn" type="button">
+                    <i class="ph ph-bell"></i>
+                    <span class="badge"></span>
+                </button>
+                <div class="top-user-info">
+                    <div class="user-details">
+                        <span class="user-name">Estudiante</span>
+                        <span class="user-action">Mi cuenta <i class="ph ph-caret-right"></i></span>
+                    </div>
+                    <div class="avatar"><i class="ph-fill ph-user" style="font-size:24px;color:var(--primary);"></i></div>
+                    <div class="account-dropdown">
+                        <button type="button" id="account-ver-perfil"><i class="ph ph-user-circle"></i> Ver perfil</button>
+                        <button type="button" class="account-logout" id="account-cerrar-sesion"><i class="ph ph-sign-out"></i> Cerrar sesion</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <div class="settings-page">
+                <nav class="settings-menu" aria-label="Menu de configuracion">
+                    <button type="button" class="settings-tab active" data-view="perfil"><i class="ph-fill ph-user"></i><span>Mi perfil</span></button>
+                    <button type="button" class="settings-tab" data-view="notificaciones"><i class="ph ph-bell"></i><span>Notificaciones</span></button>
+                    <button type="button" class="settings-tab" data-view="seguridad"><i class="ph ph-lock-key"></i><span>Seguridad</span></button>
+                    <button type="button" class="settings-tab" data-view="cuenta"><i class="ph ph-user-circle"></i><span>Cuenta</span></button>
+                </nav>
+
+                <section id="settings-view" class="settings-view">
+                    <div class="settings-loading">
+                        <i class="ph ph-circle-notch"></i>
+                        <strong>Cargando configuracion...</strong>
+                        <span>Estamos preparando tu informacion.</span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="settings-modal" id="modal-perfil" aria-hidden="true">
+    <div class="settings-modal-card">
+        <button class="modal-close" type="button" data-close="modal-perfil"><i class="ph ph-x"></i></button>
+        <h2>Editar perfil</h2>
+        <form id="form-perfil" class="settings-form">
+            <div class="photo-uploader">
+                <div class="photo-preview" id="cfg-foto-preview">
+                    <i class="ph-fill ph-user"></i>
+                </div>
+                <div class="photo-actions">
+                    <strong>Foto de perfil</strong>
+                    <span>Sube una imagen JPG, PNG o WebP.</span>
+                    <div class="photo-buttons">
+                        <label class="btn-secondary-settings" for="cfg-foto"><i class="ph ph-upload-simple"></i> Subir foto</label>
+                        <button class="btn-ghost" type="button" id="btn-quitar-foto"><i class="ph ph-trash"></i> Quitar</button>
+                    </div>
+                    <input id="cfg-foto" type="file" accept="image/png,image/jpeg,image/webp">
+                </div>
+            </div>
+            <div class="form-grid">
+                <label>Nombres<input id="cfg-nombres" type="text" required></label>
+                <label>Apellidos<input id="cfg-apellidos" type="text" required></label>
+            </div>
+            <label>Email<input id="cfg-email" type="email" required></label>
+            <div class="form-grid">
+                <label>Nivel
+                    <select id="cfg-nivel">
+                        <option value="">Sin asignar</option>
+                        <option value="PRIMARIA">Primaria</option>
+                        <option value="SECUNDARIA">Secundaria</option>
+                    </select>
+                </label>
+                <label>Grado
+                    <select id="cfg-grado">
+                        <option value="">Sin asignar</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </label>
+            </div>
+            <div class="form-grid">
+                <label>Seccion
+                    <select id="cfg-seccion">
+                        <option value="">Sin asignar</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </label>
+                <label>Turno
+                    <select id="cfg-turno">
+                        <option value="">Sin asignar</option>
+                        <option value="MAÑANA">Manana</option>
+                        <option value="TARDE">Tarde</option>
+                    </select>
+                </label>
+            </div>
+            <label>Fecha de nacimiento<input id="cfg-nacimiento" type="date"></label>
+            <div class="modal-actions">
+                <button class="btn-ghost" type="button" data-close="modal-perfil">Cancelar</button>
+                <button class="btn-primary-settings" type="submit">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="settings-modal" id="modal-password" aria-hidden="true">
+    <div class="settings-modal-card">
+        <button class="modal-close" type="button" data-close="modal-password"><i class="ph ph-x"></i></button>
+        <h2>Cambiar contrasena</h2>
+        <form id="form-password" class="settings-form">
+            <label>Nueva contrasena<input id="cfg-password" type="password" minlength="4" required></label>
+            <label>Confirmar contrasena<input id="cfg-password-confirm" type="password" minlength="4" required></label>
+            <div class="modal-actions">
+                <button class="btn-ghost" type="button" data-close="modal-password">Cancelar</button>
+                <button class="btn-primary-settings" type="submit">Actualizar contrasena</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
+<script src="../js/configuracion.js?v=apiestudiante20260512i"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+</html>

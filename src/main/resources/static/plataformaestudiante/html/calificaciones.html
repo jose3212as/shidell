@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Calificaciones</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
+    <link rel="stylesheet" href="../css/calificaciones.css">
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="ph-fill ph-graduation-cap"></i>
+                </div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Estudiante</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="portalestudiante.html" class="nav-item">
+                    <i class="ph ph-house"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="miscursos.html" class="nav-item">
+                    <i class="ph ph-book-open"></i>
+                    <span>Mis cursos</span>
+                </a>
+                <a href="tareas.html" class="nav-item">
+                    <i class="ph ph-clipboard-text"></i>
+                    <span>Tareas</span>
+                </a>
+                <a href="calificaciones.html" class="nav-item active">
+                    <i class="ph ph-star"></i>
+                    <span>Calificaciones</span>
+                </a>
+                <a href="calendario.html" class="nav-item">
+                    <i class="ph ph-calendar-blank"></i>
+                    <span>Calendario</span>
+                </a>
+                <a href="mensajes.html" class="nav-item">
+                    <i class="ph ph-chat-circle-dots"></i>
+                    <span>Mensajes</span>
+                </a>
+                <a href="miprogreso.html" class="nav-item">
+                    <i class="ph ph-shield-check"></i>
+                    <span>Mi progreso</span>
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <i class="ph ph-gear"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="greeting">
+                    <h1>¡Hola, Estudiante! 👋</h1>
+                    <p id="user-academic-info">Cargando información académica...</p>
+                </div>
+
+                <div class="topbar-actions">
+
+                    <button class="notification-btn">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge"></span>
+                    </button>
+
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name">Estudiante</span>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span></a>
+                        </div>
+                        <div class="avatar">
+                            <i class="ph-fill ph-user" style="font-size: 24px; color: var(--primary);"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <div class="calificaciones-header">
+                    <h2>Calificaciones</h2>
+                    <div class="calificaciones-toolbar">
+                        <div class="calificaciones-tabs">
+                            <button class="cal-tab active">Resumen general</button>
+                            <button class="cal-tab">Por curso</button>
+                            <button class="cal-tab">Por evaluación</button>
+                            <button class="cal-tab">Historial académico</button>
+                        </div>
+                        <button class="semester-dropdown" type="button" id="cal-api-source">
+                            <i class="ph ph-database"></i> Datos del estudiante
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Row -->
+                <div class="cal-stats-row">
+                    <div class="cal-stat-card">
+                        <div class="cal-stat-icon bg-yellow-light text-yellow"><i class="ph ph-star"></i></div>
+                        <div class="cal-stat-info">
+                            <span class="label">Promedio general</span>
+                            <div class="value" id="stat-promedio">0.0 <span>/ 20</span></div>
+                            <span class="cal-stat-badge" id="stat-promedio-badge">Sin notas</span>
+                        </div>
+                    </div>
+
+                    <div class="cal-stat-card">
+                        <div class="cal-stat-icon bg-purple-light" style="color: var(--purple);"><i
+                                class="ph ph-trend-up"></i></div>
+                        <div class="cal-stat-info">
+                            <span class="label">Cursos aprobados</span>
+                            <div class="value" id="stat-cursos">0 <span>/ 0</span></div>
+                            <span class="cal-stat-subtext green" id="stat-cursos-pct">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="cal-stat-card">
+                        <div class="cal-stat-icon bg-green-light text-green"><i class="ph ph-trend-up"></i></div>
+                        <div class="cal-stat-info">
+                            <span class="label">Mejora de promedio</span>
+                            <div class="value" id="stat-mejora">0.0</div>
+                            <span class="cal-stat-subtext green">según historial del estudiante</span>
+                        </div>
+                    </div>
+
+                    <div class="cal-stat-card">
+                        <div class="cal-stat-icon bg-blue-light text-blue"><i class="ph ph-medal"></i></div>
+                        <div class="cal-stat-info">
+                            <span class="label">Evaluaciones</span>
+                            <div class="value" id="stat-evaluaciones">0</div>
+                            <span class="cal-stat-subtext">registradas por docentes</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calificaciones-layout">
+                    <!-- Left Column -->
+                    <div class="cal-main-column">
+                        <div class="cal-panel">
+                            <h3>Calificaciones por curso</h3>
+
+                            <div class="cal-table-header">
+                                <div>Curso</div>
+                                <div>Promedio</div>
+                                <div>Estado</div>
+                                <div></div>
+                            </div>
+
+                            <div class="cal-list">
+                                <div class="cal-state">Cargando calificaciones desde el API...</div>
+                            </div>
+
+                            <a href="#calificaciones-detalle" class="view-all-link">Ver todas las calificaciones detalladas <i
+                                    class="ph ph-arrow-right"></i></a>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="cal-widgets-column">
+
+                        <!-- Distribución de calificaciones -->
+                        <div class="widget-panel">
+                            <h3>Distribución de calificaciones</h3>
+
+                            <div class="chart-layout">
+                                <div class="donut-chart">
+                                    <div class="donut-inner">
+                                        <span class="num">0</span>
+                                        <span class="lbl">Evaluaciones</span>
+                                    </div>
+                                </div>
+
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <div class="label">
+                                            <div class="dot" style="background: var(--green);"></div> 18 - 20
+                                        </div>
+                                        <div><span class="val">0</span> <span class="pct">(0%)</span></div>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="label">
+                                            <div class="dot" style="background: var(--blue);"></div> 14 - 17
+                                        </div>
+                                        <div><span class="val">0</span> <span class="pct">(0%)</span></div>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="label">
+                                            <div class="dot" style="background: var(--yellow);"></div> 11 - 13
+                                        </div>
+                                        <div><span class="val">0</span> <span class="pct">(0%)</span></div>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="label">
+                                            <div class="dot" style="background: var(--red);"></div> 0 - 10
+                                        </div>
+                                        <div><span class="val">0</span> <span class="pct">(0%)</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Evaluaciones recientes -->
+                        <div class="widget-panel">
+                            <h3>Evaluaciones recientes</h3>
+
+                            <div class="eval-list">
+                                <div class="cal-state">Cargando evaluaciones desde el API...</div>
+                            </div>
+                        </div>
+
+                        <!-- Sigue así banner -->
+                        <div class="motivational-banner">
+                            <div class="motivational-content">
+                                <h4>¡Sigue así!</h4>
+                                <p>El mensaje se calculará con tus calificaciones reales.</p>
+                            </div>
+                            <div class="motivational-grade-icon"><i class="ph-fill ph-medal"></i></div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <section class="cal-detail-panel" id="calificaciones-detalle" hidden>
+                    <div class="cal-detail-header">
+                        <div>
+                            <span>Detalle completo</span>
+                            <h3>Todas las calificaciones</h3>
+                            <p id="cal-detail-count">Cargando evaluaciones...</p>
+                        </div>
+                        <button type="button" class="detail-close-btn" id="btn-cerrar-detalle">
+                            <i class="ph ph-x"></i>
+                        </button>
+                    </div>
+
+                    <div class="detail-table-wrap">
+                        <div class="detail-table-head">
+                            <div>Curso</div>
+                            <div>Evaluacion</div>
+                            <div>Docente</div>
+                            <div>Fecha</div>
+                            <div>Nota</div>
+                            <div>Estado</div>
+                        </div>
+                        <div class="detail-table-body" id="cal-detail-list">
+                            <div class="cal-state">Cargando detalle...</div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+<script src="../js/app.js?v=apiestudiante20260512i"></script>
+<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
+    <script src="../js/calificaciones.js?v=apiestudiante20260512i"></script>
+
+    <!-- SweetAlert2 para Alertas Elegantes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js"></script>
+
+</body>
+
+</html>
+
