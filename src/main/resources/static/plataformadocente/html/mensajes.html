@@ -92,7 +92,7 @@
         }
 
         .convo-info { flex: 1; overflow: hidden; }
-        .convo-name { font-weight: 700; font-size: 14px; color: var(--text-main); display: block; }
+        .convo-name { font-weight: 700; font-size: 14px; color: var(--text-primary); display: block; }
         .convo-preview { font-size: 12px; color: var(--text-tertiary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* Area de Chat */
@@ -171,7 +171,7 @@
         .msg-received {
             align-self: flex-start;
             background: white;
-            color: var(--text-main);
+            color: var(--text-primary);
             border-bottom-left-radius: 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
@@ -287,18 +287,20 @@
                     <h1>Mensajería</h1>
                     <p id="teacher-context">Cargando datos del docente...</p>
                 </div>
-                <div class="top-user-info">
-                    <div class="user-details">
-                        <span class="user-name" id="user-name-label">Docente</span>
-                        <span class="user-role">Docente</span>
-                    </div>
-                    <div class="user-dropdown">
-                        <div class="avatar" id="profile-avatar"><i class="ph-fill ph-user-circle" style="font-size: 32px;"></i></div>
-                        <i class="ph ph-caret-down dropdown-icon"></i>
-                        <div class="dropdown-menu">
-                            <a href="/login.html" id="btn-logout" class="dropdown-item">
-                                <i class="ph ph-sign-out"></i><span>Cerrar sesión</span>
-                            </a>
+                <div class="topbar-actions">
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name" id="user-name-label">Docente</span>
+                            <span class="user-role">Docente</span>
+                        </div>
+                        <div class="user-dropdown">
+                            <div class="avatar" id="profile-avatar"><i class="ph-fill ph-user-circle" style="font-size: 32px;"></i></div>
+                            <i class="ph ph-caret-down dropdown-icon"></i>
+                            <div class="dropdown-menu">
+                                <a href="/login.html" id="btn-logout" class="dropdown-item">
+                                    <i class="ph ph-sign-out"></i><span>Cerrar sesión</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -311,7 +313,7 @@
                         <div class="sidebar-search">
                             <div class="search-input-wrapper" style="margin-bottom: 12px;">
                                 <i class="ph ph-magnifying-glass"></i>
-                                <input type="text" placeholder="Buscar conversación...">
+                                <input type="text" placeholder="Buscar conversación..." id="search-input">
                             </div>
                             <div class="course-filter-wrapper">
                                 <label style="font-size: 11px; font-weight: 700; color: var(--text-tertiary); margin-bottom: 4px; display: block;">FILTRAR POR CURSO</label>
@@ -381,6 +383,8 @@
         </div>
     </div>
 
+    <script src="../js/app.js?v=docentedash20260518"></script>
+    <script src="../js/notificaciones.js?v=20260518"></script>
     <script src="../js/mensajes.js?v=docenteapi20260508"></script>
 
     <!-- SweetAlert2 para Alertas Elegantes -->

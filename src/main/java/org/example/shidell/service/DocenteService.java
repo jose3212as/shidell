@@ -16,40 +16,29 @@ import java.util.*;
 
 @Service
 public class DocenteService {
-
     @Autowired
     private CursoRepository cursoRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private AsistenciaRepository asistenciaRepository;
-
     @Autowired
     private CalificacionRepository calificacionRepository;
-
     @Autowired
     private TareaRepository tareaRepository;
-
     @Autowired
     private EventoRepository eventoRepository;
-
     @Autowired
     private MaterialCursoRepository materialCursoRepository;
-
     @Autowired
     private NotificacionService notificacionService;
-
     @Autowired
     private EntityMapper mapper;
-
     public List<CursoDTO> obtenerCursosPorDocente(Long docenteId) {
         UserEntity docente = userRepository.findById(docenteId).orElse(null);
         if (docente == null) return List.of();
         return cursoRepository.findByProfesor(docente).stream().map(mapper::toDTO).toList();
     }
-
     public Map<String, Object> obtenerDashboardDocente(Long docenteId) {
         UserEntity docente = userRepository.findById(docenteId).orElseThrow();
         List<Curso> cursos = deduplicarCursos(cursoRepository.findByProfesor(docente));
@@ -95,7 +84,7 @@ public class DocenteService {
     public List<UserEntity> obtenerEstudiantesPorCurso(Long cursoId) {
         Curso curso = cursoRepository.findById(cursoId).orElse(null);
         if (curso == null) return List.of();
-        return userRepository.findByNivelAndGradoAndSeccion(curso.getNivel(), curso.getGrado(), curso.getSeccion())
+        return userRepository.findByGrupoAcademico(curso.getNivel(), curso.getGrado(), curso.getSeccion(), curso.getTurno())
                 .stream().filter(u -> "ESTUDIANTE".equalsIgnoreCase(u.getRol())).toList();
     }
 

@@ -58,8 +58,9 @@ public class CursoController {
     public List<CursoDTO> getCursosBySeccion(
             @RequestParam String nivel,
             @RequestParam String grado,
-            @RequestParam String seccion) {
-        return cursoRepository.findByNivelAndGradoAndSeccion(nivel, grado, seccion).stream().map(mapper::toDTO).toList();
+            @RequestParam String seccion,
+            @RequestParam(required = false) String turno) {
+        return cursoRepository.findByGrupoAcademico(nivel, grado, seccion, turno).stream().map(mapper::toDTO).toList();
     }
 
     @GetMapping("/estudiante/{estudianteId}/detalle")
@@ -67,8 +68,8 @@ public class CursoController {
         UserEntity estudiante = userRepository.findById(estudianteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
         
-        List<Curso> cursos = cursoRepository.findByNivelAndGradoAndSeccion(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion());
+        List<Curso> cursos = cursoRepository.findByGrupoAcademico(
+                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
 
         Map<String, Map<String, Object>> cursosUnicos = new LinkedHashMap<>();
 
@@ -142,6 +143,10 @@ public class CursoController {
         detalle.put("nombre", TextUtils.limpiarTexto(curso.getNombre()));
         detalle.put("icono", curso.getIcono());
         detalle.put("color", curso.getColor());
+        detalle.put("nivel", curso.getNivel());
+        detalle.put("grado", curso.getGrado());
+        detalle.put("seccion", curso.getSeccion());
+        detalle.put("turno", curso.getTurno());
         
         if (curso.getProfesor() != null) {
             String prof = (curso.getProfesor().getNombres() + " " + curso.getProfesor().getApellidos()).trim();

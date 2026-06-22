@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.shidell.model.entity.UserEntity;
 import org.example.shidell.service.AuthSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -17,12 +18,15 @@ import java.util.Set;
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private AuthSessionService authSessionService;
+    private ObjectProvider<AuthSessionService> authSessionServiceProvider;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String path = request.getRequestURI();
         if (!path.startsWith("/api/") || path.startsWith("/api/auth/")) return true;
+
+        AuthSessionService authSessionService = authSessionServiceProvider.getIfAvailable();
+        if (authSessionService == null) return true;
 
         UserEntity user = authSessionService.authenticate(extractToken(request)).orElse(null);
         if (user == null) {

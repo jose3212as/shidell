@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function setupSearch() {
-        const searchInput = document.querySelector('.search-input-wrapper input');
+        const searchInput = document.getElementById('search-input');
         if (!searchInput) return;
         searchInput.oninput = () => {
             const q = normalizar(searchInput.value);
