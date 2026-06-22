@@ -18,6 +18,6 @@ public interface MensajeRepository extends JpaRepository<Mensaje, Long> {
     @Query("SELECT m FROM Mensaje m WHERE (m.remitente = :u OR m.destinatario = :u) AND (:cursoId IS NULL OR m.curso.id = :cursoId) ORDER BY m.fechaEnvio DESC")
     List<Mensaje> findAllByUser(UserEntity u, Long cursoId);
 
-    @Query("SELECT DISTINCT CASE WHEN m.remitente = :u THEN m.destinatario ELSE m.remitente END FROM Mensaje m WHERE (m.remitente = :u OR m.destinatario = :u) AND (:cursoId IS NULL OR m.curso.id = :cursoId) ORDER BY m.fechaEnvio DESC")
+    @Query("SELECT CASE WHEN m.remitente = :u THEN m.destinatario ELSE m.remitente END FROM Mensaje m WHERE (m.remitente = :u OR m.destinatario = :u) AND (:cursoId IS NULL OR m.curso.id = :cursoId) GROUP BY CASE WHEN m.remitente = :u THEN m.destinatario ELSE m.remitente END ORDER BY MAX(m.fechaEnvio) DESC")
     List<UserEntity> findDistinctContacts(UserEntity u, Long cursoId);
 }

@@ -16,19 +16,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class MensajeService {
-
     @Autowired
     private MensajeRepository mensajeRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private CursoRepository cursoRepository;
-
     @Autowired
     private EntityMapper mapper;
-
     public Long contarMensajesNoLeidos(Long usuarioId) {
         UserEntity u = userRepository.findById(usuarioId).orElseThrow();
         return (long) mensajeRepository.findByDestinatarioAndLeidoFalse(u).size();
@@ -157,14 +152,14 @@ public class MensajeService {
         Curso curso = cursoRepository.findById(cursoId).orElseThrow();
         List<UserEntity> participants = new ArrayList<>();
         if (curso.getProfesor() != null) participants.add(curso.getProfesor());
-        participants.addAll(userRepository.findByNivelAndGradoAndSeccion(curso.getNivel(), curso.getGrado(), curso.getSeccion()));
+        participants.addAll(userRepository.findByGrupoAcademico(curso.getNivel(), curso.getGrado(), curso.getSeccion(), curso.getTurno()));
         return participants;
     }
 
     private List<Curso> cursosDelEstudiante(UserEntity estudiante) {
         if (estudiante.getNivel() == null || estudiante.getGrado() == null || estudiante.getSeccion() == null) return List.of();
         LinkedHashMap<String, Curso> cursos = new LinkedHashMap<>();
-        cursoRepository.findByNivelAndGradoAndSeccion(estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion())
+        cursoRepository.findByGrupoAcademico(estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno())
                 .forEach(c -> cursos.putIfAbsent(TextUtils.claveCurso(c.getNombre(), c.getId()), c));
         return new ArrayList<>(cursos.values());
     }
@@ -178,7 +173,7 @@ public class MensajeService {
 
     private List<UserEntity> estudiantesDelCurso(Curso curso) {
         if (curso == null || curso.getNivel() == null || curso.getGrado() == null || curso.getSeccion() == null) return List.of();
-        return userRepository.findByNivelAndGradoAndSeccion(curso.getNivel(), curso.getGrado(), curso.getSeccion())
+        return userRepository.findByGrupoAcademico(curso.getNivel(), curso.getGrado(), curso.getSeccion(), curso.getTurno())
                 .stream().filter(u -> "ESTUDIANTE".equalsIgnoreCase(u.getRol())).toList();
     }
 
@@ -195,7 +190,7 @@ public class MensajeService {
     private List<UserEntity> contactosAcademicos(UserEntity estudiante, List<Curso> cursos) {
         LinkedHashMap<Long, UserEntity> contactos = new LinkedHashMap<>();
         if (estudiante.getNivel() != null && estudiante.getGrado() != null && estudiante.getSeccion() != null) {
-            userRepository.findByNivelAndGradoAndSeccion(estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion())
+            userRepository.findByGrupoAcademico(estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno())
                     .stream().filter(u -> !u.getId().equals(estudiante.getId())).forEach(u -> contactos.putIfAbsent(u.getId(), u));
         }
         cursos.stream().map(Curso::getProfesor).filter(Objects::nonNull).forEach(u -> contactos.putIfAbsent(u.getId(), u));

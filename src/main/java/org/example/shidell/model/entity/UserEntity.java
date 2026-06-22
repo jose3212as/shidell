@@ -32,6 +32,9 @@ public class UserEntity {
     // Roles: ADMINISTRADOR, DOCENTE, ESTUDIANTE, PADRE
     private String rol;
 
+    @Column(name = "codigo_plaza", unique = true)
+    private String codigoPlaza;
+
     // Tutor (docente asignado al estudiante)
     @JsonIgnoreProperties({"tutor", "padre"})
     @ManyToOne
@@ -84,6 +87,9 @@ public class UserEntity {
 
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+
+    public String getCodigoPlaza() { return codigoPlaza; }
+    public void setCodigoPlaza(String codigoPlaza) { this.codigoPlaza = codigoPlaza; }
 
     public UserEntity getTutor() { return tutor; }
     public void setTutor(UserEntity tutor) { this.tutor = tutor; }

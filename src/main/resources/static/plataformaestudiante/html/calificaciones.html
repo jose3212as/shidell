@@ -99,10 +99,10 @@
                     <h2>Calificaciones</h2>
                     <div class="calificaciones-toolbar">
                         <div class="calificaciones-tabs">
-                            <button class="cal-tab active">Resumen general</button>
-                            <button class="cal-tab">Por curso</button>
-                            <button class="cal-tab">Por evaluación</button>
-                            <button class="cal-tab">Historial académico</button>
+                            <button class="cal-tab active" data-view="resumen">Resumen general</button>
+                            <button class="cal-tab" data-view="curso">Por curso</button>
+                            <button class="cal-tab" data-view="evaluacion">Por evaluación</button>
+                            <button class="cal-tab" data-view="historial">Historial académico</button>
                         </div>
                         <button class="semester-dropdown" type="button" id="cal-api-source">
                             <i class="ph ph-database"></i> Datos del estudiante
@@ -110,159 +110,261 @@
                     </div>
                 </div>
 
-                <!-- Stats Row -->
-                <div class="cal-stats-row">
-                    <div class="cal-stat-card">
-                        <div class="cal-stat-icon bg-yellow-light text-yellow"><i class="ph ph-star"></i></div>
-                        <div class="cal-stat-info">
-                            <span class="label">Promedio general</span>
-                            <div class="value" id="stat-promedio">0.0 <span>/ 20</span></div>
-                            <span class="cal-stat-badge" id="stat-promedio-badge">Sin notas</span>
+                <!-- Vista 1: Resumen General -->
+                <div id="view-resumen" class="cal-tab-content">
+                    <!-- Stats Row -->
+                    <div class="cal-stats-row">
+                        <div class="cal-stat-card">
+                            <div class="cal-stat-icon bg-yellow-light text-yellow"><i class="ph ph-star"></i></div>
+                            <div class="cal-stat-info">
+                                <span class="label">Promedio general</span>
+                                <div class="value" id="stat-promedio">0.0 <span>/ 20</span></div>
+                                <span class="cal-stat-badge" id="stat-promedio-badge">Sin notas</span>
+                            </div>
+                        </div>
+
+                        <div class="cal-stat-card">
+                            <div class="cal-stat-icon bg-purple-light" style="color: var(--purple);"><i
+                                    class="ph ph-trend-up"></i></div>
+                            <div class="cal-stat-info">
+                                <span class="label">Cursos aprobados</span>
+                                <div class="value" id="stat-cursos">0 <span>/ 0</span></div>
+                                <span class="cal-stat-subtext green" id="stat-cursos-pct">0%</span>
+                            </div>
+                        </div>
+
+                        <div class="cal-stat-card">
+                            <div class="cal-stat-icon bg-green-light text-green"><i class="ph ph-trend-up"></i></div>
+                            <div class="cal-stat-info">
+                                <span class="label">Mejora de promedio</span>
+                                <div class="value" id="stat-mejora">0.0</div>
+                                <span class="cal-stat-subtext green">según historial del estudiante</span>
+                            </div>
+                        </div>
+
+                        <div class="cal-stat-card">
+                            <div class="cal-stat-icon bg-blue-light text-blue"><i class="ph ph-medal"></i></div>
+                            <div class="cal-stat-info">
+                                <span class="label">Evaluaciones</span>
+                                <div class="value" id="stat-evaluaciones">0</div>
+                                <span class="cal-stat-subtext">registradas por docentes</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="cal-stat-card">
-                        <div class="cal-stat-icon bg-purple-light" style="color: var(--purple);"><i
-                                class="ph ph-trend-up"></i></div>
-                        <div class="cal-stat-info">
-                            <span class="label">Cursos aprobados</span>
-                            <div class="value" id="stat-cursos">0 <span>/ 0</span></div>
-                            <span class="cal-stat-subtext green" id="stat-cursos-pct">0%</span>
-                        </div>
-                    </div>
+                    <div class="calificaciones-layout">
+                        <!-- Left Column -->
+                        <div class="cal-main-column">
+                            <div class="cal-panel">
+                                <h3>Calificaciones por curso</h3>
 
-                    <div class="cal-stat-card">
-                        <div class="cal-stat-icon bg-green-light text-green"><i class="ph ph-trend-up"></i></div>
-                        <div class="cal-stat-info">
-                            <span class="label">Mejora de promedio</span>
-                            <div class="value" id="stat-mejora">0.0</div>
-                            <span class="cal-stat-subtext green">según historial del estudiante</span>
-                        </div>
-                    </div>
+                                <div class="cal-table-header">
+                                    <div>Curso</div>
+                                    <div>Promedio</div>
+                                    <div>Estado</div>
+                                    <div></div>
+                                </div>
 
-                    <div class="cal-stat-card">
-                        <div class="cal-stat-icon bg-blue-light text-blue"><i class="ph ph-medal"></i></div>
-                        <div class="cal-stat-info">
-                            <span class="label">Evaluaciones</span>
-                            <div class="value" id="stat-evaluaciones">0</div>
-                            <span class="cal-stat-subtext">registradas por docentes</span>
+                                <div class="cal-list">
+                                    <div class="cal-state">Cargando calificaciones desde el API...</div>
+                                </div>
+
+                                <a href="#calificaciones-detalle" class="view-all-link">Ver todas las calificaciones detalladas <i
+                                        class="ph ph-arrow-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="cal-widgets-column">
+
+                            <!-- Distribución de calificaciones -->
+                            <div class="widget-panel">
+                                <h3>Distribución de calificaciones</h3>
+
+                                <div class="chart-layout">
+                                    <div class="donut-chart">
+                                        <div class="donut-inner">
+                                            <span class="num">0</span>
+                                            <span class="lbl">Evaluaciones</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="chart-legend">
+                                        <div class="legend-item">
+                                            <div class="label">
+                                                <div class="dot" style="background: var(--green);"></div> 18 - 20
+                                            </div>
+                                            <div><span class="val">0</span> <span class="pct">(0%)</span></div>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="label">
+                                                <div class="dot" style="background: var(--blue);"></div> 14 - 17
+                                            </div>
+                                            <div><span class="val">0</span> <span class="pct">(0%)</span></div>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="label">
+                                                <div class="dot" style="background: var(--yellow);"></div> 11 - 13
+                                            </div>
+                                            <div><span class="val">0</span> <span class="pct">(0%)</span></div>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="label">
+                                                <div class="dot" style="background: var(--red);"></div> 0 - 10
+                                            </div>
+                                            <div><span class="val">0</span> <span class="pct">(0%)</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Evaluaciones recientes -->
+                            <div class="widget-panel">
+                                <h3>Evaluaciones recientes</h3>
+
+                                <div class="eval-list">
+                                    <div class="cal-state">Cargando evaluaciones desde el API...</div>
+                                </div>
+                            </div>
+
+                            <!-- Sigue así banner -->
+                            <div class="motivational-banner">
+                                <div class="motivational-content">
+                                    <h4>¡Sigue así!</h4>
+                                    <p>El mensaje se calculará con tus calificaciones reales.</p>
+                                </div>
+                                <div class="motivational-grade-icon"><i class="ph-fill ph-medal"></i></div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
 
-                <div class="calificaciones-layout">
-                    <!-- Left Column -->
-                    <div class="cal-main-column">
-                        <div class="cal-panel">
-                            <h3>Calificaciones por curso</h3>
+                <!-- Vista 2: Por Curso (Split Layout) -->
+                <div id="view-curso" class="cal-tab-content" hidden>
+                    <div class="cal-course-split-layout">
+                        <div class="cal-course-sidebar">
+                            <h3>Mis cursos</h3>
+                            <div class="cal-course-select-list" id="curso-tab-list">
+                                <div class="cal-state">Cargando cursos...</div>
+                            </div>
+                        </div>
+                        <div class="cal-course-detail-panel">
+                            <div id="selected-course-detail-header" class="course-detail-header" style="display: none;">
+                                <div class="course-detail-title-wrap">
+                                    <div class="course-detail-icon" id="course-detail-icon-box">
+                                        <i class="ph-fill ph-book-open"></i>
+                                    </div>
+                                    <div>
+                                        <h3 id="course-detail-name">Selecciona un curso</h3>
+                                        <p id="course-detail-teacher">Docente por asignar</p>
+                                    </div>
+                                </div>
+                                <div class="course-detail-stats">
+                                    <div class="detail-stat">
+                                        <span class="lbl">Promedio</span>
+                                        <span class="val" id="course-detail-average">0.0</span>
+                                    </div>
+                                    <div class="detail-stat">
+                                        <span class="lbl">Estado</span>
+                                        <span class="cal-status-tag" id="course-detail-status">Sin notas</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="course-detail-body">
+                                <div class="detail-table-wrap">
+                                    <div class="detail-table-head course-detail-table-head">
+                                        <div>Evaluación</div>
+                                        <div>Docente</div>
+                                        <div>Fecha</div>
+                                        <div>Nota</div>
+                                        <div>Estado</div>
+                                    </div>
+                                    <div class="detail-table-body" id="course-detail-eval-list">
+                                        <div class="cal-state">Selecciona un curso de la lista para ver el detalle de sus evaluaciones.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <div class="cal-table-header">
+                <!-- Vista 3: Por Evaluación -->
+                <div id="view-evaluacion" class="cal-tab-content" hidden>
+                    <div class="cal-evaluations-panel">
+                        <div class="panel-header-with-actions">
+                            <div>
+                                <h3>Detalle de todas las evaluaciones</h3>
+                                <p id="eval-tab-count">Cargando evaluaciones...</p>
+                            </div>
+                            <div class="search-filter-box">
+                                <i class="ph ph-magnifying-glass"></i>
+                                <input type="text" id="eval-search-input" placeholder="Buscar por evaluación, curso o docente...">
+                            </div>
+                        </div>
+                        <div class="detail-table-wrap">
+                            <div class="detail-table-head all-evals-table-head">
                                 <div>Curso</div>
-                                <div>Promedio</div>
+                                <div>Evaluación</div>
+                                <div>Docente</div>
+                                <div>Fecha</div>
+                                <div>Nota</div>
                                 <div>Estado</div>
-                                <div></div>
                             </div>
-
-                            <div class="cal-list">
-                                <div class="cal-state">Cargando calificaciones desde el API...</div>
-                            </div>
-
-                            <a href="#calificaciones-detalle" class="view-all-link">Ver todas las calificaciones detalladas <i
-                                    class="ph ph-arrow-right"></i></a>
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="cal-widgets-column">
-
-                        <!-- Distribución de calificaciones -->
-                        <div class="widget-panel">
-                            <h3>Distribución de calificaciones</h3>
-
-                            <div class="chart-layout">
-                                <div class="donut-chart">
-                                    <div class="donut-inner">
-                                        <span class="num">0</span>
-                                        <span class="lbl">Evaluaciones</span>
-                                    </div>
-                                </div>
-
-                                <div class="chart-legend">
-                                    <div class="legend-item">
-                                        <div class="label">
-                                            <div class="dot" style="background: var(--green);"></div> 18 - 20
-                                        </div>
-                                        <div><span class="val">0</span> <span class="pct">(0%)</span></div>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="label">
-                                            <div class="dot" style="background: var(--blue);"></div> 14 - 17
-                                        </div>
-                                        <div><span class="val">0</span> <span class="pct">(0%)</span></div>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="label">
-                                            <div class="dot" style="background: var(--yellow);"></div> 11 - 13
-                                        </div>
-                                        <div><span class="val">0</span> <span class="pct">(0%)</span></div>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="label">
-                                            <div class="dot" style="background: var(--red);"></div> 0 - 10
-                                        </div>
-                                        <div><span class="val">0</span> <span class="pct">(0%)</span></div>
-                                    </div>
-                                </div>
+                            <div class="detail-table-body" id="eval-tab-list">
+                                <div class="cal-state">Cargando detalle...</div>
                             </div>
                         </div>
-
-                        <!-- Evaluaciones recientes -->
-                        <div class="widget-panel">
-                            <h3>Evaluaciones recientes</h3>
-
-                            <div class="eval-list">
-                                <div class="cal-state">Cargando evaluaciones desde el API...</div>
-                            </div>
-                        </div>
-
-                        <!-- Sigue así banner -->
-                        <div class="motivational-banner">
-                            <div class="motivational-content">
-                                <h4>¡Sigue así!</h4>
-                                <p>El mensaje se calculará con tus calificaciones reales.</p>
-                            </div>
-                            <div class="motivational-grade-icon"><i class="ph-fill ph-medal"></i></div>
-                        </div>
-
                     </div>
                 </div>
 
-                <section class="cal-detail-panel" id="calificaciones-detalle" hidden>
-                    <div class="cal-detail-header">
-                        <div>
-                            <span>Detalle completo</span>
-                            <h3>Todas las calificaciones</h3>
-                            <p id="cal-detail-count">Cargando evaluaciones...</p>
+                <!-- Vista 4: Historial Académico -->
+                <div id="view-historial" class="cal-tab-content" hidden>
+                    <div class="cal-history-panel">
+                        <div class="panel-header-with-actions">
+                            <div>
+                                <h3>Historial Académico Consolidado</h3>
+                                <p>Reporte oficial consolidado del rendimiento académico del estudiante.</p>
+                            </div>
+                            <button class="btn-print-report" id="btn-imprimir-historial" type="button">
+                                <i class="ph ph-printer"></i> Imprimir Reporte
+                            </button>
                         </div>
-                        <button type="button" class="detail-close-btn" id="btn-cerrar-detalle">
-                            <i class="ph ph-x"></i>
-                        </button>
-                    </div>
+                        
+                        <div class="academic-history-summary-row">
+                            <div class="summary-card">
+                                <span class="lbl">Promedio general</span>
+                                <span class="val" id="history-overall-avg">0.0</span>
+                            </div>
+                            <div class="summary-card">
+                                <span class="lbl">Total cursos</span>
+                                <span class="val" id="history-total-courses">0</span>
+                            </div>
+                            <div class="summary-card">
+                                <span class="lbl">Cursos aprobados</span>
+                                <span class="val" id="history-approved-courses">0</span>
+                            </div>
+                            <div class="summary-card">
+                                <span class="lbl">Eficiencia académica</span>
+                                <span class="val" id="history-efficiency">0%</span>
+                            </div>
+                        </div>
 
-                    <div class="detail-table-wrap">
-                        <div class="detail-table-head">
-                            <div>Curso</div>
-                            <div>Evaluacion</div>
-                            <div>Docente</div>
-                            <div>Fecha</div>
-                            <div>Nota</div>
-                            <div>Estado</div>
-                        </div>
-                        <div class="detail-table-body" id="cal-detail-list">
-                            <div class="cal-state">Cargando detalle...</div>
+                        <div class="detail-table-wrap">
+                            <div class="detail-table-head history-table-head">
+                                <div>Curso</div>
+                                <div>Docente Principal</div>
+                                <div>Evaluaciones</div>
+                                <div>Calificación Final</div>
+                                <div>Resultado</div>
+                            </div>
+                            <div class="detail-table-body" id="history-tab-list">
+                                <div class="cal-state">Cargando historial...</div>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
             </div>
         </main>

@@ -24,6 +24,7 @@ public class Curso {
     private String nivel;   // PRIMARIA o SECUNDARIA
     private String grado;   // 1, 2, 3, 4, 5
     private String seccion; // A, B, C...
+    private String turno;   // MANANA o TARDE
     
     @Column(name = "hora_inicio")
     private String horaInicio; // e.g., "08:00"
@@ -55,6 +56,8 @@ public class Curso {
     public void setGrado(String grado) { this.grado = grado; }
     public String getSeccion() { return seccion; }
     public void setSeccion(String seccion) { this.seccion = seccion; }
+    public String getTurno() { return turno; }
+    public void setTurno(String turno) { this.turno = turno; }
 
     public String getHoraInicio() { return horaInicio; }
     public void setHoraInicio(String horaInicio) { this.horaInicio = horaInicio; }
