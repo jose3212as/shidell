@@ -2,6 +2,7 @@ package org.example.shidell.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -10,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class AppConfig implements WebMvcConfigurer {
     @Autowired
-    private AuthInterceptor authInterceptor;
+    private ObjectProvider<AuthInterceptor> authInterceptorProvider;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -20,7 +21,10 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(authInterceptor).addPathPatterns("/api/**");
+        AuthInterceptor authInterceptor = authInterceptorProvider.getIfAvailable();
+        if (authInterceptor != null) {
+            registry.addInterceptor(authInterceptor).addPathPatterns("/api/**");
+        }
     }
 
     @Override

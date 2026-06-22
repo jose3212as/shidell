@@ -82,13 +82,13 @@ public class UserController {
         List<UserEntity> contacts = new ArrayList<>();
         
         if (user.getNivel() != null && user.getGrado() != null && user.getSeccion() != null) {
-            List<UserEntity> classmates = userRepository.findByNivelAndGradoAndSeccion(
-                user.getNivel(), user.getGrado(), user.getSeccion());
+            List<UserEntity> classmates = userRepository.findByGrupoAcademico(
+                user.getNivel(), user.getGrado(), user.getSeccion(), user.getTurno());
             classmates.removeIf(u -> u.getId().equals(id));
             contacts.addAll(classmates);
             
-            List<Curso> cursos = cursoRepository.findByNivelAndGradoAndSeccion(
-                user.getNivel(), user.getGrado(), user.getSeccion());
+            List<Curso> cursos = cursoRepository.findByGrupoAcademico(
+                user.getNivel(), user.getGrado(), user.getSeccion(), user.getTurno());
             
             for (Curso curso : cursos) {
                 if (curso.getProfesor() != null && !contacts.contains(curso.getProfesor())) {
@@ -113,8 +113,8 @@ public class UserController {
             contacts.add(curso.getProfesor());
         }
         
-        List<UserEntity> students = userRepository.findByNivelAndGradoAndSeccion(
-            curso.getNivel(), curso.getGrado(), curso.getSeccion());
+        List<UserEntity> students = userRepository.findByGrupoAcademico(
+            curso.getNivel(), curso.getGrado(), curso.getSeccion(), curso.getTurno());
         contacts.addAll(students);
         
         return contacts.stream().map(mapper::toDTO).toList();

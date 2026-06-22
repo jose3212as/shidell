@@ -9,9 +9,11 @@ public class UserDTO {
     private String email;
     private String rol;
     private String fotoPerfil;
+    private String codigoPlaza;
     private String nivel;
     private String grado;
     private String seccion;
+    private String turno;
     private LocalDateTime ultimaConexion;
     private String sessionToken;
     private Long padreId;
@@ -30,12 +32,16 @@ public class UserDTO {
     public void setRol(String rol) { this.rol = rol; }
     public String getFotoPerfil() { return fotoPerfil; }
     public void setFotoPerfil(String fotoPerfil) { this.fotoPerfil = fotoPerfil; }
+    public String getCodigoPlaza() { return codigoPlaza; }
+    public void setCodigoPlaza(String codigoPlaza) { this.codigoPlaza = codigoPlaza; }
     public String getNivel() { return nivel; }
     public void setNivel(String nivel) { this.nivel = nivel; }
     public String getGrado() { return grado; }
     public void setGrado(String grado) { this.grado = grado; }
     public String getSeccion() { return seccion; }
     public void setSeccion(String seccion) { this.seccion = seccion; }
+    public String getTurno() { return turno; }
+    public void setTurno(String turno) { this.turno = turno; }
     public LocalDateTime getUltimaConexion() { return ultimaConexion; }
     public void setUltimaConexion(LocalDateTime ultimaConexion) { this.ultimaConexion = ultimaConexion; }
     public String getSessionToken() { return sessionToken; }

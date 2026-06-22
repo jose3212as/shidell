@@ -716,3 +716,409 @@
         justify-content: flex-start;
     }
 }
+
+/* ---------- Tabbed Content Control ---------- */
+.cal-tab-content[hidden] {
+    display: none !important;
+}
+
+/* ---------- Split Layout (Por Curso) ---------- */
+.cal-course-split-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 24px;
+    margin-top: 24px;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .cal-course-split-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.cal-course-sidebar {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border-color-dark);
+    padding: 24px;
+}
+
+.cal-course-sidebar h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.cal-course-select-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.course-select-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    background: var(--bg-main);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.course-select-btn:hover {
+    background: var(--border-color-dark);
+    border-color: var(--border-color);
+}
+
+.course-select-btn.active {
+    background: var(--primary-light);
+    border-color: rgba(37, 99, 235, 0.15);
+}
+
+.course-select-btn.active .course-select-details h4 {
+    color: var(--primary);
+}
+
+.course-select-btn.active .course-select-arrow {
+    color: var(--primary);
+    transform: translateX(3px);
+}
+
+.course-select-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.course-select-details {
+    min-width: 0;
+}
+
+.course-select-details h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.course-select-details p {
+    font-size: 11px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.course-select-score {
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.course-select-score .score-val {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.course-select-score .score-lbl {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    display: block;
+}
+
+.course-select-arrow {
+    color: var(--text-tertiary);
+    font-size: 14px;
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+}
+
+.cal-course-detail-panel {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border-color-dark);
+    padding: 24px;
+    min-height: 400px;
+}
+
+.course-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color-dark);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.course-detail-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.course-detail-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+#course-detail-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+#course-detail-teacher {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.course-detail-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.course-detail-stats .detail-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.course-detail-stats .detail-stat .lbl {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.course-detail-stats .detail-stat .val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.course-detail-table-head {
+    grid-template-columns: 1.8fr 1.5fr 1.2fr 1fr 1fr;
+}
+
+#course-detail-eval-list .detail-row {
+    grid-template-columns: 1.8fr 1.5fr 1.2fr 1fr 1fr;
+}
+
+/* ---------- Evaluaciones Panel (Por Evaluación) ---------- */
+.cal-evaluations-panel {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border-color-dark);
+    padding: 24px;
+}
+
+.panel-header-with-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.panel-header-with-actions h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.panel-header-with-actions p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.search-filter-box {
+    position: relative;
+    width: 320px;
+}
+
+@media (max-width: 576px) {
+    .search-filter-box {
+        width: 100%;
+    }
+}
+
+.search-filter-box i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-tertiary);
+    font-size: 18px;
+}
+
+.search-filter-box input {
+    width: 100%;
+    padding: 10px 16px 10px 42px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color-dark);
+    background: var(--bg-main);
+    font-size: 14px;
+    color: var(--text-primary);
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.search-filter-box input:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.all-evals-table-head {
+    grid-template-columns: 1.4fr 1.5fr 1.2fr .9fr .8fr .9fr;
+}
+
+#eval-tab-list .detail-row {
+    grid-template-columns: 1.4fr 1.5fr 1.2fr .9fr .8fr .9fr;
+}
+
+/* ---------- Historial Panel (Historial Académico) ---------- */
+.cal-history-panel {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border-color-dark);
+    padding: 24px;
+}
+
+.btn-print-report {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color-dark);
+    background: white;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-print-report:hover {
+    background: var(--bg-main);
+    border-color: var(--text-secondary);
+}
+
+.btn-print-report i {
+    font-size: 18px;
+}
+
+.academic-history-summary-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+    background: var(--bg-main);
+    padding: 16px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color-dark);
+}
+
+@media (max-width: 768px) {
+    .academic-history-summary-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .academic-history-summary-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+.summary-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    text-align: center;
+    border-right: 1px solid var(--border-color-dark);
+}
+
+.summary-card:last-child {
+    border-right: none;
+}
+
+@media (max-width: 768px) {
+    .summary-card:nth-child(2n) {
+        border-right: none;
+    }
+}
+
+.summary-card .lbl {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.summary-card .val {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.history-table-head {
+    grid-template-columns: 2fr 2fr 1fr 1fr 1.2fr;
+}
+
+#history-tab-list .detail-row {
+    grid-template-columns: 2fr 2fr 1fr 1fr 1.2fr;
+}
+
+/* ---------- Impresión ---------- */
+@media print {
+    body * {
+        visibility: hidden !important;
+    }
+    .cal-history-panel, .cal-history-panel * {
+        visibility: visible !important;
+    }
+    .cal-history-panel {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: none !important;
+        padding: 0 !important;
+    }
+    .btn-print-report {
+        display: none !important;
+    }
+    .academic-history-summary-row {
+        background: transparent !important;
+        border: 1px solid #ccc !important;
+    }
+    .summary-card {
+        border-color: #ccc !important;
+    }
+}
+

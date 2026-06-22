@@ -6,11 +6,11 @@
     <title>Shidell - Mi Progreso</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
     <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
-    <link rel="stylesheet" href="../css/progreso.css">
+    <link rel="stylesheet" href="../css/progreso.css?v=redesign20260620">
 </head>
 <body>
     <div class="dashboard">
@@ -52,7 +52,7 @@
                     <span>Mensajes</span>
                 </a>
                 <a href="miprogreso.html" class="nav-item active">
-                    <i class="ph ph-shield-check"></i>
+                    <i class="ph ph-chart-line-up"></i>
                     <span>Mi progreso</span>
                 </a>
                 <a href="configuracion.html" class="nav-item">
@@ -60,7 +60,6 @@
                     <span>Configuración</span>
                 </a>
             </nav>
-
         </aside>
 
         <!-- Main Content -->
@@ -71,18 +70,17 @@
                     <h1>¡Hola, Estudiante! 👋</h1>
                     <p id="user-academic-info">Cargando información académica...</p>
                 </div>
-                
                 <div class="topbar-actions">
-                    
                     <button class="notification-btn">
                         <i class="ph ph-bell"></i>
                         <span class="badge"></span>
                     </button>
-                    
                     <div class="top-user-info">
                         <div class="user-details">
                             <span class="user-name">Estudiante</span>
-                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span></a>
+                            <a href="configuracion.html" style="text-decoration:none;">
+                                <span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span>
+                            </a>
                         </div>
                         <div class="avatar">
                             <i class="ph-fill ph-user" style="font-size: 24px; color: var(--primary);"></i>
@@ -93,9 +91,16 @@
 
             <!-- Content Area -->
             <div class="content-area">
-                
+
+                <!-- Encabezado de sección -->
+                <div class="progreso-page-header">
+                    <h2><i class="ph-fill ph-chart-line-up"></i>Mi Progreso Académico</h2>
+                    <span style="font-size:13px; color:var(--text-tertiary); font-weight:600;">Datos en tiempo real</span>
+                </div>
+
                 <!-- Top Stats Row -->
                 <div class="progreso-stats-row">
+
                     <!-- Promedio General -->
                     <div class="p-stat-card">
                         <div class="p-stat-header">
@@ -112,7 +117,7 @@
                         </div>
                     </div>
 
-                    <!-- Cursos Aprobados (Podemos dejarlo estático o dinámico) -->
+                    <!-- Cursos en curso -->
                     <div class="p-stat-card">
                         <div class="p-stat-header">
                             <div class="p-stat-icon bg-green-light text-green"><i class="ph ph-graduation-cap"></i></div>
@@ -146,7 +151,7 @@
                         </div>
                     </div>
 
-                    <!-- Horas de estudio -->
+                    <!-- Asistencia / Horas -->
                     <div class="p-stat-card">
                         <div class="p-stat-header">
                             <div class="p-stat-icon bg-blue-light text-blue"><i class="ph ph-clock"></i></div>
@@ -161,26 +166,25 @@
                             <span class="right up" id="progreso-horas-comparacion">Datos del API</span>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Middle Row -->
                 <div class="progreso-middle-row">
-                    
+
                     <!-- Progreso por curso -->
                     <div class="p-panel">
                         <h3>Progreso por curso</h3>
-                        
                         <div class="p-course-list" id="progresoCursosLista">
                             <p style="color: var(--text-secondary); font-size: 14px;">Cargando cursos...</p>
                         </div>
-
                         <a href="miscursos.html" class="view-link">Ver todos los cursos <i class="ph ph-arrow-right"></i></a>
                     </div>
 
                     <!-- Racha de estudio -->
                     <div class="p-panel p-racha-panel">
                         <h3>Racha de estudio 🔥</h3>
-                        
+
                         <div class="racha-ring">
                             <div class="racha-inner">
                                 <span class="num" id="racha-valor">12</span>
@@ -209,7 +213,6 @@
                             <h3>Logros recientes</h3>
                             <span id="logrosOrigen">Datos del estudiante</span>
                         </div>
-                        
                         <div class="p-logros-list" id="logrosLista">
                             <p style="color: var(--text-secondary); font-size: 14px;">Cargando logros...</p>
                         </div>
@@ -224,7 +227,6 @@
                         <p id="progreso-mejora-texto">Cargando crecimiento académico desde el API...</p>
                         <button class="btn-outline-blue">Ver reporte detallado</button>
                     </div>
-
                     <div class="p-banner-graphic">
                         <div class="student-chart" id="student-chart" aria-label="Tendencia de progreso"></div>
                     </div>
@@ -233,6 +235,7 @@
             </div>
         </main>
     </div>
+
 <script>window.__shidellProgresoPage = true;</script>
 <script src="../js/app.js?v=apiestudiante20260512i"></script>
 <script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
@@ -335,7 +338,6 @@
             lista.innerHTML = '<p style="color: var(--text-secondary); font-size: 14px;">Aún no tienes cursos asignados.</p>';
             return;
         }
-
         lista.innerHTML = cursos.map(curso => {
             const color = colorSeguro(curso.color);
             const icono = curso.icono || 'ph-book-open';
@@ -352,7 +354,6 @@
 
     function normalizarCursosProgreso(cursos) {
         const mapa = new Map();
-
         (Array.isArray(cursos) ? cursos : []).forEach(item => {
             const base = item.curso && typeof item.curso === 'object'
                 ? { ...item.curso, ...item }
@@ -362,18 +363,15 @@
             const key = quitarAcentos(nombre).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim() || String(id);
             const porcentaje = limitar(Number(base.porcentaje || 0), 0, 100);
             const curso = {
-                id,
-                nombre,
+                id, nombre,
                 icono: base.icono || base.curso?.icono || 'ph-book-open',
                 color: colorSeguro(base.color || base.curso?.color),
                 porcentaje
             };
-
             if (!mapa.has(key) || porcentaje > Number(mapa.get(key).porcentaje || 0)) {
                 mapa.set(key, curso);
             }
         });
-
         return [...mapa.values()];
     }
 
@@ -384,12 +382,11 @@
             ? 'Racha basada en asistencia registrada'
             : 'Aún no hay asistencia registrada';
         document.getElementById('racha-mejor').textContent = `Mejor racha: ${Number(data.mejorRacha || 0)} días`;
-        document.querySelector('.racha-ring').style.background = `conic-gradient(var(--green) 0% ${limitar(racha * 10, 0, 100)}%, var(--bg-main) ${limitar(racha * 10, 0, 100)}% 100%)`;
+        document.querySelector('.racha-ring').style.background = `conic-gradient(var(--green) 0% ${limitar(racha * 10, 0, 100)}%, #e2e8f0 ${limitar(racha * 10, 0, 100)}% 100%)`;
 
         const dias = Array.isArray(data.diasSemana) ? data.diasSemana : [];
         const contenedor = document.querySelector('.racha-days');
         if (!dias.length) return;
-
         contenedor.innerHTML = dias.map(dia => `
             <div class="racha-day">
                 <span>${dia.label}</span>
@@ -404,12 +401,9 @@
             lista.innerHTML = '<p style="color: var(--text-secondary); font-size: 14px;">Aún no hay logros disponibles.</p>';
             return;
         }
-
         lista.innerHTML = logros.map(logro => {
             const color = colorSeguro(logro.color);
-            const iconClass = color === 'yellow'
-                ? 'p-logro-icon text-white'
-                : `p-logro-icon bg-${color} text-white`;
+            const iconClass = color === 'yellow' ? 'p-logro-icon text-white' : `p-logro-icon bg-${color} text-white`;
             const style = color === 'yellow' ? ' style="background: var(--yellow);"' : '';
             return `
                 <div class="p-logro-item">
@@ -426,12 +420,10 @@
     function renderTendencia(puntos) {
         const chart = document.getElementById('student-chart');
         if (!chart) return;
-
         if (!puntos.length) {
             chart.innerHTML = '<p>No hay suficientes datos para graficar.</p>';
             return;
         }
-
         chart.innerHTML = puntos.map(punto => {
             const porcentaje = limitar(Number(punto.porcentaje || 0), 0, 100);
             return `
@@ -457,9 +449,7 @@
                 const decodificado = decodeURIComponent(escape(valor));
                 if (decodificado === valor) break;
                 valor = decodificado;
-            } catch (error) {
-                break;
-            }
+            } catch (error) { break; }
         }
         return valor;
     }
@@ -476,7 +466,6 @@
             .replaceAll('"', '&quot;')
             .replaceAll("'", '&#039;');
     }
-
 </script>
 
     <!-- SweetAlert2 para Alertas Elegantes -->
@@ -485,5 +474,3 @@
 
 </body>
 </html>
-
-

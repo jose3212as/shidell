@@ -54,7 +54,6 @@ public class AuthSessionService {
             return Optional.empty();
         }
     }
-
     public boolean matchesPassword(String stored, String raw) {
         if (stored == null || raw == null) return false;
         if (stored.startsWith(HASH_PREFIX)) {
@@ -62,7 +61,6 @@ public class AuthSessionService {
         }
         return stored.equals(raw);
     }
-
     public String hashPassword(String raw) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -72,7 +70,6 @@ public class AuthSessionService {
             throw new IllegalStateException("No se pudo cifrar la contraseña", e);
         }
     }
-
     private String sign(String payload) {
         try {
             Mac mac = Mac.getInstance("HmacSHA256");

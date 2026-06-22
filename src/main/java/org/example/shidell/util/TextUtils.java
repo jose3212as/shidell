@@ -37,7 +37,7 @@ public class TextUtils {
             }
         }
 
-        return texto;
+        return texto.trim();
     }
 
     /**
