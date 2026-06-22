@@ -20,7 +20,6 @@ import java.util.*;
 @RequestMapping("/api/calendario")
 @CrossOrigin(origins = "*")
 public class CalendarioController {
-
     @Autowired
     private EventoRepository eventoRepository;
     @Autowired
@@ -31,15 +30,14 @@ public class CalendarioController {
     private CursoRepository cursoRepository;
     @Autowired
     private EntityMapper mapper;
-
     @GetMapping("/estudiante/{estudianteId}")
     public Map<String, Object> getCalendarioEstudiante(@PathVariable Long estudianteId) {
         UserEntity estudiante = userRepository.findById(estudianteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
         
         List<Map<String, Object>> eventos = new ArrayList<>();
-        List<Curso> cursos = cursoRepository.findByNivelAndGradoAndSeccion(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion());
+        List<Curso> cursos = cursoRepository.findByGrupoAcademico(
+                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
 
         // 1. Clases y Eventos
         for (Curso curso : cursos) {
@@ -57,8 +55,8 @@ public class CalendarioController {
         }
 
         // 2. Tareas
-        List<Tarea> tareas = tareaRepository.findByCursoNivelAndCursoGradoAndCursoSeccion(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion());
+        List<Tarea> tareas = tareaRepository.findByGrupoAcademico(
+                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
         for (Tarea t : tareas) {
             if (t.getFechaVencimiento() == null) continue;
             eventos.add(tareaAMap(t));

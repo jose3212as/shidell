@@ -25,28 +25,20 @@ public class ProgresoController {
         LocalDate.of(2026, 8, 10),
         LocalDate.of(2026, 10, 19)
     );
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private CursoRepository cursoRepository;
-
     @Autowired
     private CalificacionRepository calificacionRepository;
-
     @Autowired
     private TareaRepository tareaRepository;
-
     @Autowired
     private EntregaRepository entregaRepository;
-
     @Autowired
     private AsistenciaRepository asistenciaRepository;
-
     @Autowired
     private EntityMapper mapper;
-
     @GetMapping("/estudiante/{id}")
     public Map<String, Object> getProgresoEstudiante(@PathVariable("id") Long id) {
         UserEntity estudiante = userRepository.findById(id)
@@ -54,12 +46,12 @@ public class ProgresoController {
         
         List<Calificacion> calificaciones = calificacionRepository.findByEstudianteId(id);
         List<Asistencia> asistencias = asistenciaRepository.findByEstudiante(estudiante);
-        List<Tarea> tareasSeccion = tareaRepository.findByCursoNivelAndCursoGradoAndCursoSeccion(
-            estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion());
+        List<Tarea> tareasSeccion = tareaRepository.findByGrupoAcademico(
+            estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
         List<Entrega> entregas = entregaRepository.findByEstudiante(estudiante);
 
-        List<Curso> cursosEstudiante = cursoRepository.findByNivelAndGradoAndSeccion(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion());
+        List<Curso> cursosEstudiante = cursoRepository.findByGrupoAcademico(
+                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
 
         Map<String, Object> res = new HashMap<>();
         res.put("estudiante", mapper.toDTO(estudiante));

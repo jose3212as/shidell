@@ -19,9 +19,11 @@ public class EntityMapper {
         dto.setEmail(entity.getEmail());
         dto.setRol(entity.getRol());
         dto.setFotoPerfil(entity.getFotoPerfil());
+        dto.setCodigoPlaza(entity.getCodigoPlaza());
         dto.setNivel(entity.getNivel());
         dto.setGrado(entity.getGrado());
         dto.setSeccion(entity.getSeccion());
+        dto.setTurno(entity.getTurno());
         dto.setUltimaConexion(entity.getUltimaConexion());
         if (entity.getPadre() != null) {
             dto.setPadreId(entity.getPadre().getId());
@@ -36,6 +38,13 @@ public class EntityMapper {
         dto.setNombre(TextUtils.limpiarTexto(entity.getNombre()));
         dto.setIcono(entity.getIcono());
         dto.setColor(entity.getColor());
+        dto.setNivel(entity.getNivel());
+        dto.setGrado(entity.getGrado());
+        dto.setSeccion(entity.getSeccion());
+        dto.setTurno(entity.getTurno());
+        dto.setHoraInicio(entity.getHoraInicio());
+        dto.setHoraFin(entity.getHoraFin());
+        dto.setDiaSemana(entity.getDiaSemana());
         dto.setProfesor(toDTO(entity.getProfesor()));
         return dto;
     }

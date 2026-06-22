@@ -23,27 +23,22 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/calificaciones")
 @CrossOrigin(origins = "*")
 public class CalificacionController {
-
     @Autowired
     private CalificacionRepository calificacionRepository;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private CursoRepository cursoRepository;
-
     @Autowired
     private EntityMapper mapper;
-
     @GetMapping("/estudiante/{id}")
     public Map<String, Object> getCalificacionesByEstudiante(@PathVariable Long id) {
         UserEntity estudiante = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
         
         List<Calificacion> calificaciones = calificacionRepository.findByEstudianteId(id);
-        List<Curso> cursos = cursoRepository.findByNivelAndGradoAndSeccion(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion());
+        List<Curso> cursos = cursoRepository.findByGrupoAcademico(
+                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
 
         List<CalificacionDTO> evaluaciones = calificaciones.stream()
                 .sorted(Comparator.comparing((Calificacion c) -> c.getFecha() == null ? LocalDate.MIN : c.getFecha()).reversed())

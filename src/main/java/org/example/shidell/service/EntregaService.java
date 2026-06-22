@@ -40,14 +40,11 @@ public class EntregaService {
         if (archivo == null || archivo.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Selecciona un archivo para entregar la tarea.");
         }
-
         Tarea tarea = tareaRepository.findById(tareaId).orElseThrow();
         UserEntity estudiante = userRepository.findById(estudianteId).orElseThrow();
-
         // Verificar si ya existe una entrega
         Entrega entrega = entregaRepository.findByTareaAndEstudiante(tarea, estudiante)
                 .orElse(new Entrega());
-
         entrega.setTarea(tarea);
         entrega.setEstudiante(estudiante);
         entrega.setComentarioEstudiante(comentario);

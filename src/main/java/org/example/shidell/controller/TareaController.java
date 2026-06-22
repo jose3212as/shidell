@@ -53,7 +53,7 @@ public class TareaController {
                 .collect(Collectors.toMap(e -> e.getTarea().getId(), mapper::toDTO, (a, b) -> a));
 
         List<Map<String, Object>> tareas = tareaRepository
-                .findByCursoNivelAndCursoGradoAndCursoSeccion(estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion())
+                .findByGrupoAcademico(estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno())
                 .stream()
                 .sorted((a, b) -> nullSafeDate(a.getFechaVencimiento()).compareTo(nullSafeDate(b.getFechaVencimiento())))
                 .map(tarea -> {
