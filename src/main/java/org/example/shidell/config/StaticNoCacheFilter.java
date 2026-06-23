@@ -16,6 +16,13 @@ public class StaticNoCacheFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String path = request.getRequestURI();
+        
+        // Agregar cabeceras de seguridad (Mitigación DAST - OWASP)
+        response.setHeader("X-Content-Type-Options", "nosniff");
+        response.setHeader("X-Frame-Options", "DENY");
+        response.setHeader("X-XSS-Protection", "1; mode=block");
+        response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
+
         if (path.endsWith(".html") || path.endsWith(".js") || path.endsWith(".css")) {
             response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
             response.setHeader("Pragma", "no-cache");
