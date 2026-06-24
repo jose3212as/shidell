@@ -38,12 +38,23 @@
             </div>
             <div class="topbar-actions">
                 <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
-                <div class="top-user-info">
-                    <div class="user-details">
-                        <span class="user-name padre-nombre">Padre</span>
-                        <a href="configuracion.html" class="user-action">Ver perfil <i class="ph ph-caret-right"></i></a>
+                <div class="top-user-info" style="cursor:pointer;">
+                    <div class="user-dropdown">
+                        <div class="avatar" id="topbar-avatar"><i class="ph-fill ph-user-circle" style="font-size:32px;"></i></div>
+                        <div class="user-info-text" style="display:flex; flex-direction:column; align-items:flex-start; margin-right:5px; text-align:left;">
+                            <span class="user-name padre-nombre" id="topbar-name" style="font-size:14px; font-weight:700; color:var(--text-primary); line-height:1.2;">Padre</span>
+                            <span id="topbar-role" style="font-size:12px; font-weight:500; color:var(--text-secondary); line-height:1.2;">Padre de Familia</span>
+                        </div>
+                        <i class="ph ph-caret-down dropdown-icon"></i>
+                        <div class="dropdown-menu">
+                            <a href="configuracion.html" class="dropdown-item">
+                                <i class="ph ph-gear"></i><span>Configuración</span>
+                            </a>
+                            <a href="#" class="dropdown-item btn-logout">
+                                <i class="ph ph-sign-out"></i><span>Cerrar sesión</span>
+                            </a>
+                        </div>
                     </div>
-                    <div class="avatar"><i class="ph-fill ph-user" style="font-size:24px; color:var(--primary);"></i></div>
                 </div>
             </div>
         </header>

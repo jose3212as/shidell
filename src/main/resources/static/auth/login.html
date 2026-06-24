@@ -9,8 +9,84 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="../plataformaestudiante/css/styles.css">
+    <style>
+        /* Splash Screen Animation */
+        .intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
+        }
+        
+        .intro-splash.fade-out {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-content {
+            text-align: center;
+            color: white;
+            animation: content-pop 1.2s ease-out forwards;
+        }
+
+        .intro-logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce-scale 1.5s ease-out infinite;
+        }
+
+        .intro-title {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fade-in-up 0.8s ease-out 0.3s forwards;
+            letter-spacing: 2px;
+        }
+
+        .intro-subtitle {
+            font-size: 18px;
+            font-weight: 400;
+            opacity: 0;
+            animation: fade-in-up 0.8s ease-out 0.6s forwards;
+        }
+
+        @keyframes content-pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes bounce-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes fade-in-up {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
+    <!-- Intro Animation Overlay -->
+    <div id="intro-splash" class="intro-splash">
+        <div class="intro-content">
+            <div class="intro-logo">
+                <i class="ph-fill ph-graduation-cap"></i>
+            </div>
+            <h1 class="intro-title">Shidell</h1>
+            <p class="intro-subtitle">Tu portal académico</p>
+        </div>
+    </div>
+
     <div class="auth-page">
         <!-- Lado Izquierdo: Formulario -->
         <div class="auth-left">
@@ -101,7 +177,7 @@
                     if (rolUpper === 'ESTUDIANTE') {
                         window.location.href = '../plataformaestudiante/html/portalestudiante.html';
                     } else if (rolUpper === 'DOCENTE') {
-                        window.location.href = '../plataformadocente/html/portaldocente.html';
+                        window.location.href = '../plataformadocente/index.html';
                     } else if (rolUpper === 'ADMINISTRADOR' || rolUpper === 'ADMIN') {
                         window.location.href = '../plataformaadmin/html/dashboard.html';
                     } else if (rolUpper === 'PADRE') {
@@ -117,6 +193,21 @@
             } catch (error) {
                 console.error("Error connecting to server:", error);
                 AppAlerts.mostrarError('Error al conectar con el servidor', '¿Está encendido el backend?');
+            }
+        });
+
+        // Intro Animation logic
+        document.addEventListener("DOMContentLoaded", () => {
+            const splash = document.getElementById("intro-splash");
+            if (splash) {
+                // Remove splash screen after 2.5 seconds
+                setTimeout(() => {
+                    splash.classList.add("fade-out");
+                    // Remove from DOM after animation completes
+                    setTimeout(() => {
+                        splash.remove();
+                    }, 800);
+                }, 2500);
             }
         });
     </script>

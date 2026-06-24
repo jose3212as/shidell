@@ -36,8 +36,16 @@ public class CalendarioController {
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
         
         List<Map<String, Object>> eventos = new ArrayList<>();
+        String turnoEstudiante = estudiante.getTurno();
+        if (turnoEstudiante == null || turnoEstudiante.isBlank()) {
+            turnoEstudiante = "PRIMARIA".equals(estudiante.getNivel()) ? "MAÑANA" : "TARDE";
+        }
+
         List<Curso> cursos = cursoRepository.findByGrupoAcademico(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
+                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), turnoEstudiante);
+                
+        // Asegurar que no se envíen cursos archivados
+        cursos.removeIf(c -> "ARCHIVADO".equals(c.getTurno()));
 
         // 1. Clases y Eventos
         for (Curso curso : cursos) {
@@ -56,7 +64,7 @@ public class CalendarioController {
 
         // 2. Tareas
         List<Tarea> tareas = tareaRepository.findByGrupoAcademico(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
+                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), turnoEstudiante);
         for (Tarea t : tareas) {
             if (t.getFechaVencimiento() == null) continue;
             eventos.add(tareaAMap(t));
@@ -65,6 +73,7 @@ public class CalendarioController {
         Map<String, Object> res = new HashMap<>();
         res.put("estudiante", mapper.toDTO(estudiante));
         res.put("eventos", eventos);
+        res.put("cursos", cursos.stream().map(mapper::toDTO).toList());
         return res;
     }
 
@@ -76,6 +85,7 @@ public class CalendarioController {
         m.put("color", c != null ? c.getColor() : (e.getColor() != null ? e.getColor() : "blue"));
         m.put("fechaInicio", e.getFechaInicio().toString());
         m.put("curso", c != null ? TextUtils.limpiarTexto(c.getNombre()) : "");
+        if (c != null) m.put("cursoId", c.getId());
         return m;
     }
 
@@ -87,6 +97,7 @@ public class CalendarioController {
         m.put("color", t.getCurso() != null ? t.getCurso().getColor() : "yellow");
         m.put("fechaInicio", t.getFechaVencimiento().toString());
         m.put("curso", t.getCurso() != null ? TextUtils.limpiarTexto(t.getCurso().getNombre()) : "");
+        if (t.getCurso() != null) m.put("cursoId", t.getCurso().getId());
         return m;
     }
 
@@ -105,6 +116,8 @@ public class CalendarioController {
             m.put("color", c.getColor());
             m.put("fechaInicio", fecha.toString());
             m.put("hora", c.getHoraInicio());
+            m.put("cursoId", c.getId());
+            m.put("curso", TextUtils.limpiarTexto(c.getNombre()));
             evs.add(m);
             fecha = fecha.plusWeeks(1);
         }

@@ -156,7 +156,23 @@ function buildTopbar(pageTitle = '', breadcrumb = '') {
         <i class="ph ph-bell"></i>
         <span class="badge-dot" id="notif-dot" style="display:none"></span>
       </button>
-      <div class="topbar-avatar" title="Perfil">${initials}</div>
+      <div class="top-user-info">
+        <div class="user-dropdown">
+          <div class="topbar-avatar avatar" id="topbar-avatar" title="Perfil" style="background:transparent; color:var(--text-secondary); border:none; border-radius:50%; width:auto; height:auto;">
+            <i class="ph-fill ph-user-circle" style="font-size:36px;"></i>
+          </div>
+          <div class="user-info-text">
+            <span class="user-dropdown-name" id="topbar-name">${user ? (user.nombres || 'Admin') : 'Admin'}</span>
+            <span class="user-dropdown-role" id="topbar-role">${user && user.rol ? user.rol : 'Administrador'}</span>
+          </div>
+          <i class="ph ph-caret-down dropdown-icon"></i>
+          <div class="dropdown-menu">
+            <a onclick="Auth.logout()" class="dropdown-item">
+              <i class="ph ph-sign-out"></i><span>Cerrar sesión</span>
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   </header>`;
 }

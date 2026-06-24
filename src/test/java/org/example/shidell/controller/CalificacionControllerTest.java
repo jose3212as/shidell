@@ -63,6 +63,7 @@ class CalificacionControllerTest {
         estudiante.setNivel("SECUNDARIA");
         estudiante.setGrado("3");
         estudiante.setSeccion("A");
+        estudiante.setTurno("MAÑANA");
 
         curso = new Curso();
         curso.setId(10L);
@@ -94,7 +95,7 @@ class CalificacionControllerTest {
     void getCalificacionesByEstudiante_retornaResumen() throws Exception {
         when(userRepository.findById(1L)).thenReturn(Optional.of(estudiante));
         when(calificacionRepository.findByEstudianteId(1L)).thenReturn(List.of(calificacion));
-        when(cursoRepository.findByNivelAndGradoAndSeccion("SECUNDARIA", "3", "A")).thenReturn(List.of(curso));
+        when(cursoRepository.findByGrupoAcademico("SECUNDARIA", "3", "A", "MAÑANA")).thenReturn(List.of(curso));
         when(mapper.toDTO(estudiante)).thenReturn(estudianteDTO);
         when(mapper.toDTO(calificacion)).thenReturn(calificacionDTO);
 

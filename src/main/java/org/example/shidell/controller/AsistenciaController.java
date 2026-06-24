@@ -22,7 +22,7 @@ import java.util.Locale;
 public class AsistenciaController {
 
     @Autowired
-    private AsistenciaRepository asistenciaRepository;
+    private org.example.shidell.service.AsistenciaService asistenciaService;
 
     @Autowired
     private UserRepository userRepository;
@@ -39,7 +39,7 @@ public class AsistenciaController {
         
         validarAcceso(estudiante, (UserEntity) request.getAttribute("authUser"));
 
-        return asistenciaRepository.findByEstudiante(estudiante).stream()
+        return asistenciaService.getAsistenciasCompletas(estudiante).stream()
                 .sorted(Comparator.comparing(Asistencia::getFecha, Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                 .map(mapper::toDTO)
                 .peek(dto -> {

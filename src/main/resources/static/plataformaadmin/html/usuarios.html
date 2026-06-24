@@ -23,11 +23,6 @@
           <h1>Gestión de Usuarios</h1>
           <p>Administra docentes, estudiantes y padres de familia del sistema</p>
         </div>
-        <div class="page-header-right">
-          <button class="btn btn-primary" onclick="openCreateModal()">
-            <i class="ph ph-user-plus"></i>Nuevo usuario
-          </button>
-        </div>
       </div>
 
       <!-- KPI mini -->
@@ -73,6 +68,9 @@
             <button class="filter-tab" data-rol="PADRE">Padres</button>
             <button class="filter-tab" data-rol="ADMINISTRADOR">Admins</button>
           </div>
+          <button class="btn btn-primary btn-sm" onclick="openCreateModal()" style="margin-left:auto;white-space:nowrap">
+            <i class="ph ph-user-plus"></i> Nuevo usuario
+          </button>
         </div>
 
         <div class="table-wrapper">
@@ -83,7 +81,7 @@
                 <th>Rol</th>
                 <th>Sección</th>
                 <th>Turno</th>
-                <th>Padre/Tutor</th>
+                <th>Info adicional</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>

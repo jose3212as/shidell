@@ -12,82 +12,390 @@
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/shared.css">
+  <style>
+    /* ════════════════════════════════════════════════════════
+       HERO BANNER — selector integrado
+    ════════════════════════════════════════════════════════ */
+    .calif-hero {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #4c1d95 100%);
+      border-radius: 20px;
+      padding: 36px 40px;
+      margin-bottom: 28px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .calif-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 15% 50%, rgba(99,102,241,.25) 0%, transparent 50%),
+        radial-gradient(circle at 85% 20%, rgba(168,85,247,.2) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .calif-hero::after {
+      content: '\e9b3'; /* ph-exam glyph approximation */
+      font-family: 'Phosphor', sans-serif;
+      position: absolute;
+      right: 48px;
+      bottom: -20px;
+      font-size: 160px;
+      color: rgba(255,255,255,.04);
+      pointer-events: none;
+      line-height: 1;
+    }
+    .calif-hero-left { position: relative; z-index: 1; flex: 1; min-width: 200px; }
+    .calif-hero-left h1 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      margin: 0 0 6px;
+    }
+    .calif-hero-left p {
+      color: rgba(255,255,255,.65);
+      font-size: 14px;
+      margin: 0 0 20px;
+    }
+    .calif-hero-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,.1);
+      border: 1.5px solid rgba(255,255,255,.2);
+      border-radius: 12px;
+      padding: 10px 14px;
+      backdrop-filter: blur(12px);
+      max-width: 480px;
+    }
+    .calif-hero-select-wrap i { color: rgba(255,255,255,.7); font-size: 20px; flex-shrink:0; }
+    .calif-hero-select-wrap select {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      width: 100%;
+      outline: none;
+      cursor: pointer;
+    }
+    .calif-hero-select-wrap select option { background: #1e1b4b; color: #fff; }
+
+    /* Student info pills in hero */
+    .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .hero-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255,255,255,.85);
+      backdrop-filter: blur(8px);
+    }
+
+    /* Promedio ring in hero */
+    .calif-hero-ring {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .ring-container { position: relative; width: 110px; height: 110px; }
+    .ring-container svg { transform: rotate(-90deg); }
+    .ring-center {
+      position: absolute;
+      inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .ring-number { font-size: 28px; font-weight: 900; color: #fff; line-height: 1; }
+    .ring-denom  { font-size: 12px; color: rgba(255,255,255,.5); font-weight: 600; }
+    .ring-label  { font-size: 12px; font-weight: 700; color: rgba(255,255,255,.7); letter-spacing: .4px; }
+
+    /* ════════════════════════════════════════════════════════
+       KPI STRIP
+    ════════════════════════════════════════════════════════ */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    .kpi-strip-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .kpi-strip-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+      border-color: var(--border-strong);
+    }
+    .kpi-strip-icon {
+      width: 46px; height: 46px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .kpi-strip-val { font-size: 28px; font-weight: 800; color: var(--text-primary); line-height: 1.1; }
+    .kpi-strip-lbl { font-size: 11px; color: var(--text-tertiary); font-weight: 600; margin-top: 2px; }
+
+    /* ════════════════════════════════════════════════════════
+       TABLA DE EVALUACIONES
+    ════════════════════════════════════════════════════════ */
+    .eval-row td { vertical-align: middle; padding: 12px 14px; }
+    .nota-chip {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .mini-bar-track {
+      flex: 1;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--border-color);
+      overflow: hidden;
+      min-width: 60px; max-width: 100px;
+    }
+    .mini-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width .7s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ════════════════════════════════════════════════════════
+       RESUMEN POR CURSO — barras horizontales CSS
+    ════════════════════════════════════════════════════════ */
+    .course-bar-card {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background .15s;
+    }
+    .course-bar-card:last-child { border-bottom: none; }
+    .course-bar-card:hover { background: var(--color-bg-elevated); }
+    .course-bar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    .course-bar-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .course-bar-letter {
+      width: 26px; height: 26px;
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+      flex-shrink: 0;
+    }
+    .course-bar-score { font-size: 17px; font-weight: 800; }
+    .course-bar-track {
+      height: 7px;
+      border-radius: 999px;
+      background: var(--border-color);
+      overflow: hidden;
+    }
+    .course-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width .8s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ════════════════════════════════════════════════════════
+       ESTADO VACÍO
+    ════════════════════════════════════════════════════════ */
+    .calif-empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 260px; gap: 12px;
+      color: var(--text-tertiary);
+      text-align: center;
+    }
+    .calif-empty-icon {
+      width: 72px; height: 72px;
+      border-radius: 20px;
+      background: var(--color-bg-elevated);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px;
+      color: var(--text-tertiary);
+      margin-bottom: 4px;
+    }
+    .calif-empty h3 { font-size: 17px; font-weight: 700; color: var(--text-secondary); margin: 0; }
+    .calif-empty p  { font-size: 13px; margin: 0; }
+
+    /* nivel-logro band */
+    .logro-band {
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell" id="app-shell">
   <div class="main-content" id="main-content">
     <main class="page-content">
-      <div class="page-header">
-        <div class="page-header-left">
-          <h1>Calificaciones</h1>
-          <p>Consulta las notas y rendimiento académico de cada estudiante</p>
-        </div>
-      </div>
 
-      <!-- Selector -->
-      <div class="card mb-20">
-        <div class="d-flex gap-16 items-center">
-          <div style="flex:1">
-            <label class="form-label">Estudiante</label>
-            <select class="form-control form-select mt-8" id="est-select">
-              <option value="">Seleccionar estudiante...</option>
+      <!-- ── HERO BANNER ──────────────────────────────────── -->
+      <div class="calif-hero">
+        <div class="calif-hero-left">
+          <h1><i class="ph ph-exam" style="font-size:22px;vertical-align:middle;margin-right:8px"></i>Calificaciones</h1>
+          <p>Consulta el rendimiento académico detallado de cada estudiante</p>
+
+          <!-- Filtros dentro del hero -->
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;max-width:600px">
+            <div class="calif-hero-select-wrap" style="flex:1;min-width:140px">
+              <i class="ph ph-graduation-cap"></i>
+              <select id="filter-nivel">
+                <option value="">Todos los niveles</option>
+                <option value="PRIMARIA">Primaria</option>
+                <option value="SECUNDARIA">Secundaria</option>
+              </select>
+            </div>
+            <div class="calif-hero-select-wrap" style="flex:1;min-width:140px">
+              <i class="ph ph-list-numbers"></i>
+              <select id="filter-grado">
+                <option value="">Todos los grados</option>
+                <option value="1">1° Grado</option>
+                <option value="2">2° Grado</option>
+                <option value="3">3° Grado</option>
+                <option value="4">4° Grado</option>
+                <option value="5">5° Grado</option>
+                <option value="6">6° Grado</option>
+              </select>
+            </div>
+          </div>
+          <div class="calif-hero-select-wrap" style="max-width:600px">
+            <i class="ph ph-user-focus"></i>
+            <select id="est-select">
+              <option value="">— Busca y selecciona un estudiante —</option>
             </select>
           </div>
+
+          <!-- Pills del estudiante -->
+          <div class="hero-pills" id="student-pills"></div>
+        </div>
+
+        <!-- Anillo promedio -->
+        <div class="calif-hero-ring" id="hero-ring" style="display:none">
+          <div class="ring-container">
+            <svg width="110" height="110" viewBox="0 0 110 110">
+              <circle cx="55" cy="55" r="46" fill="none"
+                stroke="rgba(255,255,255,.12)" stroke-width="9"/>
+              <circle cx="55" cy="55" r="46" fill="none" id="ring-fill"
+                stroke="#a78bfa" stroke-width="9"
+                stroke-linecap="round"
+                stroke-dasharray="289.03"
+                stroke-dashoffset="289.03"
+                style="transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1)"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-number" id="ring-number">—</span>
+              <span class="ring-denom">/ 20</span>
+            </div>
+          </div>
+          <div class="ring-label" id="ring-logro">Promedio general</div>
+          <div id="ring-badge"></div>
         </div>
       </div>
 
-      <!-- Placeholder -->
-      <div id="calif-placeholder" class="empty-state" style="min-height:300px">
-        <i class="ph ph-exam" style="font-size:52px;color:var(--text-tertiary)"></i>
-        <h3>Selecciona un estudiante</h3>
-        <p>Sus calificaciones aparecerán aquí</p>
+      <!-- ── PLACEHOLDER ──────────────────────────────────── -->
+      <div id="calif-placeholder" class="calif-empty">
+        <div class="calif-empty-icon"><i class="ph ph-exam"></i></div>
+        <h3>Sin estudiante seleccionado</h3>
+        <p>Elige un estudiante en el buscador de arriba</p>
       </div>
 
-      <!-- Loading -->
-      <div id="calif-loading" style="display:none;min-height:200px" class="empty-state">
+      <!-- ── LOADING ──────────────────────────────────────── -->
+      <div id="calif-loading" style="display:none" class="calif-empty">
         <div class="spinner spinner-lg"></div>
-        <p>Cargando calificaciones...</p>
+        <p style="margin-top:12px">Cargando calificaciones…</p>
       </div>
 
-      <!-- Main content -->
+      <!-- ── MAIN CONTENT ─────────────────────────────────── -->
       <div id="calif-main" style="display:none">
-        <!-- KPIs -->
-        <div class="grid-4 mb-24">
-          <div class="kpi-card" style="--kpi-bg:var(--primary-light);--kpi-color2:var(--primary)">
-            <div class="kpi-icon"><i class="ph-fill ph-exam"></i></div>
-            <div class="kpi-value" style="font-size:28px"><span id="calif-promedio">—</span></div>
-            <div class="kpi-label">Promedio general / 20</div>
+
+        <!-- KPI strip -->
+        <div class="kpi-strip" id="kpi-strip">
+          <div class="kpi-strip-card">
+            <div class="kpi-strip-icon" style="background:var(--primary-light);color:var(--primary)">
+              <i class="ph-fill ph-exam"></i>
+            </div>
+            <div>
+              <div class="kpi-strip-val" id="calif-promedio">—</div>
+              <div class="kpi-strip-lbl">Promedio / 20</div>
+            </div>
           </div>
-          <div class="kpi-card" style="--kpi-bg:var(--green-light);--kpi-color2:var(--green)">
-            <div class="kpi-icon"><i class="ph-fill ph-check-circle"></i></div>
-            <div class="kpi-value" style="font-size:28px"><span id="calif-aprobados">—</span></div>
-            <div class="kpi-label">Cursos aprobados</div>
+          <div class="kpi-strip-card">
+            <div class="kpi-strip-icon" style="background:var(--green-light);color:var(--green)">
+              <i class="ph-fill ph-check-circle"></i>
+            </div>
+            <div>
+              <div class="kpi-strip-val" id="calif-aprobados">—</div>
+              <div class="kpi-strip-lbl">Cursos aprobados</div>
+            </div>
           </div>
-          <div class="kpi-card" style="--kpi-bg:var(--yellow-light);--kpi-color2:var(--yellow)">
-            <div class="kpi-icon"><i class="ph-fill ph-clipboard-text"></i></div>
-            <div class="kpi-value" style="font-size:28px"><span id="calif-total-ev">—</span></div>
-            <div class="kpi-label">Evaluaciones</div>
+          <div class="kpi-strip-card">
+            <div class="kpi-strip-icon" style="background:var(--yellow-light);color:var(--yellow)">
+              <i class="ph-fill ph-clipboard-text"></i>
+            </div>
+            <div>
+              <div class="kpi-strip-val" id="calif-total-ev">—</div>
+              <div class="kpi-strip-lbl">Evaluaciones</div>
+            </div>
           </div>
-          <div class="kpi-card" style="--kpi-bg:var(--cyan-light);--kpi-color2:var(--cyan)">
-            <div class="kpi-icon"><i class="ph-fill ph-book-open"></i></div>
-            <div class="kpi-value" style="font-size:28px"><span id="calif-cursos">—</span></div>
-            <div class="kpi-label">Cursos totales</div>
+          <div class="kpi-strip-card">
+            <div class="kpi-strip-icon" style="background:var(--cyan-light);color:var(--cyan)">
+              <i class="ph-fill ph-book-open"></i>
+            </div>
+            <div>
+              <div class="kpi-strip-val" id="calif-cursos">—</div>
+              <div class="kpi-strip-lbl">Cursos totales</div>
+            </div>
           </div>
         </div>
 
-        <div class="d-flex gap-20" style="align-items:flex-start;flex-wrap:wrap">
-          <!-- Tabla de evaluaciones -->
-          <div class="card" style="flex:2;min-width:320px">
+        <!-- Tabla + resumen -->
+        <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+
+          <!-- Tabla evaluaciones -->
+          <div class="card" style="flex:2;min-width:340px">
             <div class="card-header">
-              <div class="card-title">Evaluaciones</div>
+              <div>
+                <div class="card-title">Evaluaciones</div>
+                <div class="card-subtitle" id="eval-subtitle">Todas las actividades calificadas</div>
+              </div>
+              <div id="logro-badge-header"></div>
             </div>
             <div class="table-wrapper">
               <table class="table">
                 <thead>
                   <tr>
                     <th>Actividad</th>
-                    <th>Curso</th>
-                    <th>Nota / 20</th>
+                    <th>Materia</th>
+                    <th style="min-width:180px">Nota</th>
                     <th>Estado</th>
                     <th>Fecha</th>
                   </tr>
@@ -97,15 +405,16 @@
             </div>
           </div>
 
-          <!-- Resumen por curso -->
-          <div class="card" style="flex:1;min-width:250px">
+          <!-- Sidebar promedio por curso -->
+          <div class="card" style="flex:1;min-width:260px">
             <div class="card-header">
-              <div class="card-title">Promedio por curso</div>
+              <div class="card-title">Rendimiento por materia</div>
             </div>
             <div id="calif-cursos-list"></div>
           </div>
+
         </div>
-      </div>
+      </div><!-- /calif-main -->
 
     </main>
   </div>
@@ -116,10 +425,7 @@
 <script src="../js/auth.js"></script>
 <script src="../js/shared.js"></script>
 <script src="../js/calificaciones.js"></script>
-
-    <!-- SweetAlert2 para Alertas Elegantes -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/vendor/alertas.js"></script>
 </body>
 </html>

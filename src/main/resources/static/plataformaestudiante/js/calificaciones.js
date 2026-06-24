@@ -111,12 +111,19 @@
     }
 
     function normalizarCurso(curso) {
+        let profeStr = 'Docente por asignar';
+        if (typeof curso.profesor === 'string') {
+            profeStr = curso.profesor;
+        } else if (curso.profesor && typeof curso.profesor === 'object') {
+            profeStr = [curso.profesor.nombres, curso.profesor.apellidos].filter(Boolean).join(' ').trim() || 'Docente por asignar';
+        }
+
         return {
             id: curso.id ?? 'sin-curso',
             nombre: limpiarTexto(curso.nombre || 'Curso sin nombre'),
             color: colorValido(curso.color),
             icono: curso.icono || 'ph-book-open',
-            profesor: limpiarTexto(curso.profesor || 'Docente por asignar')
+            profesor: limpiarTexto(profeStr)
         };
     }
 

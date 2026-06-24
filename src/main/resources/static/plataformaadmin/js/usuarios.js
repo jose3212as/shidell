@@ -3,11 +3,12 @@
    CRUD completo: Docentes, Estudiantes, Padres
    ========================================================= */
 
-let allUsers = [];
-let allParents = [];
+let allUsers    = [];
+let allParents  = [];
+let allCourses  = [];   // para mapear cursos de docentes
 let currentFilter = 'TODOS';
-let editingId = null;
-let searchTerm = '';
+let editingId   = null;
+let searchTerm  = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
   initShared('Gestión de Usuarios', 'Admin / Usuarios');
@@ -18,7 +19,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadUsers() {
   setTableLoading(true);
   try {
-    allUsers  = await API.admin.usuarios();
+    const [users, courses] = await Promise.all([
+      API.admin.usuarios(),
+      API.admin.cursos().catch(() => [])
+    ]);
+    allUsers   = users;
+    allCourses = courses;
     allParents = allUsers.filter(u => u.rol === 'PADRE');
     if (typeof populateParentsSelect === 'function') populateParentsSelect();
     renderUsers();
@@ -28,6 +34,28 @@ async function loadUsers() {
   } finally {
     setTableLoading(false);
   }
+}
+
+// Construye los salones (grado+sección) asignados a un docente
+function buildCursosDocente(userId) {
+  const cursos = allCourses.filter(c => c.profesor && c.profesor.id === userId);
+  if (!cursos.length) return '<span class="text-muted text-xs">Sin cursos asignados</span>';
+
+  // Agrupar por nivel+grado+sección+turno (cada combinación = un aula)
+  const aulas = new Set();
+  for (const c of cursos) {
+    const label = `${c.nivel || ''} ${c.grado || ''}°${c.seccion || ''} ${c.turno || ''}`.trim();
+    aulas.add(label);
+  }
+
+  const entries = [...aulas];
+  const shown   = entries.slice(0, 4).map(k =>
+    `<span class="badge badge-gray badge-no-dot" style="font-size:11px;padding:2px 8px">${escapeHtml(k)}</span>`
+  ).join('');
+  const extra   = entries.length > 4
+    ? `<span class="text-xs text-muted"> +${entries.length - 4} más</span>`
+    : '';
+  return `<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${shown}${extra}</div>`;
 }
 
 function updateStats() {
@@ -65,9 +93,26 @@ function renderUsers() {
   }
   tbody.innerHTML = list.map(u => {
     const fullName = `${escapeHtml(u.nombres||'')} ${escapeHtml(u.apellidos||'')}`.trim();
-    const seccion = (u.nivel && u.grado && u.seccion) ? `${u.nivel} ${u.grado}°${u.seccion}` : '—';
-    const turno = u.turno || '—';
-    const padre = u.padre ? `${u.padre.nombres||''} ${u.padre.apellidos||''}`.trim() : null;
+
+    // Docentes: no tienen sección/turno fija — enseñan en múltiples salones
+    let seccionCell, turnoCell, infoCell;
+    if (u.rol === 'DOCENTE') {
+      seccionCell = '<span class="text-muted text-xs">Múltiple</span>';
+      turnoCell   = '<span class="text-muted text-xs">Múltiple</span>';
+      infoCell    = buildCursosDocente(u.id);
+    } else {
+      seccionCell = (u.nivel && u.grado && u.seccion)
+        ? `<span class="text-sm">${u.nivel} ${u.grado}°${u.seccion}</span>`
+        : '<span class="text-muted">—</span>';
+      turnoCell = u.turno
+        ? `<span class="text-sm">${u.turno}</span>`
+        : '<span class="text-muted">—</span>';
+      const padre = u.padre ? `${u.padre.nombres||''} ${u.padre.apellidos||''}`.trim() : null;
+      infoCell = padre
+        ? `<span class="text-sm text-secondary">${escapeHtml(padre)}</span>`
+        : '<span class="text-muted text-xs">—</span>';
+    }
+
     return `
     <tr class="stagger-item" style="opacity:0;animation:fadeInUp 0.3s ease forwards">
       <td>
@@ -80,9 +125,9 @@ function renderUsers() {
         </div>
       </td>
       <td>${rolBadge(u.rol)}</td>
-      <td><span class="text-sm">${seccion}</span></td>
-      <td><span class="text-sm">${turno}</span></td>
-      <td>${padre ? `<span class="text-sm text-secondary">${escapeHtml(padre)}</span>` : '<span class="text-muted text-xs">—</span>'}</td>
+      <td>${seccionCell}</td>
+      <td>${turnoCell}</td>
+      <td>${infoCell}</td>
       <td>
         <span class="badge ${u.ultimaConexion ? 'badge-green' : 'badge-gray'} badge-no-dot">
           ${u.ultimaConexion ? 'Activo' : 'Inactivo'}
@@ -93,9 +138,9 @@ function renderUsers() {
           <button class="btn btn-ghost btn-icon btn-sm" title="Editar" onclick="openEditModal(${u.id})">
             <i class="ph ph-pencil-simple"></i>
           </button>
-          <button class="btn btn-ghost btn-icon btn-sm" title="Eliminar" onclick="confirmDelete(${u.id},'${fullName}')">
+          ${u.rol === 'DOCENTE' ? '' : `<button class="btn btn-ghost btn-icon btn-sm" title="Eliminar" onclick="confirmDelete(${u.id},'${fullName}')">
             <i class="ph ph-trash" style="color:var(--red)"></i>
-          </button>
+          </button>`}
         </div>
       </td>
     </tr>`;
@@ -146,6 +191,8 @@ function openCreateModal() {
   editingId = null;
   resetForm();
   document.getElementById('modal-title').textContent = 'Nuevo Usuario';
+  document.getElementById('f-rol').disabled = false;
+  document.querySelector('#f-rol option[value="DOCENTE"]')?.setAttribute('disabled', 'disabled');
   document.getElementById('f-password-group').style.display = '';
   document.getElementById('modal-overlay').classList.remove('hidden');
 }
@@ -154,6 +201,7 @@ async function openEditModal(id) {
   editingId = id;
   resetForm();
   document.getElementById('modal-title').textContent = 'Editar Usuario';
+  document.querySelector('#f-rol option[value="DOCENTE"]')?.removeAttribute('disabled');
   document.getElementById('f-password-group').style.display = '';
   document.getElementById('modal-overlay').classList.remove('hidden');
 
@@ -163,6 +211,7 @@ async function openEditModal(id) {
     document.getElementById('f-apellidos').value = u.apellidos || '';
     document.getElementById('f-email').value     = u.email || '';
     document.getElementById('f-rol').value       = u.rol || '';
+    document.getElementById('f-rol').disabled    = u.rol === 'DOCENTE';
     document.getElementById('f-nivel').value     = u.nivel || '';
     document.getElementById('f-grado').value     = u.grado || '';
     document.getElementById('f-seccion').value   = u.seccion || '';
@@ -177,6 +226,8 @@ async function openEditModal(id) {
 
 function closeModal() {
   document.getElementById('modal-overlay')?.classList.add('hidden');
+  document.getElementById('f-rol').disabled = false;
+  document.querySelector('#f-rol option[value="DOCENTE"]')?.removeAttribute('disabled');
   editingId = null;
 }
 
@@ -234,6 +285,11 @@ async function handleSubmit(e) {
 
 /* ── Eliminar ───────────────────────────────────────────── */
 function confirmDelete(id, name) {
+  const user = allUsers.find(u => u.id === id);
+  if (user?.rol === 'DOCENTE') {
+    Toast.info('Plaza docente fija', 'Los docentes se editan para reemplazos, no se eliminan.');
+    return;
+  }
   showConfirm(
     '¿Eliminar usuario?',
     `Se eliminará permanentemente a "${name}". Esta acción no se puede deshacer.`,

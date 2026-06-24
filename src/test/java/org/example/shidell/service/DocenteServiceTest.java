@@ -76,6 +76,7 @@ class DocenteServiceTest {
         estudiante.setNivel("SECUNDARIA");
         estudiante.setGrado("3");
         estudiante.setSeccion("A");
+        estudiante.setTurno("MAÑANA");
 
         curso = new Curso();
         curso.setId(10L);
@@ -84,6 +85,7 @@ class DocenteServiceTest {
         curso.setNivel("SECUNDARIA");
         curso.setGrado("3");
         curso.setSeccion("A");
+        curso.setTurno("MAÑANA");
     }
 
     @Test
@@ -142,7 +144,7 @@ class DocenteServiceTest {
         otroDocente.setId(3L);
         otroDocente.setRol("DOCENTE");
         
-        when(userRepository.findByNivelAndGradoAndSeccion("SECUNDARIA", "3", "A"))
+        when(userRepository.findByGrupoAcademico("SECUNDARIA", "3", "A", "MAÑANA"))
                 .thenReturn(List.of(estudiante, otroDocente));
 
         List<UserEntity> resultado = docenteService.obtenerEstudiantesPorCurso(10L);

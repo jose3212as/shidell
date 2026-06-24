@@ -34,9 +34,11 @@ public class ProgresoController {
     @Autowired
     private TareaRepository tareaRepository;
     @Autowired
-    private EntregaRepository entregaRepository;
+    private org.example.shidell.service.AsistenciaService asistenciaService;
+    
     @Autowired
-    private AsistenciaRepository asistenciaRepository;
+    private EntregaRepository entregaRepository;
+
     @Autowired
     private EntityMapper mapper;
     @GetMapping("/estudiante/{id}")
@@ -45,7 +47,7 @@ public class ProgresoController {
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
         
         List<Calificacion> calificaciones = calificacionRepository.findByEstudianteId(id);
-        List<Asistencia> asistencias = asistenciaRepository.findByEstudiante(estudiante);
+        List<Asistencia> asistencias = asistenciaService.getAsistenciasCompletas(estudiante);
         List<Tarea> tareasSeccion = tareaRepository.findByGrupoAcademico(
             estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
         List<Entrega> entregas = entregaRepository.findByEstudiante(estudiante);
@@ -77,8 +79,13 @@ public class ProgresoController {
                 .count();
         res.put("horasEstudioSemana", redondear(entregasSemana * 1.5 + asistenciasSemana * 0.5));
         res.put("mejoradoPuntos", 0.0);
-        res.put("cursosTotales", cursosEstudiante.size());
-        res.put("cursosActivos", cursosEstudiante.size());
+        long cursosUnicosCount = cursosEstudiante.stream()
+                .map(c -> TextUtils.normalizar(c.getNombre()))
+                .distinct()
+                .count();
+
+        res.put("cursosTotales", (int) cursosUnicosCount);
+        res.put("cursosActivos", (int) cursosUnicosCount);
         res.put("logrosRecientes", construirLogros(completadas, totalTareasPorCurso(tareasSeccion), asistenciaPct, calificaciones));
         res.put("tendenciaProgreso", construirTendencia(calificaciones));
 
@@ -88,16 +95,22 @@ public class ProgresoController {
 
     private List<Map<String, Object>> construirProgresoCursos(List<Curso> cursos, List<Tarea> tareas, List<Entrega> entregas, List<Calificacion> califs) {
         List<Map<String, Object>> list = new ArrayList<>();
+        Set<String> procesados = new HashSet<>();
+        
         for (Curso c : cursos) {
+            String key = TextUtils.normalizar(c.getNombre());
+            if (procesados.contains(key)) continue;
+            procesados.add(key);
+            
             Map<String, Object> m = new HashMap<>();
             m.put("curso", mapper.toDTO(c));
             m.put("id", c.getId());
             m.put("nombre", TextUtils.limpiarTexto(c.getNombre()));
             m.put("icono", c.getIcono());
             m.put("color", c.getColor());
-            m.put("porcentaje", calcularPorcentaje(c, tareas, entregas));
+            m.put("porcentaje", calcularPorcentajeGrupo(key, cursos, tareas, entregas));
             m.put("promedio", redondear(califs.stream()
-                    .filter(calificacion -> calificacion.getCurso() != null && calificacion.getCurso().getId().equals(c.getId()))
+                    .filter(calif -> calif.getCurso() != null && TextUtils.normalizar(calif.getCurso().getNombre()).equals(key))
                     .map(Calificacion::getNota)
                     .filter(Objects::nonNull)
                     .mapToDouble(Double::doubleValue)
@@ -106,6 +119,18 @@ public class ProgresoController {
             list.add(m);
         }
         return list;
+    }
+
+    private int calcularPorcentajeGrupo(String key, List<Curso> cursos, List<Tarea> tareas, List<Entrega> entregas) {
+        List<Long> cursoIds = cursos.stream()
+                .filter(c -> TextUtils.normalizar(c.getNombre()).equals(key))
+                .map(Curso::getId)
+                .toList();
+                
+        long total = tareas.stream().filter(t -> t.getCurso() != null && cursoIds.contains(t.getCurso().getId())).count();
+        if (total == 0) return 0;
+        long done = entregas.stream().filter(e -> e.getTarea() != null && e.getTarea().getCurso() != null && cursoIds.contains(e.getTarea().getCurso().getId())).count();
+        return (int) Math.round((double) done / total * 100.0);
     }
 
     private int calcularPorcentaje(Curso c, List<Tarea> tareas, List<Entrega> entregas) {

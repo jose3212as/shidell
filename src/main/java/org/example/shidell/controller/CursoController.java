@@ -51,7 +51,9 @@ public class CursoController {
 
     @GetMapping
     public List<CursoDTO> getAllCursos() {
-        return cursoRepository.findAll().stream().map(mapper::toDTO).toList();
+        return cursoRepository.findAll().stream()
+                .filter(c -> !"ARCHIVADO".equalsIgnoreCase(c.getTurno()))
+                .map(mapper::toDTO).toList();
     }
 
     @GetMapping("/seccion")
@@ -74,7 +76,7 @@ public class CursoController {
         Map<String, Map<String, Object>> cursosUnicos = new LinkedHashMap<>();
 
         for (Curso curso : cursos) {
-            String key = TextUtils.claveCurso(curso.getNombre(), curso.getId());
+            String key = TextUtils.normalizar(curso.getNombre());
             Map<String, Object> detalle = construirDetalleCurso(curso);
 
             if (!cursosUnicos.containsKey(key)) {

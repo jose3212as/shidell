@@ -10,7 +10,8 @@ import java.util.Optional;
 @Repository
 public interface CursoRepository extends JpaRepository<Curso, Long> {
     List<Curso> findByProfesor(UserEntity profesor);
-    Optional<Curso> findByNombreAndNivelAndGradoAndSeccionAndTurno(String nombre, String nivel, String grado, String seccion, String turno);
+    Optional<Curso> findByNombreAndNivelAndGradoAndSeccionAndTurnoAndDiaSemanaAndHoraInicio(
+            String nombre, String nivel, String grado, String seccion, String turno, Integer diaSemana, String horaInicio);
     List<Curso> findByNivelAndGradoAndSeccion(String nivel, String grado, String seccion);
     List<Curso> findByNivelAndGradoAndSeccionAndTurno(String nivel, String grado, String seccion, String turno);
 

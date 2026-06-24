@@ -45,9 +45,7 @@ const API = (() => {
       desvincularPadre:(eId)  => request('DELETE', `/admin/usuarios/${eId}/asignar-padre`),
       hijosDePadre:  (pId)    => request('GET',    `/admin/padres/${pId}/hijos`),
       cursos:        ()       => request('GET',    '/admin/cursos'),
-      crearCurso:    (data)   => request('POST',   '/admin/cursos', data),
       editarCurso:   (id, d)  => request('PUT',    `/admin/cursos/${id}`, d),
-      eliminarCurso: (id)     => request('DELETE', `/admin/cursos/${id}`),
     },
 
     // ── Docente ──────────────────────────────────────────
@@ -78,7 +76,7 @@ const API = (() => {
     // ── Cursos (público) ─────────────────────────────────
     cursos: {
       todos:           ()          => request('GET', '/cursos'),
-      porSeccion:      (n,g,s)     => request('GET', `/cursos/seccion?nivel=${n}&grado=${g}&seccion=${s}`),
+      porSeccion:      (n,g,s,t)   => request('GET', `/cursos/seccion?nivel=${n}&grado=${g}&seccion=${s}${t ? `&turno=${t}` : ''}`),
       estudianteDetalle:(id)       => request('GET', `/cursos/estudiante/${id}/detalle`),
     },
 

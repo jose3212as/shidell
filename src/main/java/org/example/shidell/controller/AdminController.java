@@ -43,13 +43,42 @@ public class AdminController {
     @GetMapping("/stats")
     public Map<String, Object> getStats() {
         Map<String, Object> res = new HashMap<>();
-        res.put("totalUsuarios", userRepository.count());
-        res.put("totalEstudiantes", userRepository.findAll().stream().filter(u -> "ESTUDIANTE".equalsIgnoreCase(u.getRol())).count());
-        res.put("totalDocentes", userRepository.findAll().stream().filter(u -> "DOCENTE".equalsIgnoreCase(u.getRol())).count());
-        res.put("totalCursos", cursoRepository.count());
-        res.put("totalMensajes", mensajeRepository.count());
+
+        var allUsers = userRepository.findAll();
+
+        // Roles activos (excluir ARCHIVADO)
+        long estudiantes = allUsers.stream().filter(u -> "ESTUDIANTE".equalsIgnoreCase(u.getRol())).count();
+        long docentes    = allUsers.stream().filter(u -> "DOCENTE".equalsIgnoreCase(u.getRol())).count();
+        long padres      = allUsers.stream().filter(u -> "PADRE".equalsIgnoreCase(u.getRol())).count();
+        long admins      = allUsers.stream().filter(u -> "ADMINISTRADOR".equalsIgnoreCase(u.getRol())).count();
+
+        res.put("totalUsuarios",    estudiantes + docentes + padres + admins);
+        res.put("totalEstudiantes", estudiantes);
+        res.put("totalDocentes",    docentes);
+        res.put("totalPadres",      padres);
+
+        // Aulas únicas activas (nivel+grado+seccion+turno distintos)
+        var cursosActivos = cursoRepository.findAll().stream().filter(this::esCursoActivo).toList();
+        long aulasTotal = cursosActivos.stream()
+                .map(c -> c.getNivel() + "|" + c.getGrado() + "|" + c.getSeccion() + "|" + c.getTurno())
+                .distinct().count();
+        long aulasPrimaria   = cursosActivos.stream()
+                .filter(c -> "PRIMARIA".equalsIgnoreCase(c.getNivel()))
+                .map(c -> c.getGrado() + "|" + c.getSeccion())
+                .distinct().count();
+        long aulasSecundaria = cursosActivos.stream()
+                .filter(c -> "SECUNDARIA".equalsIgnoreCase(c.getNivel()))
+                .map(c -> c.getGrado() + "|" + c.getSeccion())
+                .distinct().count();
+
+        res.put("totalAulas",        aulasTotal);
+        res.put("aulasPrimaria",     aulasPrimaria);
+        res.put("aulasSecundaria",   aulasSecundaria);
+        res.put("totalCursos",       cursosActivos.size());  // sesiones de malla
+        res.put("totalMensajes",     mensajeRepository.count());
         return res;
     }
+
     @GetMapping("/usuarios")
     public List<UserDTO> getAllUsuarios(@RequestParam(required = false) String rol) {
         if (rol != null && !rol.isEmpty()) {
@@ -105,7 +134,7 @@ public class AdminController {
     }
     @GetMapping("/cursos")
     public List<CursoDTO> getAllCursos() {
-        return cursoRepository.findAll().stream().map(mapper::toDTO).toList();
+        return cursoRepository.findAll().stream().filter(this::esCursoActivo).map(mapper::toDTO).toList();
     }
     @PostMapping("/cursos")
     public CursoDTO createCurso(@RequestBody Curso curso) {
@@ -126,6 +155,8 @@ public class AdminController {
             if (datos.getHoraFin() != null) curso.setHoraFin(datos.getHoraFin());
             if (datos.getProfesor() != null && datos.getProfesor().getId() != null) {
                 userRepository.findById(datos.getProfesor().getId()).ifPresent(curso::setProfesor);
+            } else {
+                curso.setProfesor(null);
             }
             return mapper.toDTO(cursoRepository.save(curso));
         }).orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado"));
@@ -138,5 +169,9 @@ public class AdminController {
     @GetMapping("/padres/{id}/hijos")
     public List<UserDTO> getHijos(@PathVariable Long id) {
         return userRepository.findByPadreId(id).stream().map(mapper::toDTO).toList();
+    }
+
+    private boolean esCursoActivo(Curso curso) {
+        return curso != null && !"ARCHIVADO".equalsIgnoreCase(curso.getTurno());
     }
 }

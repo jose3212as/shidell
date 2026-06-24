@@ -85,6 +85,11 @@ public class DocenteController {
         return mapper.toDTO(docenteService.guardarCalificacion(cursoId, estudianteId, actividad, nota));
     }
 
+    @GetMapping("/curso/{cursoId}/calificaciones")
+    public List<CalificacionDTO> getCalificacionesPorCurso(@PathVariable Long cursoId) {
+        return docenteService.obtenerCalificacionesPorCurso(cursoId).stream().map(mapper::toDTO).toList();
+    }
+
     @PostMapping(value = "/tareas", consumes = "multipart/form-data")
     public TareaDTO crearTarea(
             @RequestParam String titulo,

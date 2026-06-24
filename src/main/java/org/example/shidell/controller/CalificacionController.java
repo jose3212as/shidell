@@ -87,33 +87,36 @@ public class CalificacionController {
     }
 
     private List<Map<String, Object>> construirCursosResumen(List<Curso> cursos, List<Calificacion> calificaciones) {
-        Map<Long, Map<String, Object>> map = new LinkedHashMap<>();
+        Map<String, Map<String, Object>> map = new LinkedHashMap<>();
 
         for (Curso curso : cursos) {
-            Map<String, Object> cMap = new HashMap<>();
-            cMap.put("id", curso.getId());
-            cMap.put("nombre", TextUtils.limpiarTexto(curso.getNombre()));
-            cMap.put("icono", curso.getIcono());
-            cMap.put("color", curso.getColor());
-            cMap.put("evaluaciones", 0);
-            cMap.put("promedio", 0.0);
-            cMap.put("estado", "Sin notas");
-            map.put(curso.getId(), cMap);
+            String key = TextUtils.normalizar(curso.getNombre());
+            if (!map.containsKey(key)) {
+                Map<String, Object> cMap = new HashMap<>();
+                cMap.put("id", curso.getId());
+                cMap.put("nombre", TextUtils.limpiarTexto(curso.getNombre()));
+                cMap.put("icono", curso.getIcono());
+                cMap.put("color", curso.getColor());
+                String profesorStr = "Docente por asignar";
+                if (curso.getProfesor() != null) {
+                    profesorStr = TextUtils.limpiarTexto(curso.getProfesor().getNombres() + " " + (curso.getProfesor().getApellidos() != null ? curso.getProfesor().getApellidos() : ""));
+                }
+                cMap.put("profesor", profesorStr);
+                map.put(key, cMap);
+            }
         }
 
         for (Calificacion cal : calificaciones) {
             if (cal.getCurso() == null) continue;
-            Map<String, Object> cMap = map.computeIfAbsent(cal.getCurso().getId(), id -> {
-                Map<String, Object> m = new HashMap<>();
-                m.put("id", cal.getCurso().getId());
-                m.put("nombre", TextUtils.limpiarTexto(cal.getCurso().getNombre()));
-                m.put("evaluaciones", 0);
-                m.put("promedio", 0.0);
-                return m;
-            });
-            
+            String key = TextUtils.normalizar(cal.getCurso().getNombre());
+            // No agregamos cursos archivados o antiguos a la lista;
+            // solo procesamos calificaciones de los cursos activos.
+        }
+
+        for (Map<String, Object> cMap : map.values()) {
+            String key = TextUtils.normalizar((String) cMap.get("nombre"));
             List<Calificacion> notasCurso = calificaciones.stream()
-                    .filter(c -> c.getCurso() != null && c.getCurso().getId().equals(cal.getCurso().getId()))
+                    .filter(c -> c.getCurso() != null && TextUtils.normalizar(c.getCurso().getNombre()).equals(key))
                     .toList();
             
             double promedio = promedioNota20(notasCurso);

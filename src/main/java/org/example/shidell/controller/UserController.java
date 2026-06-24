@@ -61,10 +61,15 @@ public class UserController {
         return mapper.toDTO(userRepository.save(user));
     }
 
-    @PutMapping("/{id}/foto-perfil")
-    public UserDTO updateFotoPerfil(@PathVariable Long id, @RequestBody Map<String, String> datos) {
+    @PutMapping(value = "/{id}/foto-perfil", consumes = org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE)
+    public UserDTO updateFotoPerfil(@PathVariable Long id, @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
         UserEntity user = userRepository.findById(id).orElseThrow();
-        user.setFotoPerfil(datos.getOrDefault("fotoPerfil", ""));
+        String fotoUrl = org.example.shidell.util.FileUploadUtil.saveFile("perfiles", file);
+        if (fotoUrl != null) {
+            user.setFotoPerfil(fotoUrl);
+        } else {
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo guardar la imagen en el servidor.");
+        }
         return mapper.toDTO(userRepository.save(user));
     }
 

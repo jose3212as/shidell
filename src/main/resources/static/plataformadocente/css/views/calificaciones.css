@@ -1,0 +1,130 @@
+/* calificaciones.css - Estilos para el módulo de Registro de Calificaciones */
+
+.grades-header {
+    margin-bottom: 25px;
+}
+
+.grades-main-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    border: 1px solid var(--border-color-light);
+}
+
+.grades-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.grades-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.grades-table th {
+    background: var(--background-color);
+    padding: 15px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-color);
+    white-space: nowrap;
+}
+
+.grades-table th.col-student {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background: var(--background-color);
+    z-index: 10;
+}
+
+.grades-table td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color-light);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.grades-table td.col-student {
+    text-align: left;
+    position: sticky;
+    left: 0;
+    background: #fff;
+    z-index: 10;
+    border-right: 1px solid var(--border-color-light);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.grades-table tr:last-child td {
+    border-bottom: none;
+}
+
+.grades-table tr:hover td {
+    background: var(--primary-light);
+}
+.grades-table tr:hover td.col-student {
+    background: var(--primary-light);
+}
+
+/* Indicadores visuales de notas */
+.grade-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.grade-badge.aprobado {
+    background: var(--green-light);
+    color: var(--green-dark);
+}
+
+.grade-badge.desaprobado {
+    background: var(--red-light);
+    color: var(--red-dark);
+}
+
+.grade-badge.empty {
+    background: var(--border-color);
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+
+.student-mini-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--primary-light), var(--blue-light));
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.student-name-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.student-name-block strong {
+    font-size: 14px;
+}
+.student-name-block span {
+    font-size: 12px;
+    color: var(--text-secondary);
+}

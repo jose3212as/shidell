@@ -4,55 +4,55 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
   initShared('Dashboard', 'Inicio / Resumen general');
-
-  await Promise.all([
-    loadStats(),
-    loadRecentUsers(),
-    loadRecentCourses(),
-  ]);
+  await Promise.all([loadStats(), loadRecentUsers(), loadRecentCourses()]);
 });
 
+/* ── Stats desde el backend ───────────────────────────────── */
 async function loadStats() {
   try {
     const s = await API.admin.stats();
-    animateCount('kpi-usuarios',    s.totalUsuarios    || 0);
+
+    // KPI cards
     animateCount('kpi-estudiantes', s.totalEstudiantes || 0);
     animateCount('kpi-docentes',    s.totalDocentes    || 0);
-    animateCount('kpi-cursos',      s.totalCursos      || 0);
+    animateCount('kpi-padres',      s.totalPadres      || 0);
+    animateCount('kpi-primaria',    s.aulasPrimaria    || 0);
+    animateCount('kpi-secundaria',  s.aulasSecundaria  || 0);
     animateCount('kpi-mensajes',    s.totalMensajes    || 0);
 
-    // Padres = total - estudiantes - docentes - admins
-    // Pero el servidor ya da las cifras principales, mejor calcularlo sumando si no se tiene directo
-    // o simplemente mostrar lo que venga del servidor si lo añadimos luego.
-    // Por ahora, usamos el cálculo actual aproximado.
-    const padres = (s.totalUsuarios - s.totalEstudiantes - s.totalDocentes) || 0;
-    animateCount('kpi-padres', Math.max(0, padres));
+    // Welcome banner mini-stats
+    animateCount('ws-estudiantes', s.totalEstudiantes || 0);
+    animateCount('ws-docentes',    s.totalDocentes    || 0);
+    animateCount('ws-aulas',       s.totalAulas       || 0);
   } catch (e) {
-    console.error(e);
+    console.error('Error cargando stats:', e);
   }
 }
 
+/* ── Animación de contador ───────────────────────────────── */
 function animateCount(id, target) {
   const el = document.getElementById(id);
   if (!el) return;
-  const dur = 800, fps = 60;
+  const dur = 900, fps = 60;
   const frames = Math.floor(dur / (1000 / fps));
   let frame = 0;
   const timer = setInterval(() => {
     frame++;
-    const progress = frame / frames;
-    const ease = 1 - Math.pow(1 - progress, 3);
+    const ease = 1 - Math.pow(1 - frame / frames, 3);
     el.textContent = Math.round(target * ease);
     if (frame >= frames) { el.textContent = target; clearInterval(timer); }
   }, 1000 / fps);
 }
 
+/* ── Usuarios recientes ─────────────────────────────────── */
 async function loadRecentUsers() {
   const tbody = document.getElementById('recent-users-body');
   if (!tbody) return;
   try {
     const users = await API.admin.usuarios();
-    const recent = users.sort((a, b) => b.id - a.id).slice(0, 8);
+    // Solo roles reales (excluir ARCHIVADO)
+    const active = users.filter(u => u.rol !== 'ARCHIVADO');
+    const recent = active.sort((a, b) => b.id - a.id).slice(0, 8);
     tbody.innerHTML = recent.map(u => `
       <tr class="stagger-item" style="animation:fadeInUp 0.4s ease forwards;opacity:0">
         <td>
@@ -66,7 +66,9 @@ async function loadRecentUsers() {
         </td>
         <td>${rolBadge(u.rol)}</td>
         <td>
-          ${u.nivel ? `<span class="text-sm">${u.nivel} ${u.grado}° ${u.seccion}</span>` : '<span class="text-muted text-xs">—</span>'}
+          ${u.nivel
+            ? `<span class="text-sm">${u.nivel} ${u.grado}° ${u.seccion} ${u.turno || ''}</span>`
+            : '<span class="text-muted text-xs">—</span>'}
         </td>
         <td>
           <a href="usuarios.html" class="btn btn-ghost btn-sm btn-icon">
@@ -79,6 +81,7 @@ async function loadRecentUsers() {
   }
 }
 
+/* ── Cursos / malla ──────────────────────────────────────── */
 async function loadRecentCourses() {
   const grid = document.getElementById('courses-grid');
   if (!grid) return;
@@ -88,7 +91,13 @@ async function loadRecentCourses() {
       grid.innerHTML = `<div class="empty-state"><i class="ph ph-book"></i><h3>Sin cursos registrados</h3></div>`;
       return;
     }
-    grid.innerHTML = cursos.slice(0, 6).map((c, i) => {
+    const ordenados = [...cursos].sort((a, b) =>
+      String(a.nivel || '').localeCompare(String(b.nivel || '')) ||
+      Number(a.grado || 0) - Number(b.grado || 0) ||
+      String(a.seccion || '').localeCompare(String(b.seccion || '')) ||
+      Number(a.diaSemana || 0) - Number(b.diaSemana || 0)
+    );
+    grid.innerHTML = ordenados.slice(0, 6).map((c, i) => {
       const color = CONFIG.COLOR_MAP[c.color] || '#6366f1';
       const prof = c.profesor ? `${c.profesor.nombres||''} ${c.profesor.apellidos||''}`.trim() : 'Sin docente';
       return `
@@ -106,6 +115,6 @@ async function loadRecentCourses() {
       </div>`;
     }).join('');
   } catch (e) {
-    grid.innerHTML = `<div class="empty-state"><i class="ph ph-warning"></i><h3>Error al cargar cursos</h3></div>`;
+    grid.innerHTML = `<div class="empty-state"><i class="ph ph-warning"></i><h3>Error al cargar</h3></div>`;
   }
 }

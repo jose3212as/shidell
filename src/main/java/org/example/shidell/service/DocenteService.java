@@ -37,7 +37,9 @@ public class DocenteService {
     public List<CursoDTO> obtenerCursosPorDocente(Long docenteId) {
         UserEntity docente = userRepository.findById(docenteId).orElse(null);
         if (docente == null) return List.of();
-        return cursoRepository.findByProfesor(docente).stream().map(mapper::toDTO).toList();
+        
+        List<Curso> cursosUnicos = deduplicarCursos(cursoRepository.findByProfesor(docente));
+        return cursosUnicos.stream().map(mapper::toDTO).toList();
     }
     public Map<String, Object> obtenerDashboardDocente(Long docenteId) {
         UserEntity docente = userRepository.findById(docenteId).orElseThrow();
@@ -90,9 +92,10 @@ public class DocenteService {
 
     public void registrarAsistencia(Long cursoId, Long estudianteId, String estado) {
         Curso curso = cursoRepository.findById(cursoId).orElseThrow();
-        UserEntity estudiante = userRepository.findById(estudianteId).orElseThrow();
         LocalDate fecha = LocalDate.now();
+        validarVentanaAsistencia(curso, fecha);
 
+        UserEntity estudiante = userRepository.findById(estudianteId).orElseThrow();
         Asistencia asistencia = asistenciaRepository.findByCursoAndEstudianteAndFecha(curso, estudiante, fecha).orElseGet(Asistencia::new);
         asistencia.setCurso(curso);
         asistencia.setEstudiante(estudiante);
@@ -142,6 +145,10 @@ public class DocenteService {
         return guardada;
     }
 
+    public List<Calificacion> obtenerCalificacionesPorCurso(Long cursoId) {
+        return calificacionRepository.findByCursoId(cursoId);
+    }
+
     public Tarea crearTarea(Tarea tarea, MultipartFile archivo) {
         if (tarea.getEstado() == null) tarea.setEstado("Pendiente");
         String pdfUrl = FileUploadUtil.saveFile("tareas", archivo);
@@ -151,6 +158,8 @@ public class DocenteService {
 
     public List<Asistencia> guardarAsistencias(Long cursoId, LocalDate fecha, List<RegistroAsistencia> registros) {
         Curso curso = cursoRepository.findById(cursoId).orElseThrow();
+        validarVentanaAsistencia(curso, fecha);
+
         List<Asistencia> guardadas = new ArrayList<>();
         for (RegistroAsistencia r : registros) {
             if (r.estudianteId() == null) continue;
@@ -165,6 +174,27 @@ public class DocenteService {
             notificacionService.alertarPadrePorFalta(guardada);
         }
         return guardadas;
+    }
+
+    private void validarVentanaAsistencia(Curso curso, LocalDate fechaClase) {
+        LocalDate hoy = LocalDate.now();
+        if (fechaClase.isAfter(hoy)) {
+            throw new RuntimeException("No puede tomar asistencia para fechas futuras.");
+        }
+        if (fechaClase.isBefore(hoy)) {
+            throw new RuntimeException("El tiempo para registrar faltas expiró. Todos los alumnos quedaron presentes por defecto.");
+        }
+        
+        java.time.LocalTime horaInicio = curso.getHoraInicioLocalTime();
+        java.time.LocalTime horaFin = curso.getHoraFinLocalTime();
+        java.time.LocalTime ahora = java.time.LocalTime.now();
+        
+        if (horaInicio != null && horaFin != null) {
+            java.time.LocalTime inicioPermitido = horaInicio.minusMinutes(15);
+            if (ahora.isBefore(inicioPermitido) || ahora.isAfter(horaFin)) {
+                throw new RuntimeException("Fuera de horario. Puede tomar asistencia desde 15 min antes de iniciar hasta el fin de la clase.");
+            }
+        }
     }
 
     public List<Map<String, Object>> obtenerDiasClaseAsistencia(Long cursoId) {
@@ -214,7 +244,12 @@ public class DocenteService {
 
     private List<Curso> deduplicarCursos(List<Curso> cursos) {
         LinkedHashMap<String, Curso> unicos = new LinkedHashMap<>();
-        cursos.forEach(c -> unicos.putIfAbsent(TextUtils.claveCurso(c.getNombre(), c.getId()), c));
+        for (Curso c : cursos) {
+            String key = String.format("%s-%s-%s-%s-%s", 
+                c.getNombre(), c.getNivel(), c.getGrado(), c.getSeccion(), c.getTurno()
+            ).toLowerCase();
+            unicos.putIfAbsent(key, c);
+        }
         return new ArrayList<>(unicos.values());
     }
 

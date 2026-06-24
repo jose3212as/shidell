@@ -9,6 +9,8 @@ public class EntregaDTO {
     private LocalDateTime fechaEntrega;
     private String comentarioProfesor;
     private Double nota;
+    private TareaDTO tarea;
+    private UserDTO estudiante;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -23,4 +25,8 @@ public class EntregaDTO {
     public void setComentarioProfesor(String comentarioProfesor) { this.comentarioProfesor = comentarioProfesor; }
     public Double getNota() { return nota; }
     public void setNota(Double nota) { this.nota = nota; }
+    public TareaDTO getTarea() { return tarea; }
+    public void setTarea(TareaDTO tarea) { this.tarea = tarea; }
+    public UserDTO getEstudiante() { return estudiante; }
+    public void setEstudiante(UserDTO estudiante) { this.estudiante = estudiante; }
 }

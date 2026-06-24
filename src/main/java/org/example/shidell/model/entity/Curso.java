@@ -66,4 +66,24 @@ public class Curso {
 
     public Integer getDiaSemana() { return diaSemana; }
     public void setDiaSemana(Integer diaSemana) { this.diaSemana = diaSemana; }
+
+    @Transient
+    public java.time.LocalTime getHoraInicioLocalTime() {
+        if (horaInicio == null || horaInicio.isBlank()) return null;
+        try {
+            return java.time.LocalTime.parse(horaInicio);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Transient
+    public java.time.LocalTime getHoraFinLocalTime() {
+        if (horaFin == null || horaFin.isBlank()) return null;
+        try {
+            return java.time.LocalTime.parse(horaFin);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

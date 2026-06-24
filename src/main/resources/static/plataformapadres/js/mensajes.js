@@ -142,7 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 let fileHtml = '';
                 if (m.archivoUrl) {
                     const fn = decodeURIComponent(m.archivoUrl.split('_').pop());
-                    fileHtml = `<a href="${m.archivoUrl}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,0,0,0.08);border-radius:8px;margin-bottom:8px;color:inherit;text-decoration:none;"><i class="ph ph-file" style="font-size:20px;"></i><span style="font-size:12px;font-weight:600;">${fn}</span></a>`;
+                    const ext = fn.split('.').pop().toLowerCase();
+                    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+                        fileHtml = `<a href="${m.archivoUrl}" target="_blank"><img src="${m.archivoUrl}" class="file-image-preview" alt="Imagen adjunta"></a>`;
+                    } else {
+                        fileHtml = `<a href="${m.archivoUrl}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,0,0,0.08);border-radius:8px;margin-bottom:8px;color:inherit;text-decoration:none;"><i class="ph ph-file" style="font-size:20px;"></i><span style="font-size:12px;font-weight:600;">${fn}</span></a>`;
+                    }
                 }
                 const time = new Date(m.fechaEnvio).toLocaleTimeString('es-PE', {hour:'2-digit',minute:'2-digit'});
                 bubble.innerHTML = `${fileHtml}<div>${m.contenido||''}</div><span class="msg-time">${time}</span>`;
@@ -242,7 +247,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         div.innerHTML = `<div class="convo-avatar" style="${estiloAvatar(c)}">${avatarPersona(c)}</div><div class="convo-info"><span class="convo-name">${nombreContacto(c)}</span><span class="convo-preview">${etiquetaContacto(c)}</span></div>`;
                         div.onclick = () => {
                             modal.classList.remove('show');
-                            const ex = convoList.querySelector(`[data-id="${c.id}"]`);
+                            let ex = convoList.querySelector(`[data-id="${c.id}"]`);
+                            if (!ex) {
+                                const initials = ((c.nombres||'?')[0] + (c.apellidos||'?')[0]).toUpperCase();
+                                const nombre   = nombreContacto(c);
+                                ex = document.createElement('div');
+                                ex.className = 'convo-item';
+                                ex.dataset.id   = c.id;
+                                ex.dataset.name = nombre.toLowerCase();
+                                ex.innerHTML = `<div class="convo-avatar" style="${estiloAvatar(c)}">${avatarPersona(c, initials)}</div>
+                                                <div class="convo-info">
+                                                    <span class="convo-name">${nombre}</span>
+                                                    <span class="convo-preview">${etiquetaContacto(c)}</span>
+                                                </div>`;
+                                ex.onclick = () => seleccionarChat(c, ex);
+                                convoList.prepend(ex);
+                            }
                             seleccionarChat(c, ex);
                         };
                         contactsMod.appendChild(div);

@@ -46,6 +46,7 @@ class UserRepositoryTest {
         estudiante.setNivel("SECUNDARIA");
         estudiante.setGrado("3");
         estudiante.setSeccion("A");
+        estudiante.setTurno("MAÑANA");
         estudiante.setPadre(padre);
         estudiante = userRepository.save(estudiante);
 
@@ -114,6 +115,7 @@ class UserRepositoryTest {
         estudiante2.setNivel("SECUNDARIA");
         estudiante2.setGrado("3");
         estudiante2.setSeccion("A");
+        estudiante2.setTurno("MAÑANA");
         userRepository.save(estudiante2);
 
         List<UserEntity> grupo = userRepository.findByNivelAndGradoAndSeccion("SECUNDARIA", "3", "A");
@@ -121,6 +123,26 @@ class UserRepositoryTest {
         assertThat(grupo).hasSize(2);
         assertThat(grupo).extracting(UserEntity::getEmail)
                 .containsExactlyInAnyOrder("ana@shidell.com", "luis@shidell.com");
+    }
+
+    @Test
+    @DisplayName("findByGrupoAcademico separa estudiantes por turno")
+    void findByGrupoAcademico_filtraPorTurno() {
+        UserEntity estudianteTarde = new UserEntity();
+        estudianteTarde.setNombres("Lucia");
+        estudianteTarde.setEmail("lucia@shidell.com");
+        estudianteTarde.setPassword("{SHA256}hash");
+        estudianteTarde.setRol("ESTUDIANTE");
+        estudianteTarde.setNivel("SECUNDARIA");
+        estudianteTarde.setGrado("3");
+        estudianteTarde.setSeccion("A");
+        estudianteTarde.setTurno("TARDE");
+        userRepository.save(estudianteTarde);
+
+        List<UserEntity> manana = userRepository.findByGrupoAcademico("SECUNDARIA", "3", "A", "MAÑANA");
+
+        assertThat(manana).hasSize(1);
+        assertThat(manana.get(0).getEmail()).isEqualTo("ana@shidell.com");
     }
 
     @Test

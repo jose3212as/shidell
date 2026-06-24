@@ -1,0 +1,168 @@
+/* calendario.css - Diseño Premium Mensual Interactivo */
+
+.calendar-main-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+    border: 1px solid var(--border-color-light);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Header del calendario */
+.calendar-top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 20px;
+}
+
+.calendar-month-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-primary);
+    text-transform: capitalize;
+}
+
+.calendar-nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.calendar-nav-btn {
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: var(--text-secondary);
+}
+
+.calendar-nav-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Grilla del calendario */
+.calendar-month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--border-color-light); /* Borde interno fino */
+    border: 1px solid var(--border-color-light);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.calendar-day-header {
+    background: var(--bg-main);
+    padding: 15px 10px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.calendar-day-cell {
+    background: #fff;
+    min-height: 120px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: background 0.2s;
+}
+
+.calendar-day-cell:hover {
+    background: var(--bg-main);
+}
+
+.calendar-day-cell.inactive-month {
+    background: var(--bg-main);
+}
+
+.calendar-day-cell.inactive-month .calendar-day-number {
+    color: var(--text-tertiary);
+    opacity: 0.5;
+}
+
+.calendar-day-cell.today {
+    background: var(--primary-light);
+}
+
+.calendar-day-number {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text-primary);
+    margin-bottom: 5px;
+    align-self: flex-end;
+}
+
+.calendar-day-cell.today .calendar-day-number {
+    background: var(--primary);
+    color: #fff;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+/* Tarjetas de eventos / tareas */
+.calendar-item {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.calendar-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.calendar-item.tarea {
+    background: var(--orange-light);
+    color: var(--orange);
+    border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.calendar-item.evento {
+    background: var(--purple-light);
+    color: var(--purple);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.calendar-item.clase {
+    background: var(--blue-light);
+    color: var(--blue);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Indicadores de carga */
+.calendar-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    color: var(--text-secondary);
+    gap: 15px;
+}

@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface CalificacionRepository extends JpaRepository<Calificacion, Long> {
     List<Calificacion> findByEstudianteId(Long estudianteId);
+    List<Calificacion> findByCursoId(Long cursoId);
 }

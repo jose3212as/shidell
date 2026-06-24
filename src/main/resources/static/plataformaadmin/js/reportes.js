@@ -36,31 +36,37 @@ async function loadReporteGeneral() {
   }
 }
 
+let chartRolesInstance = null;
+let chartGradosInstance = null;
+
 function renderDistribucionRol(usuarios) {
   const roles = { ADMINISTRADOR:0, DOCENTE:0, ESTUDIANTE:0, PADRE:0 };
   usuarios.forEach(u => { if (roles[u.rol] !== undefined) roles[u.rol]++; });
-  const total = usuarios.length || 1;
-  const colors = { ADMINISTRADOR:'var(--primary)', DOCENTE:'var(--purple)', ESTUDIANTE:'var(--cyan)', PADRE:'var(--green)' };
+  
+  const ctx = document.getElementById('chartRoles');
+  if (!ctx) return;
+  if (chartRolesInstance) chartRolesInstance.destroy();
 
-  const el = document.getElementById('dist-rol');
-  if (!el) return;
-  el.innerHTML = Object.entries(roles).map(([rol, count]) => {
-    const pct = Math.round(count / total * 100);
-    return `
-    <div class="stat-row">
-      <div class="d-flex items-center gap-10">
-        <div style="width:10px;height:10px;border-radius:50%;background:${colors[rol]};flex-shrink:0"></div>
-        <span class="text-sm">${CONFIG.ROLE_LABELS[rol]||rol}</span>
-      </div>
-      <div class="d-flex items-center gap-12">
-        <div class="progress-bar" style="width:100px">
-          <div class="progress-fill" style="width:${pct}%;background:${colors[rol]}"></div>
-        </div>
-        <strong style="min-width:28px;text-align:right">${count}</strong>
-        <span class="text-xs text-muted">(${pct}%)</span>
-      </div>
-    </div>`;
-  }).join('');
+  chartRolesInstance = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Admin', 'Docente', 'Estudiante', 'Padre'],
+      datasets: [{
+        data: [roles.ADMINISTRADOR, roles.DOCENTE, roles.ESTUDIANTE, roles.PADRE],
+        backgroundColor: ['#6366f1', '#a855f7', '#06b6d4', '#10b981'],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '70%',
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } } }
+      }
+    }
+  });
 }
 
 function renderDistribucionGrado(estudiantes) {
@@ -70,27 +76,38 @@ function renderDistribucionGrado(estudiantes) {
     grupos[key] = (grupos[key] || 0) + 1;
   });
 
-  const el = document.getElementById('dist-grado');
-  if (!el) return;
   const entries = Object.entries(grupos).sort((a,b) => b[1]-a[1]);
-  if (!entries.length) {
-    el.innerHTML = '<div class="empty-state" style="padding:20px"><p>Sin estudiantes con sección asignada</p></div>';
-    return;
-  }
-  const max = Math.max(...entries.map(e=>e[1]));
-  el.innerHTML = entries.map(([key, count]) => {
-    const pct = Math.round(count / max * 100);
-    return `
-    <div class="stat-row">
-      <span class="text-sm" style="min-width:160px">${key}</span>
-      <div class="d-flex items-center gap-12" style="flex:1">
-        <div class="progress-bar" style="flex:1">
-          <div class="progress-fill" style="width:${pct}%;background:var(--cyan)"></div>
-        </div>
-        <strong>${count}</strong>
-      </div>
-    </div>`;
-  }).join('');
+  const labels = entries.map(e => e[0]);
+  const data = entries.map(e => e[1]);
+
+  const ctx = document.getElementById('chartGrados');
+  if (!ctx) return;
+  if (chartGradosInstance) chartGradosInstance.destroy();
+
+  chartGradosInstance = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Estudiantes',
+        data: data,
+        backgroundColor: '#0ea5e9',
+        borderRadius: 6,
+        barPercentage: 0.6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: { beginAtZero: true, grid: { color: '#334155', drawBorder: false }, ticks: { stepSize: 1, color: '#94a3b8' } },
+        x: { grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45, minRotation: 45 } }
+      }
+    }
+  });
 }
 
 function renderDocentesCursos(docentes, cursos) {

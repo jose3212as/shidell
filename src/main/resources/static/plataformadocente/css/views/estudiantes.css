@@ -1,0 +1,61 @@
+/* estudiantes.css - Estilos específicos para la vista de Estudiantes */
+
+.student-card-header {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.student-card-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.student-card-title {
+    margin: 0;
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.student-card-subtitle {
+    margin: 2px 0 0 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.student-card-courses {
+    border-top: 1px solid var(--border-color-light);
+    padding-top: 15px;
+    flex: 1;
+}
+
+.student-card-courses-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 10px 0;
+}
+
+.student-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.student-card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+

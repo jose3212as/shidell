@@ -278,89 +278,123 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── 9. Notificaciones ──────────────────────────────────
+    let notificationPanel = null;
+
     async function cargarNotificaciones() {
         try {
             const res = await fetch(`/api/notificaciones/usuario/${padre.id}`);
             if (!res.ok) return;
-            const nots     = await res.json();
+            const nots = await res.json();
             const noLeidas = nots.filter(n => !n.leida).length;
-            const badge    = document.querySelector('.notification-btn .badge');
+            const badge = document.querySelector('.notification-btn .badge');
             if (badge) {
-                badge.textContent   = noLeidas > 9 ? '9+' : noLeidas;
-                badge.style.display = noLeidas > 0 ? 'block' : 'none';
+                badge.textContent = noLeidas > 9 ? '9+' : noLeidas;
+                badge.style.display = noLeidas > 0 ? 'flex' : 'none';
             }
-
-            // Render list
-            const notifList = document.getElementById('notif-list');
-            if (notifList) {
-                notifList.innerHTML = '';
-                if (nots.length === 0) {
-                    notifList.innerHTML = `
-                        <div class="empty-state" style="padding:30px">
-                            <i class="ph ph-bell-slash"></i>
-                            <h3>Sin notificaciones</h3>
-                        </div>`;
-                } else {
-                    nots.slice(0, 15).forEach(n => {
-                        let icon = 'ph-bell';
-                        let colorClass = 'bg-blue-light text-blue';
-                        
-                        // Sistema Experto: Parsed from title
-                        let titulo = n.titulo;
-                        if (titulo.includes('[CRITICO]')) {
-                            icon = 'ph-warning-circle';
-                            colorClass = 'bg-red-light text-red';
-                            titulo = titulo.replace('[CRITICO]', '').trim();
-                        } else if (titulo.includes('[ALERTA]')) {
-                            icon = 'ph-info';
-                            colorClass = 'bg-yellow-light text-yellow';
-                            titulo = titulo.replace('[ALERTA]', '').trim();
-                        }
-
-                        const opacity = n.leida ? '0.6' : '1';
-                        const dot = n.leida ? '' : '<div style="width:8px; height:8px; background:var(--primary); border-radius:50%;"></div>';
-
-                        const div = document.createElement('div');
-                        div.className = 'notif-item';
-                        div.style.opacity = opacity;
-                        div.innerHTML = `
-                            <div style="width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0;" class="${colorClass}">
-                                <i class="ph-fill ${icon}" style="font-size:20px;"></i>
-                            </div>
-                            <div style="flex:1;">
-                                <h4 style="font-size:13px; margin:0 0 4px; color:var(--text-primary); display:flex; justify-content:space-between; align-items:center;">
-                                    ${titulo}
-                                    ${dot}
-                                </h4>
-                                <p style="font-size:12px; margin:0; color:var(--text-secondary); line-height:1.4;">${n.mensaje}</p>
-                                <small style="font-size:10px; color:var(--text-tertiary); margin-top:4px; display:block;">
-                                    ${new Date(n.fecha).toLocaleString('es-PE')}
-                                </small>
-                            </div>
-                        `;
-                        div.onclick = async () => {
-                            if (!n.leida) {
-                                await fetch(`/api/notificaciones/${n.id}/leer`, { method: 'PUT' });
-                                cargarNotificaciones();
-                            }
-                        };
-                        notifList.appendChild(div);
-                    });
-                }
-            }
+            renderNotificationPanel(nots);
         } catch (e) { console.error('Error notificaciones:', e); }
     }
 
-    // ── 10. Logout ─────────────────────────────────────────
-    // FIXED: eliminar la clave correcta 'shidell_user'
-    const btnLogout = document.getElementById('btn-logout');
-    if (btnLogout) {
-        btnLogout.onclick = () => {
-            localStorage.removeItem('shidell_user');
-            localStorage.removeItem('shidell_admin');
-            window.location.href = '/login.html';
-        };
+    function toggleNotificationPanel(btn) {
+        if (!notificationPanel) return;
+        const isVisible = notificationPanel.classList.contains('visible');
+        notificationPanel.classList.toggle('visible', !isVisible);
+        notificationPanel.style.top = `${btn.offsetTop + btn.offsetHeight + 10}px`;
+        notificationPanel.style.right = '20px';
     }
+
+    function renderNotificationPanel(notificaciones) {
+        if (!notificationPanel) {
+            notificationPanel = document.createElement('div');
+            notificationPanel.id = 'notificationPanel';
+            notificationPanel.className = 'notification-panel';
+            document.body.appendChild(notificationPanel);
+            notificationPanel.addEventListener('click', e => e.stopPropagation());
+            
+            document.addEventListener('click', () => {
+                if (notificationPanel) notificationPanel.classList.remove('visible');
+            });
+        }
+
+        const items = [];
+        notificaciones.slice(0, 10).forEach(n => {
+            let icon = 'ph-bell';
+            let titulo = n.titulo;
+            if (titulo.includes('[CRITICO]')) {
+                icon = 'ph-warning-circle';
+                titulo = titulo.replace('[CRITICO]', '').trim();
+            } else if (titulo.includes('[ALERTA]')) {
+                icon = 'ph-info';
+                titulo = titulo.replace('[ALERTA]', '').trim();
+            }
+
+            items.push(`
+                <button class="notif-row ${n.leida ? '' : 'unread'}" data-id="${n.id}">
+                    <span class="notif-icon"><i class="ph ${icon}"></i></span>
+                    <span class="notif-content">
+                        <strong>${titulo}</strong>
+                        <small>${n.mensaje}</small>
+                        <span class="time">${new Date(n.fecha).toLocaleString()}</span>
+                    </span>
+                </button>
+            `);
+        });
+
+        notificationPanel.innerHTML = `
+            <div class="notification-panel-header">
+                <h3>Notificaciones</h3>
+                <button id="btn-marcar-todas" title="Marcar como leídas"><i class="ph ph-checks"></i></button>
+            </div>
+            <div class="notification-panel-list">
+                ${items.length ? items.join('') : '<div class="notif-empty"><i class="ph ph-bell-slash"></i><p>No tienes notificaciones pendientes.</p></div>'}
+            </div>
+        `;
+
+        notificationPanel.querySelectorAll('.notif-row').forEach(row => {
+            row.addEventListener('click', async (e) => {
+                const id = e.currentTarget.getAttribute('data-id');
+                try {
+                    await fetch(`/api/notificaciones/${id}/leer`, { method: 'PUT' });
+                    cargarNotificaciones();
+                } catch (err) {
+                    console.error(err);
+                }
+            });
+        });
+
+        const btnMarcarTodas = notificationPanel.querySelector('#btn-marcar-todas');
+        if (btnMarcarTodas) {
+            btnMarcarTodas.addEventListener('click', async () => {
+                await Promise.all(notificaciones.filter(n => !n.leida).map(n =>
+                    fetch(`/api/notificaciones/${n.id}/leer`, { method: 'PUT' }).catch(() => {})
+                ));
+                cargarNotificaciones();
+            });
+        }
+    }
+
+    // Event listener para el botón
+    const btnNotificaciones = document.querySelector('.notification-btn');
+    if (btnNotificaciones) {
+        btnNotificaciones.addEventListener('click', (e) => {
+            e.stopPropagation();
+            cargarNotificaciones().then(() => toggleNotificationPanel(btnNotificaciones));
+        });
+    }
+
+    // ── 10. Logout ─────────────────────────────────────────
+    // ── 10. Logout ─────────────────────────────────────────
+    const btnLogouts = document.querySelectorAll('#btn-logout, .btn-logout, .dropdown-item');
+    btnLogouts.forEach(btn => {
+        if (btn && (btn.id === 'btn-logout' || btn.classList.contains('btn-logout'))) {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                localStorage.removeItem('shidell_user');
+                localStorage.removeItem('shidell_admin');
+                window.location.href = '/login.html';
+            });
+        }
+    });
 
     // ── Arrancar ───────────────────────────────────────────
     cargarHijos();

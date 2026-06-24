@@ -554,7 +554,7 @@
                 }
                 allEventos = Array.isArray(calendarioData.eventos) ? calendarioData.eventos : [];
                 allCursos = Array.isArray(calendarioData.cursos) ? dedupeCursos(calendarioData.cursos) : [];
-                cursosFiltro = new Set(allCursos.map(c => String(c.id)));
+                cursosFiltro = new Set(allCursos.map(c => getCursoKey(c)));
             } catch (e) {
                 console.error(e);
                 allEventos = [];
@@ -571,8 +571,8 @@
 
         // ── Render grilla mes ─────────────────────────────────────────────────────────
         function cursoVisible(ev) {
-            if (!ev.cursoId || cursosFiltro.size === 0) return true;
-            return cursosFiltro.has(String(ev.cursoId));
+            if (!ev.curso || cursosFiltro.size === 0) return true;
+            return cursosFiltro.has(getCursoKey({nombre: ev.curso}));
         }
 
         function colorCurso(color) {
@@ -589,15 +589,19 @@
 
         function nombreCursoVisible(nombre) {
             return (nombre || '')
-                .replaceAll('ÃÂ¡', 'Ã¡')
-                .replaceAll('ÃÂ­', 'Ã­')
-                .replaceAll('ÃÂ³', 'Ã³');
+                .replaceAll('ÃƒÂ¡', 'Ã¡')
+                .replaceAll('ÃƒÂ­', 'Ã­')
+                .replaceAll('ÃƒÂ³', 'Ã³');
+        }
+
+        function getCursoKey(curso) {
+            return nombreCursoVisible(curso.nombre).toLowerCase();
         }
 
         function dedupeCursos(cursos) {
             const vistos = new Set();
             return cursos.filter(curso => {
-                const key = nombreCursoVisible(curso.nombre).toLowerCase();
+                const key = getCursoKey(curso);
                 if (vistos.has(key)) return false;
                 vistos.add(key);
                 curso.nombre = nombreCursoVisible(curso.nombre);
@@ -619,15 +623,26 @@
                 <button class="course-pill ${cursosFiltro.size === allCursos.length ? 'active' : ''}" onclick="toggleTodosCursos()">
                     <span class="course-dot"></span>Todos los cursos
                 </button>
-                ${allCursos.map(c => `
-                    <button class="course-pill ${cursosFiltro.has(String(c.id)) ? 'active' : ''}" onclick="toggleCurso('${c.id}')">
+                ${allCursos.map(c => {
+                    const key = getCursoKey(c);
+                    return `
+                    <button class="course-pill ${cursosFiltro.has(key) ? 'active' : ''}" onclick="toggleCurso('${key}')">
                         <span class="course-dot" style="background:${colorCurso(c.color)}"></span>${c.nombre}
                     </button>
-                `).join('')}`;
+                    `;
+                }).join('')}`;
 
             list.innerHTML = allCursos.map(c => {
-                const total = allEventos.filter(ev => String(ev.cursoId) === String(c.id)).length;
-                const docente = c.profesor || 'Docente por asignar';
+                const key = getCursoKey(c);
+                const total = allEventos.filter(ev => {
+                    if (!ev.curso) return false;
+                    return getCursoKey({nombre: ev.curso}) === key;
+                }).length;
+                let docenteName = 'Docente por asignar';
+                if (c.profesor) {
+                    docenteName = typeof c.profesor === 'string' ? c.profesor : `${c.profesor.nombres} ${c.profesor.apellidos}`;
+                }
+                const docente = docenteName;
                 return `
                     <div class="course-card">
                         <div class="course-card-icon" style="background:${colorCurso(c.color)}">
@@ -772,8 +787,8 @@
         function renderProximosEventos() {
             const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
             const proximos = allEventos
-                .filter(ev => ev.fechaInicio && tiposFiltro.has(ev.tipo) && cursoVisible(ev) && new Date(ev.fechaInicio + 'T00:00:00') >= hoy)
-                .sort((a, b) => new Date(a.fechaInicio) - new Date(b.fechaInicio))
+                .filter(ev => ev.fechaInicio && tiposFiltro.has(ev.tipo) && cursoVisible(ev) && new Date(ev.fechaInicio + 'T12:00:00') >= hoy)
+                .sort((a, b) => new Date(a.fechaInicio + 'T12:00:00') - new Date(b.fechaInicio + 'T12:00:00'))
                 .slice(0, 5);
 
             const el = document.getElementById('proximosEventos');
@@ -785,7 +800,7 @@
             const colorMap = { CLASE: 'bg-blue-light text-blue', EXAMEN: 'bg-purple-light', TAREA: 'bg-yellow-light text-yellow' };
 
             el.innerHTML = proximos.map(ev => {
-                const fecha = new Date(ev.fechaInicio + 'T00:00:00');
+                const fecha = new Date(ev.fechaInicio + 'T12:00:00');
                 const str = fecha.toLocaleDateString('es-PE', { day: 'numeric', month: 'long' });
                 const icon = iconMap[ev.tipo] || 'ph-calendar-blank';
                 const color = colorMap[ev.tipo] || '';
@@ -806,7 +821,7 @@
         function renderResumen() {
             const mes = allEventos.filter(ev => {
                 if (!ev.fechaInicio) return false;
-                const d = new Date(ev.fechaInicio + 'T00:00:00');
+                const d = new Date(ev.fechaInicio + 'T12:00:00');
                 return d.getFullYear() === viewYear && d.getMonth() === viewMonth && cursoVisible(ev);
             });
             document.getElementById('sumExamenes').textContent = mes.filter(e => e.tipo === 'EXAMEN').length;

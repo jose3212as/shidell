@@ -1,0 +1,89 @@
+/* mis-clases.css - Estilos específicos para la vista de Mis Clases */
+
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+.course-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.06);
+}
+
+.course-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.course-card-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--primary-light), #fff);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    box-shadow: 0 4px 10px rgba(37,99,235,0.1);
+}
+
+.course-card-body h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.course-details {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.detail-item i {
+    color: var(--text-tertiary);
+    font-size: 16px;
+}
+
+.course-card-footer {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color-light);
+    display: flex;
+    gap: 10px;
+}
+
+.course-card-footer button {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 10px;
+}
+

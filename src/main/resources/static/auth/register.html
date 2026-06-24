@@ -91,7 +91,7 @@
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || 'No se pudo registrar la cuenta');
-                if (data.rol === 'DOCENTE') location.href = '../plataformadocente/html/portaldocente.html';
+                if (data.rol === 'DOCENTE') location.href = '../plataformadocente/index.html';
                 else if (data.rol === 'PADRE') location.href = '../plataformapadres/html/portalpadres.html';
                 else location.href = '../plataformaestudiante/html/portalestudiante.html';
             } catch (error) {

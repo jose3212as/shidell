@@ -165,6 +165,8 @@ public class EntityMapper {
         dto.setFechaEntrega(entity.getFechaEntrega());
         dto.setComentarioProfesor(TextUtils.limpiarTexto(entity.getComentarioProfesor()));
         dto.setNota(entity.getNota());
+        dto.setTarea(toDTO(entity.getTarea()));
+        dto.setEstudiante(toDTO(entity.getEstudiante()));
         return dto;
     }
 }

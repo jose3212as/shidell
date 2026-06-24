@@ -1,17 +1,113 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="refresh" content="0; url=html/portaldocente.html">
-    <title>Shidell - Docente Redirect</title>
-</head>
-<body>
-    <script>window.location.replace('html/portaldocente.html');</script>
-    <p>Redirigiendo a <a href="html/portaldocente.html">portal docente</a>...</p>
-
-    <!-- SweetAlert2 para Alertas Elegantes -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Portal Docente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/portaldocente.css">
+    <link rel="stylesheet" href="css/spa.css">
+    <!-- Vistas Modulares -->
+    <link rel="stylesheet" href="css/views/dashboard.css">
+    <link rel="stylesheet" href="css/views/mis-clases.css">
+    <link rel="stylesheet" href="css/views/calendario.css">
+    <link rel="stylesheet" href="css/views/tareas.css">
+    <link rel="stylesheet" href="css/views/estudiantes.css">
+    <link rel="stylesheet" href="css/views/calificaciones.css">
+    <link rel="stylesheet" href="css/views/mensajes.css">
+    <link rel="stylesheet" href="css/views/reportes.css">
+    <link rel="stylesheet" href="css/views/configuracion.css">
+    <link rel="stylesheet" href="css/views/reportes.css">
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 
+<body>
+    <div class="dashboard">
+        <!-- SIDEBAR FIJO -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon"><i class="ph-fill ph-chalkboard-teacher"></i></div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Docente</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#/dashboard" class="nav-item active" data-route="/dashboard"><i class="ph ph-house"></i><span>Inicio</span></a>
+                <a href="#/mis-clases" class="nav-item" data-route="/mis-clases"><i class="ph ph-presentation-chart"></i><span>Mis Clases</span></a>
+                <a href="#/tareas" class="nav-item" data-route="/tareas"><i class="ph ph-notebook"></i><span>Tareas</span></a>
+                <a href="#/estudiantes" class="nav-item" data-route="/estudiantes"><i class="ph ph-users"></i><span>Estudiantes</span></a>
+                <a href="#/calificaciones" class="nav-item" data-route="/calificaciones"><i class="ph ph-check-square"></i><span>Calificaciones</span></a>
+                <a href="#/calendario" class="nav-item" data-route="/calendario"><i class="ph ph-calendar"></i><span>Calendario</span></a>
+                <a href="#/mensajes" class="nav-item" data-route="/mensajes"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
+                <a href="#/reportes" class="nav-item nav-bottom-start" data-route="/reportes"><i class="ph ph-chart-bar"></i><span>Reportes</span></a>
+                <a href="#/configuracion" class="nav-item" data-route="/configuracion"><i class="ph ph-gear"></i><span>Configuración</span></a>
+            </nav>
+        </aside>
+
+        <main class="main-wrapper">
+            <!-- TOPBAR FIJA -->
+            <header class="topbar">
+                <div class="greeting">
+                    <h1 id="topbar-title">Portal docente</h1>
+                    <p id="topbar-subtitle">Cargando fecha...</p>
+                </div>
+
+                <div class="topbar-actions">
+                    <!-- Botón Notificaciones -->
+                    <div class="notif-wrapper" style="position:relative;">
+                        <button class="notification-btn" id="btn-notificaciones" type="button">
+                            <i class="ph ph-bell"></i>
+                            <span class="badge" id="notificaciones-badge" style="display:none;"></span>
+                        </button>
+                    </div>
+
+                    <!-- Info Usuario -->
+                    <div class="top-user-info" style="cursor:pointer;">
+                        <div class="user-dropdown">
+                            <div class="avatar" id="topbar-avatar"><i class="ph-fill ph-user-circle"></i></div>
+                            <div class="user-info-text" style="display:flex; flex-direction:column; align-items:flex-start; margin-right:5px; text-align:left;">
+                                <span id="topbar-name" style="font-size:14px; font-weight:700; color:var(--text-primary); line-height:1.2;">Cargando...</span>
+                                <span id="topbar-role" style="font-size:12px; font-weight:500; color:var(--text-secondary); line-height:1.2;">Docente</span>
+                            </div>
+                            <i class="ph ph-caret-down dropdown-icon"></i>
+                            <div class="dropdown-menu">
+                                <a href="#" id="btn-logout" class="dropdown-item">
+                                    <i class="ph ph-sign-out"></i><span>Cerrar sesión</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- CONTENEDOR PRINCIPAL DINÁMICO -->
+            <div id="app-content" class="content-area docente-redesign">
+                <!-- Las vistas se cargarán aquí -->
+            </div>
+
+            <!-- FOOTER FIJO -->
+            <footer class="teacher-footer">
+                <span>Shidell Portal Docente V2</span>
+                <span id="server-status">Conectando...</span>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Modales Globales (pueden ser usados por cualquier vista) -->
+    <div id="global-modal-container"></div>
+
+    <!-- Archivos SPA Core -->
+    <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

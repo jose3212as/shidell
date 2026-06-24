@@ -87,16 +87,23 @@
             items.push(`
                 <button class="notif-row" onclick="window.location.href='mensajes.html'">
                     <span class="notif-icon"><i class="ph ph-chat-circle-dots"></i></span>
-                    <span><strong>Mensajes nuevos</strong><small>${mensajesNoLeidos} mensaje(s) sin leer</small></span>
+                    <span class="notif-content">
+                        <strong>Mensajes nuevos</strong>
+                        <small>${mensajesNoLeidos} mensaje(s) sin leer</small>
+                    </span>
                 </button>
             `);
         }
 
-        notificaciones.slice(0, 6).forEach(n => {
+        notificaciones.slice(0, 10).forEach(n => {
             items.push(`
                 <button class="notif-row ${n.leida ? '' : 'unread'}" onclick="marcarNotificacionLeida(${n.id})">
                     <span class="notif-icon"><i class="ph ph-bell"></i></span>
-                    <span><strong>${n.titulo || 'Notificacion'}</strong><small>${n.mensaje || ''}</small></span>
+                    <span class="notif-content">
+                        <strong>${n.titulo || 'Notificación'}</strong>
+                        <small>${n.mensaje || ''}</small>
+                        <span class="time">${new Date(n.fecha).toLocaleString()}</span>
+                    </span>
                 </button>
             `);
         });
@@ -104,10 +111,10 @@
         panel.innerHTML = `
             <div class="notification-panel-header">
                 <h3>Notificaciones</h3>
-                <button onclick="marcarTodasNotificaciones()" title="Marcar como leidas"><i class="ph ph-checks"></i></button>
+                <button onclick="marcarTodasNotificaciones()" title="Marcar como leídas"><i class="ph ph-checks"></i></button>
             </div>
             <div class="notification-panel-list">
-                ${items.length ? items.join('') : '<p class="notif-empty">No tienes notificaciones pendientes.</p>'}
+                ${items.length ? items.join('') : '<div class="notif-empty"><i class="ph ph-bell-slash"></i><p>No tienes notificaciones pendientes.</p></div>'}
             </div>
         `;
     }

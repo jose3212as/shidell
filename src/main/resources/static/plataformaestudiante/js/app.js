@@ -275,11 +275,11 @@ async function cargarClasesDashboard(user) {
         const clases = eventos
             .filter(evento => {
                 const tipo = String(evento.tipo || '').toUpperCase();
-                const fecha = new Date(evento.fechaInicio || evento.fecha);
+                const fecha = new Date((evento.fechaInicio || evento.fecha) + 'T12:00:00');
                 fecha.setHours(0, 0, 0, 0);
                 return tipo === 'CLASE' && fecha >= hoy;
             })
-            .sort((a, b) => new Date(a.fechaInicio || a.fecha) - new Date(b.fechaInicio || b.fecha))
+            .sort((a, b) => new Date((a.fechaInicio || a.fecha) + 'T12:00:00') - new Date((b.fechaInicio || b.fecha) + 'T12:00:00'))
             .slice(0, 3);
 
         if (!clases.length) {
