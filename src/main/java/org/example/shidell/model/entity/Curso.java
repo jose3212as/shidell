@@ -14,17 +14,16 @@ public class Curso {
     
     @ManyToOne
     @JoinColumn(name = "docente_id")
+
     private UserEntity profesor;
     
     private String icono; // e.g., "ph-flask"
     private String color; // e.g., "green"
     private Integer progreso; // percentage 0-100
     
-    // Target Group
-    private String nivel;   // PRIMARIA o SECUNDARIA
-    private String grado;   // 1, 2, 3, 4, 5
-    private String seccion; // A, B, C...
-    private String turno;   // MANANA o TARDE
+    @ManyToOne
+    @JoinColumn(name = "aula_id")
+    private Aula aula;
     
     @Column(name = "hora_inicio")
     private String horaInicio; // e.g., "08:00"
@@ -50,14 +49,8 @@ public class Curso {
     public Integer getProgreso() { return progreso; }
     public void setProgreso(Integer progreso) { this.progreso = progreso; }
 
-    public String getNivel() { return nivel; }
-    public void setNivel(String nivel) { this.nivel = nivel; }
-    public String getGrado() { return grado; }
-    public void setGrado(String grado) { this.grado = grado; }
-    public String getSeccion() { return seccion; }
-    public void setSeccion(String seccion) { this.seccion = seccion; }
-    public String getTurno() { return turno; }
-    public void setTurno(String turno) { this.turno = turno; }
+    public Aula getAula() { return aula; }
+    public void setAula(Aula aula) { this.aula = aula; }
 
     public String getHoraInicio() { return horaInicio; }
     public void setHoraInicio(String horaInicio) { this.horaInicio = horaInicio; }
@@ -66,6 +59,27 @@ public class Curso {
 
     public Integer getDiaSemana() { return diaSemana; }
     public void setDiaSemana(Integer diaSemana) { this.diaSemana = diaSemana; }
+
+    @Transient private String tempNivel;
+    @Transient private String tempGrado;
+    @Transient private String tempSeccion;
+    @Transient private String tempTurno;
+
+    @Transient
+    public String getNivel() { return aula != null ? aula.getNivel() : tempNivel; }
+    public void setNivel(String nivel) { this.tempNivel = nivel; }
+
+    @Transient
+    public String getGrado() { return aula != null ? aula.getGrado() : tempGrado; }
+    public void setGrado(String grado) { this.tempGrado = grado; }
+
+    @Transient
+    public String getSeccion() { return aula != null ? aula.getSeccion() : tempSeccion; }
+    public void setSeccion(String seccion) { this.tempSeccion = seccion; }
+
+    @Transient
+    public String getTurno() { return aula != null ? aula.getTurno() : tempTurno; }
+    public void setTurno(String turno) { this.tempTurno = turno; }
 
     @Transient
     public java.time.LocalTime getHoraInicioLocalTime() {

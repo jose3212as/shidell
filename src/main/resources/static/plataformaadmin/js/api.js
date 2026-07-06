@@ -19,6 +19,12 @@ const API = (() => {
     if (!res.ok) {
       let msg = `Error ${res.status}`;
       try { const d = await res.json(); msg = d.error || d.message || msg; } catch {}
+      
+      if (res.status === 401 || res.status === 403 || msg.toLowerCase().includes('sesión') || msg.toLowerCase().includes('expirad')) {
+        if (typeof Auth !== 'undefined') Auth.clearUser();
+        window.location.href = '/login.html';
+      }
+      
       throw new Error(msg);
     }
     const ct = res.headers.get('content-type') || '';
@@ -46,6 +52,7 @@ const API = (() => {
       hijosDePadre:  (pId)    => request('GET',    `/admin/padres/${pId}/hijos`),
       cursos:        ()       => request('GET',    '/admin/cursos'),
       editarCurso:   (id, d)  => request('PUT',    `/admin/cursos/${id}`, d),
+      clonar:        (d)      => request('POST',   '/admin/cursos/clonar', d),
     },
 
     // ── Docente ──────────────────────────────────────────

@@ -8,6 +8,7 @@ import org.example.shidell.model.dto.EntregaDTO;
 import org.example.shidell.repository.EntregaRepository;
 import org.example.shidell.repository.TareaRepository;
 import org.example.shidell.repository.UserRepository;
+import org.example.shidell.repository.MatriculaRepository;
 import org.example.shidell.mapper.EntityMapper;
 import org.example.shidell.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ public class TareaController {
     private EntregaRepository entregaRepository;
 
     @Autowired
+    private MatriculaRepository matriculaRepository;
+
+    @Autowired
     private EntityMapper mapper;
 
     @GetMapping
@@ -52,8 +56,21 @@ public class TareaController {
                 .filter(e -> e.getTarea() != null)
                 .collect(Collectors.toMap(e -> e.getTarea().getId(), mapper::toDTO, (a, b) -> a));
 
+        String nivel = null;
+        String grado = null;
+        String seccion = null;
+        String turno = null;
+
+        org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(estudiante, 2026).orElse(null);
+        if (m != null && m.getAula() != null) {
+            nivel = m.getAula().getNivel();
+            grado = m.getAula().getGrado();
+            seccion = m.getAula().getSeccion();
+            turno = m.getAula().getTurno();
+        }
+
         List<Map<String, Object>> tareas = tareaRepository
-                .findByGrupoAcademico(estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno())
+                .findByGrupoAcademico(nivel, grado, seccion, turno)
                 .stream()
                 .sorted((a, b) -> nullSafeDate(a.getFechaVencimiento()).compareTo(nullSafeDate(b.getFechaVencimiento())))
                 .map(tarea -> {

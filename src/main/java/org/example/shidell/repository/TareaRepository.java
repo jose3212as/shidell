@@ -7,17 +7,20 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 @Repository
 public interface TareaRepository extends JpaRepository<Tarea, Long> {
     List<Tarea> findByEstado(String estado);
     List<Tarea> findByCurso(Curso curso);
-    List<Tarea> findByCursoNivelAndCursoGradoAndCursoSeccion(String nivel, String grado, String seccion);
-    List<Tarea> findByCursoNivelAndCursoGradoAndCursoSeccionAndCursoTurno(String nivel, String grado, String seccion, String turno);
+    
+    @Query("SELECT t FROM Tarea t WHERE t.curso.aula.nivel = :nivel AND t.curso.aula.grado = :grado AND t.curso.aula.seccion = :seccion")
+    List<Tarea> findByCursoNivelAndCursoGradoAndCursoSeccion(@Param("nivel") String nivel, @Param("grado") String grado, @Param("seccion") String seccion);
 
-    default List<Tarea> findByGrupoAcademico(String nivel, String grado, String seccion, String turno) {
-        if (turno == null || turno.isBlank()) {
-            return findByCursoNivelAndCursoGradoAndCursoSeccion(nivel, grado, seccion);
-        }
-        return findByCursoNivelAndCursoGradoAndCursoSeccionAndCursoTurno(nivel, grado, seccion, turno);
-    }
+    @Query("SELECT t FROM Tarea t WHERE t.curso.aula.nivel = :nivel AND t.curso.aula.grado = :grado AND t.curso.aula.seccion = :seccion AND t.curso.aula.turno = :turno")
+    List<Tarea> findByCursoNivelAndCursoGradoAndCursoSeccionAndCursoTurno(@Param("nivel") String nivel, @Param("grado") String grado, @Param("seccion") String seccion, @Param("turno") String turno);
+
+    @Query("SELECT t FROM Tarea t WHERE t.curso.aula.nivel = :nivel AND t.curso.aula.grado = :grado AND t.curso.aula.seccion = :seccion AND (:turno IS NULL OR t.curso.aula.turno = :turno)")
+    List<Tarea> findByGrupoAcademico(@Param("nivel") String nivel, @Param("grado") String grado, @Param("seccion") String seccion, @Param("turno") String turno);
 }

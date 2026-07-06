@@ -317,6 +317,10 @@
           <option value="">Sección</option>
           <option value="A">A</option><option value="B">B</option><option value="C">C</option>
         </select>
+        <!-- Clone button -->
+        <button class="btn btn-primary" style="margin-left:auto" onclick="openCloneModal()">
+          <i class="ph ph-copy"></i> Clonar Malla
+        </button>
       </div>
 
       <!-- Grid -->
@@ -492,8 +496,76 @@
   </div>
 </div>
 
-<script src="../js/config.js"></script>
-<script src="../js/api.js"></script>
+  <!-- Modal Clonar Malla -->
+  <div class="modal-overlay hidden" id="modal-clone">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">Clonar Malla Curricular</span>
+        <button class="modal-close" onclick="closeCloneModal()"><i class="ph ph-x"></i></button>
+      </div>
+      <form id="clone-form">
+        <div class="modal-body">
+          <p class="text-sm text-muted" style="margin-bottom:16px">
+            Esta herramienta copiará los cursos (materias y horarios) de un salón hacia uno nuevo. 
+            Los nuevos cursos se crearán <b>sin profesor asignado</b> para evitar choques de horario.
+          </p>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Nivel</label>
+              <select id="c-nivel" class="form-control form-select" required>
+                <option value="PRIMARIA">Primaria</option>
+                <option value="SECUNDARIA">Secundaria</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Grado</label>
+              <select id="c-grado" class="form-control form-select" required>
+                <option value="1">1°</option><option value="2">2°</option>
+                <option value="3">3°</option><option value="4">4°</option>
+                <option value="5">5°</option><option value="6">6°</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Turno</label>
+            <select id="c-turno" class="form-control form-select" required>
+              <option value="MAÑANA">Mañana</option>
+              <option value="TARDE">Tarde</option>
+            </select>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Sección ORIGEN</label>
+              <select id="c-origen" class="form-control form-select" required>
+                <option value="">Seleccionar</option>
+                <option value="A">A</option><option value="B">B</option>
+                <option value="C">C</option><option value="D">D</option>
+                <option value="E">E</option><option value="F">F</option>
+                <option value="G">G</option><option value="H">H</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sección DESTINO</label>
+              <select id="c-destino" class="form-control form-select" required>
+                <option value="">Seleccionar</option>
+                <option value="A">A</option><option value="B">B</option>
+                <option value="C">C</option><option value="D">D</option>
+                <option value="E">E</option><option value="F">F</option>
+                <option value="G">G</option><option value="H">H</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeCloneModal()">Cancelar</button>
+          <button type="submit" class="btn btn-primary"><i class="ph ph-copy"></i> Clonar Cursos</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/config.js"></script>
+  <script src="../js/api.js"></script>
 <script src="../js/auth.js"></script>
 <script src="../js/shared.js"></script>
 <script src="../js/cursos.js"></script>

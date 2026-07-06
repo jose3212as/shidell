@@ -42,6 +42,9 @@ public class AuthController {
         if (userOptional.isPresent()) {
             UserEntity user = userOptional.get();
             if (authSessionService.matchesPassword(user.getPassword(), password)) {
+                user.setUltimaConexion(java.time.LocalDateTime.now());
+                userRepository.save(user);
+
                 String token = authSessionService.issueToken(user);
                 UserDTO dto = mapper.toDTO(user);
                 dto.setSessionToken(token);

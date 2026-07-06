@@ -7,8 +7,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 @Component
 public class EntityMapper {
+
+    @Autowired
+    private org.example.shidell.repository.MatriculaRepository matriculaRepository;
 
     public UserDTO toDTO(UserEntity entity) {
         if (entity == null) return null;
@@ -17,13 +22,29 @@ public class EntityMapper {
         dto.setNombres(TextUtils.limpiarTexto(entity.getNombres()));
         dto.setApellidos(TextUtils.limpiarTexto(entity.getApellidos()));
         dto.setEmail(entity.getEmail());
+        dto.setDni(entity.getDni());
+        dto.setTelefono(entity.getTelefono());
+        dto.setFechaNacimiento(entity.getFechaNacimiento());
+        dto.setSexo(entity.getSexo());
+        dto.setDireccion(entity.getDireccion());
+        dto.setTipoSangre(entity.getTipoSangre());
+        dto.setEstadoCivil(entity.getEstadoCivil());
         dto.setRol(entity.getRol());
         dto.setFotoPerfil(entity.getFotoPerfil());
         dto.setCodigoPlaza(entity.getCodigoPlaza());
-        dto.setNivel(entity.getNivel());
-        dto.setGrado(entity.getGrado());
-        dto.setSeccion(entity.getSeccion());
-        dto.setTurno(entity.getTurno());
+        if ("ESTUDIANTE".equalsIgnoreCase(entity.getRol())) {
+            matriculaRepository.findByEstudianteAndAnioEscolar(entity, 2026).ifPresent(m -> {
+                dto.setNivel(m.getAula().getNivel());
+                dto.setGrado(m.getAula().getGrado());
+                dto.setSeccion(m.getAula().getSeccion());
+                dto.setTurno(m.getAula().getTurno());
+            });
+        } else {
+            dto.setNivel(entity.getNivel());
+            dto.setGrado(entity.getGrado());
+            dto.setSeccion(entity.getSeccion());
+            dto.setTurno(entity.getTurno());
+        }
         dto.setUltimaConexion(entity.getUltimaConexion());
         if (entity.getPadre() != null) {
             dto.setPadreId(entity.getPadre().getId());
@@ -38,10 +59,12 @@ public class EntityMapper {
         dto.setNombre(TextUtils.limpiarTexto(entity.getNombre()));
         dto.setIcono(entity.getIcono());
         dto.setColor(entity.getColor());
-        dto.setNivel(entity.getNivel());
-        dto.setGrado(entity.getGrado());
-        dto.setSeccion(entity.getSeccion());
-        dto.setTurno(entity.getTurno());
+        if (entity.getAula() != null) {
+            dto.setNivel(entity.getAula().getNivel());
+            dto.setGrado(entity.getAula().getGrado());
+            dto.setSeccion(entity.getAula().getSeccion());
+            dto.setTurno(entity.getAula().getTurno());
+        }
         dto.setHoraInicio(entity.getHoraInicio());
         dto.setHoraFin(entity.getHoraFin());
         dto.setDiaSemana(entity.getDiaSemana());

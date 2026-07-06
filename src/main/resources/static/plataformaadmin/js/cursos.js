@@ -367,3 +367,32 @@ async function handleCursoSubmit(e) {
     btn.disabled = false;
   }
 }
+
+// ── Clonar Malla ──────────────────────────────────────────
+function openCloneModal() {
+  document.getElementById('modal-clone').classList.remove('hidden');
+}
+function closeCloneModal() {
+  document.getElementById('modal-clone').classList.add('hidden');
+  document.getElementById('clone-form').reset();
+}
+
+document.getElementById('clone-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const data = {
+    nivel: document.getElementById('c-nivel').value,
+    grado: document.getElementById('c-grado').value,
+    turno: document.getElementById('c-turno').value,
+    seccionOrigen: document.getElementById('c-origen').value,
+    seccionDestino: document.getElementById('c-destino').value
+  };
+
+  try {
+    const res = await window.API.admin.cursos.clonar(data);
+    alert('Malla clonada exitosamente con ' + res.length + ' cursos. Se han guardado sin profesor para evitar choques.');
+    closeCloneModal();
+    loadCourses();
+  } catch (err) {
+    alert(err.message || 'Error al clonar malla');
+  }
+});

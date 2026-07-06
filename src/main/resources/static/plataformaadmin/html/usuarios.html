@@ -61,16 +61,27 @@
             <i class="ph ph-magnifying-glass"></i>
             <input type="text" placeholder="Buscar por nombre, email..." id="user-search">
           </div>
-          <div class="filter-tabs">
+          <div class="toolbar-select" style="margin-left: 16px;">
+            <select id="user-sort" class="form-control form-select" style="min-width: 150px;">
+              <option value="recientes">Más recientes</option>
+              <option value="antiguos">Más antiguos</option>
+            </select>
+          </div>
+          <div class="filter-tabs" style="margin-left: 16px;">
             <button class="filter-tab active" data-rol="TODOS">Todos</button>
             <button class="filter-tab" data-rol="ESTUDIANTE">Estudiantes</button>
             <button class="filter-tab" data-rol="DOCENTE">Docentes</button>
             <button class="filter-tab" data-rol="PADRE">Padres</button>
             <button class="filter-tab" data-rol="ADMINISTRADOR">Admins</button>
           </div>
-          <button class="btn btn-primary btn-sm" onclick="openCreateModal()" style="margin-left:auto;white-space:nowrap">
-            <i class="ph ph-user-plus"></i> Nuevo usuario
-          </button>
+          <div style="margin-left:auto; display:flex; gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="exportData()" title="Exportar">
+              <i class="ph ph-download-simple"></i> Exportar
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="openCreateModal()" style="white-space:nowrap">
+              <i class="ph ph-user-plus"></i> Nuevo usuario
+            </button>
+          </div>
         </div>
 
         <div class="table-wrapper">
@@ -78,6 +89,7 @@
             <thead>
               <tr>
                 <th>Usuario</th>
+                <th>DNI / Teléfono</th>
                 <th>Rol</th>
                 <th>Sección</th>
                 <th>Turno</th>
@@ -87,7 +99,7 @@
               </tr>
             </thead>
             <tbody id="users-tbody">
-              <tr><td colspan="7" class="text-center" style="padding:40px">
+              <tr><td colspan="8" class="text-center" style="padding:40px">
                 <div class="spinner spinner-lg" style="margin:0 auto"></div>
               </td></tr>
             </tbody>
@@ -119,9 +131,67 @@
         </div>
         <div class="form-grid-2">
           <div class="form-group">
+            <label class="form-label">DNI</label>
+            <input class="form-control" id="f-dni" placeholder="Ej: 12345678">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input class="form-control" id="f-telefono" placeholder="Ej: 987654321">
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input class="form-control" id="f-fechaNacimiento" type="date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Sexo</label>
+            <div style="display:flex; gap:16px; margin-top:8px;">
+              <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                <input type="radio" name="f-sexo" value="MASCULINO" id="f-sexo-m"> Masculino
+              </label>
+              <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                <input type="radio" name="f-sexo" value="FEMENINO" id="f-sexo-f"> Femenino
+              </label>
+              <label style="display:flex; align-items:center; gap:4px; cursor:pointer;">
+                <input type="radio" name="f-sexo" value="OTRO" id="f-sexo-o"> Otro
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Dirección</label>
+            <input class="form-control" id="f-direccion" placeholder="Ej: Av. Principal 123">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tipo de Sangre</label>
+            <select class="form-control form-select" id="f-tipoSangre">
+              <option value="">Seleccionar</option>
+              <option value="O+">O+</option><option value="O-">O-</option>
+              <option value="A+">A+</option><option value="A-">A-</option>
+              <option value="B+">B+</option><option value="B-">B-</option>
+              <option value="AB+">AB+</option><option value="AB-">AB-</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label">Estado Civil</label>
+            <select class="form-control form-select" id="f-estadoCivil">
+              <option value="">Seleccionar</option>
+              <option value="SOLTERO">Soltero(a)</option>
+              <option value="CASADO">Casado(a)</option>
+              <option value="VIUDO">Viudo(a)</option>
+              <option value="DIVORCIADO">Divorciado(a)</option>
+            </select>
+          </div>
+          <div class="form-group">
             <label class="form-label">Correo electrónico <span class="required">*</span></label>
             <input class="form-control" id="f-email" type="email" placeholder="correo@shidell.edu" required>
           </div>
+        </div>
+        <div class="form-grid-2">
           <div class="form-group">
             <label class="form-label">Rol <span class="required">*</span></label>
             <select class="form-control form-select" id="f-rol" required>
@@ -162,6 +232,8 @@
                 <option value="">Seleccionar</option>
                 <option value="A">A</option><option value="B">B</option>
                 <option value="C">C</option><option value="D">D</option>
+                <option value="E">E</option><option value="F">F</option>
+                <option value="G">G</option><option value="H">H</option>
               </select>
             </div>
             <div class="form-group">

@@ -30,6 +30,8 @@ public class ProgresoController {
     @Autowired
     private CursoRepository cursoRepository;
     @Autowired
+    private MatriculaRepository matriculaRepository;
+    @Autowired
     private CalificacionRepository calificacionRepository;
     @Autowired
     private TareaRepository tareaRepository;
@@ -48,12 +50,23 @@ public class ProgresoController {
         
         List<Calificacion> calificaciones = calificacionRepository.findByEstudianteId(id);
         List<Asistencia> asistencias = asistenciaService.getAsistenciasCompletas(estudiante);
-        List<Tarea> tareasSeccion = tareaRepository.findByGrupoAcademico(
-            estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
+        String nivel = null;
+        String grado = null;
+        String seccion = null;
+        String turno = null;
+
+        org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(estudiante, 2026).orElse(null);
+        if (m != null && m.getAula() != null) {
+            nivel = m.getAula().getNivel();
+            grado = m.getAula().getGrado();
+            seccion = m.getAula().getSeccion();
+            turno = m.getAula().getTurno();
+        }
+
+        List<Tarea> tareasSeccion = tareaRepository.findByGrupoAcademico(nivel, grado, seccion, turno);
         List<Entrega> entregas = entregaRepository.findByEstudiante(estudiante);
 
-        List<Curso> cursosEstudiante = cursoRepository.findByGrupoAcademico(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
+        List<Curso> cursosEstudiante = cursoRepository.findByGrupoAcademico(nivel, grado, seccion, turno);
 
         Map<String, Object> res = new HashMap<>();
         res.put("estudiante", mapper.toDTO(estudiante));

@@ -4,6 +4,7 @@ import org.example.shidell.model.entity.UserEntity;
 import org.example.shidell.model.entity.Curso;
 import org.example.shidell.model.dto.UserDTO;
 import org.example.shidell.repository.CursoRepository;
+import org.example.shidell.repository.MatriculaRepository;
 import org.example.shidell.repository.UserRepository;
 import org.example.shidell.service.AuthSessionService;
 import org.example.shidell.mapper.EntityMapper;
@@ -25,6 +26,9 @@ public class UserController {
 
     @Autowired
     private CursoRepository cursoRepository;
+
+    @Autowired
+    private MatriculaRepository matriculaRepository;
 
     @Autowired
     private AuthSessionService authSessionService;
@@ -86,14 +90,25 @@ public class UserController {
         UserEntity user = userRepository.findById(id).orElseThrow();
         List<UserEntity> contacts = new ArrayList<>();
         
-        if (user.getNivel() != null && user.getGrado() != null && user.getSeccion() != null) {
-            List<UserEntity> classmates = userRepository.findByGrupoAcademico(
-                user.getNivel(), user.getGrado(), user.getSeccion(), user.getTurno());
+        String nivel = null;
+        String grado = null;
+        String seccion = null;
+        String turno = null;
+
+        org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(user, 2026).orElse(null);
+        if (m != null && m.getAula() != null) {
+            nivel = m.getAula().getNivel();
+            grado = m.getAula().getGrado();
+            seccion = m.getAula().getSeccion();
+            turno = m.getAula().getTurno();
+        }
+
+        if (nivel != null && grado != null && seccion != null) {
+            List<UserEntity> classmates = userRepository.findByGrupoAcademico(nivel, grado, seccion, turno);
             classmates.removeIf(u -> u.getId().equals(id));
             contacts.addAll(classmates);
             
-            List<Curso> cursos = cursoRepository.findByGrupoAcademico(
-                user.getNivel(), user.getGrado(), user.getSeccion(), user.getTurno());
+            List<Curso> cursos = cursoRepository.findByGrupoAcademico(nivel, grado, seccion, turno);
             
             for (Curso curso : cursos) {
                 if (curso.getProfesor() != null && !contacts.contains(curso.getProfesor())) {
@@ -118,8 +133,12 @@ public class UserController {
             contacts.add(curso.getProfesor());
         }
         
-        List<UserEntity> students = userRepository.findByGrupoAcademico(
-            curso.getNivel(), curso.getGrado(), curso.getSeccion(), curso.getTurno());
+        String nivel = curso.getNivel();
+        String grado = curso.getGrado();
+        String seccion = curso.getSeccion();
+        String turno = curso.getTurno();
+
+        List<UserEntity> students = userRepository.findByGrupoAcademico(nivel, grado, seccion, turno);
         contacts.addAll(students);
         
         return contacts.stream().map(mapper::toDTO).toList();

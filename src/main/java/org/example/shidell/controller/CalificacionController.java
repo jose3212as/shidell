@@ -7,6 +7,7 @@ import org.example.shidell.model.dto.CalificacionDTO;
 import org.example.shidell.model.dto.UserDTO;
 import org.example.shidell.repository.CalificacionRepository;
 import org.example.shidell.repository.CursoRepository;
+import org.example.shidell.repository.MatriculaRepository;
 import org.example.shidell.repository.UserRepository;
 import org.example.shidell.mapper.EntityMapper;
 import org.example.shidell.util.TextUtils;
@@ -30,6 +31,8 @@ public class CalificacionController {
     @Autowired
     private CursoRepository cursoRepository;
     @Autowired
+    private MatriculaRepository matriculaRepository;
+    @Autowired
     private EntityMapper mapper;
     @GetMapping("/estudiante/{id}")
     public Map<String, Object> getCalificacionesByEstudiante(@PathVariable Long id) {
@@ -37,9 +40,20 @@ public class CalificacionController {
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
         
         List<Calificacion> calificaciones = calificacionRepository.findByEstudianteId(id);
-        List<Curso> cursos = cursoRepository.findByGrupoAcademico(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno());
+        String nivel = null;
+        String grado = null;
+        String seccion = null;
+        String turno = null;
 
+        org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(estudiante, 2026).orElse(null);
+        if (m != null && m.getAula() != null) {
+            nivel = m.getAula().getNivel();
+            grado = m.getAula().getGrado();
+            seccion = m.getAula().getSeccion();
+            turno = m.getAula().getTurno();
+        }
+
+        List<Curso> cursos = cursoRepository.findByGrupoAcademico(nivel, grado, seccion, turno); 
         List<CalificacionDTO> evaluaciones = calificaciones.stream()
                 .sorted(Comparator.comparing((Calificacion c) -> c.getFecha() == null ? LocalDate.MIN : c.getFecha()).reversed())
                 .map(mapper::toDTO)

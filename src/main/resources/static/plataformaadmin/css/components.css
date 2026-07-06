@@ -178,6 +178,9 @@
   display: flex; flex-direction: column;
   max-height: 90vh;
 }
+.modal form {
+  display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;
+}
 .modal-lg { max-width: 800px; }
 .modal-header {
   padding: 24px 32px; border-bottom: 1px solid var(--border-color);

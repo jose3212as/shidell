@@ -29,6 +29,8 @@ public class CalendarioController {
     @Autowired
     private CursoRepository cursoRepository;
     @Autowired
+    private MatriculaRepository matriculaRepository;
+    @Autowired
     private EntityMapper mapper;
     @GetMapping("/estudiante/{estudianteId}")
     public Map<String, Object> getCalendarioEstudiante(@PathVariable Long estudianteId) {
@@ -36,13 +38,24 @@ public class CalendarioController {
                 .orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado"));
         
         List<Map<String, Object>> eventos = new ArrayList<>();
-        String turnoEstudiante = estudiante.getTurno();
-        if (turnoEstudiante == null || turnoEstudiante.isBlank()) {
-            turnoEstudiante = "PRIMARIA".equals(estudiante.getNivel()) ? "MAÑANA" : "TARDE";
+        String nivel = null;
+        String grado = null;
+        String seccion = null;
+        String turnoEstudiante = null;
+
+        org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(estudiante, 2026).orElse(null);
+        if (m != null && m.getAula() != null) {
+            nivel = m.getAula().getNivel();
+            grado = m.getAula().getGrado();
+            seccion = m.getAula().getSeccion();
+            turnoEstudiante = m.getAula().getTurno();
         }
 
-        List<Curso> cursos = cursoRepository.findByGrupoAcademico(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), turnoEstudiante);
+        if (turnoEstudiante == null || turnoEstudiante.isBlank()) {
+            turnoEstudiante = "PRIMARIA".equals(nivel) ? "MAÑANA" : "TARDE";
+        }
+
+        List<Curso> cursos = cursoRepository.findByGrupoAcademico(nivel, grado, seccion, turnoEstudiante);
                 
         // Asegurar que no se envíen cursos archivados
         cursos.removeIf(c -> "ARCHIVADO".equals(c.getTurno()));
@@ -63,8 +76,7 @@ public class CalendarioController {
         }
 
         // 2. Tareas
-        List<Tarea> tareas = tareaRepository.findByGrupoAcademico(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), turnoEstudiante);
+        List<Tarea> tareas = tareaRepository.findByGrupoAcademico(nivel, grado, seccion, turnoEstudiante);
         for (Tarea t : tareas) {
             if (t.getFechaVencimiento() == null) continue;
             eventos.add(tareaAMap(t));

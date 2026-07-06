@@ -12,6 +12,7 @@ import org.example.shidell.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.util.Objects;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +36,11 @@ public class AdminController {
     @Autowired
     private TareaRepository tareaRepository;
     @Autowired
-    private EntregaRepository entregaRepository;
-    @Autowired
     private AsistenciaRepository asistenciaRepository;
+    @Autowired
+    private AulaRepository aulaRepository;
+    @Autowired
+    private MatriculaRepository matriculaRepository;
     @Autowired
     private EntityMapper mapper;
     @GetMapping("/stats")
@@ -96,19 +99,39 @@ public class AdminController {
     }
     @PostMapping("/usuarios")
     public UserDTO createUsuario(@RequestBody UserEntity user) {
-        if ("DOCENTE".equalsIgnoreCase(user.getRol())) {
-            throw new ForbiddenException("Los docentes son plazas base del sistema. Edita una plaza docente existente para reemplazos.");
-        }
         if (user.getPassword() != null && !user.getPassword().isBlank()) {
             user.setPassword(authSessionService.hashPassword(user.getPassword()));
         }
-        return mapper.toDTO(userRepository.save(user));
+        UserEntity savedUser = userRepository.save(user);
+
+        if ("ESTUDIANTE".equalsIgnoreCase(savedUser.getRol()) && user.getNivel() != null) {
+            org.example.shidell.model.entity.Aula aula = aulaRepository.findByNivelAndGradoAndSeccionAndTurnoAndAnioEscolar(
+                    user.getNivel(), user.getGrado(), user.getSeccion(), user.getTurno(), 2026)
+                    .orElseGet(() -> aulaRepository.save(new org.example.shidell.model.entity.Aula(user.getNivel(), user.getGrado(), user.getSeccion(), user.getTurno(), 2026)));
+            
+            org.example.shidell.model.entity.Matricula m = new org.example.shidell.model.entity.Matricula();
+            m.setEstudiante(savedUser);
+            m.setAula(aula);
+            m.setAnioEscolar(2026);
+            m.setFechaMatricula(java.time.LocalDate.now());
+            m.setEstado("ACTIVO");
+            matriculaRepository.save(m);
+        }
+
+        return mapper.toDTO(savedUser);
     }
     @PutMapping("/usuarios/{id}")
     public UserDTO updateUsuario(@PathVariable Long id, @RequestBody UserEntity datos) {
         return userRepository.findById(id).map(user -> {
             if (datos.getNombres() != null) user.setNombres(datos.getNombres());
             if (datos.getApellidos() != null) user.setApellidos(datos.getApellidos());
+            if (datos.getDni() != null) user.setDni(datos.getDni());
+            if (datos.getTelefono() != null) user.setTelefono(datos.getTelefono());
+            if (datos.getFechaNacimiento() != null) user.setFechaNacimiento(datos.getFechaNacimiento());
+            if (datos.getSexo() != null) user.setSexo(datos.getSexo());
+            if (datos.getDireccion() != null) user.setDireccion(datos.getDireccion());
+            if (datos.getTipoSangre() != null) user.setTipoSangre(datos.getTipoSangre());
+            if (datos.getEstadoCivil() != null) user.setEstadoCivil(datos.getEstadoCivil());
             if (datos.getEmail() != null) user.setEmail(datos.getEmail());
             if (datos.getRol() != null) user.setRol(datos.getRol());
             if (datos.getNivel() != null) user.setNivel(datos.getNivel());
@@ -120,16 +143,33 @@ public class AdminController {
             if (datos.getTutor() != null) user.setTutor(datos.getTutor());
             if (datos.getPassword() != null && !datos.getPassword().isBlank())
                 user.setPassword(authSessionService.hashPassword(datos.getPassword()));
-            return mapper.toDTO(userRepository.save(user));
+            
+            UserEntity savedUser = userRepository.save(user);
+
+            if ("ESTUDIANTE".equalsIgnoreCase(savedUser.getRol()) && datos.getNivel() != null) {
+                org.example.shidell.model.entity.Aula aula = aulaRepository.findByNivelAndGradoAndSeccionAndTurnoAndAnioEscolar(
+                        datos.getNivel(), datos.getGrado(), datos.getSeccion(), datos.getTurno(), 2026)
+                        .orElseGet(() -> aulaRepository.save(new org.example.shidell.model.entity.Aula(datos.getNivel(), datos.getGrado(), datos.getSeccion(), datos.getTurno(), 2026)));
+                
+                org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(savedUser, 2026).orElseGet(org.example.shidell.model.entity.Matricula::new);
+                m.setEstudiante(savedUser);
+                m.setAula(aula);
+                if (m.getId() == null) {
+                    m.setAnioEscolar(2026);
+                    m.setFechaMatricula(java.time.LocalDate.now());
+                    m.setEstado("ACTIVO");
+                }
+                matriculaRepository.save(m);
+            }
+
+            return mapper.toDTO(savedUser);
         }).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
     }
     @DeleteMapping("/usuarios/{id}")
     public void deleteUsuario(@PathVariable Long id) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        if ("DOCENTE".equalsIgnoreCase(user.getRol())) {
-            throw new ForbiddenException("No se eliminan plazas docentes base. Edita sus datos para reemplazar al profesor.");
-        }
+        // Ya se permite eliminar docentes
         userRepository.deleteById(id);
     }
     @GetMapping("/cursos")
@@ -158,12 +198,95 @@ public class AdminController {
             } else {
                 curso.setProfesor(null);
             }
+
+            // Validar choque de horarios
+            List<Curso> todosCursos = cursoRepository.findAll();
+            for (Curso c : todosCursos) {
+                if (c.getId().equals(curso.getId())) continue;
+                if (!Objects.equals(c.getDiaSemana(), curso.getDiaSemana())) continue;
+                
+                java.time.LocalTime start1 = curso.getHoraInicioLocalTime();
+                java.time.LocalTime end1 = curso.getHoraFinLocalTime();
+                java.time.LocalTime start2 = c.getHoraInicioLocalTime();
+                java.time.LocalTime end2 = c.getHoraFinLocalTime();
+                
+                if (start1 != null && end1 != null && start2 != null && end2 != null) {
+                    if (start1.isBefore(end2) && start2.isBefore(end1)) {
+                        // Hay cruce de horario
+                        // Verificar si es el mismo profesor
+                        if (curso.getProfesor() != null && c.getProfesor() != null 
+                            && curso.getProfesor().getId().equals(c.getProfesor().getId())) {
+                            throw new org.example.shidell.exception.BadRequestException("Choque de horario: El profesor ya dicta el curso '" + c.getNombre() + "' en ese horario.");
+                        }
+                        // Verificar si es la misma aula
+                        if (Objects.equals(curso.getNivel(), c.getNivel()) 
+                            && Objects.equals(curso.getGrado(), c.getGrado()) 
+                            && Objects.equals(curso.getSeccion(), c.getSeccion())
+                            && Objects.equals(curso.getTurno(), c.getTurno())) {
+                            throw new org.example.shidell.exception.BadRequestException("Choque de horario: El aula ya tiene el curso '" + c.getNombre() + "' en ese horario.");
+                        }
+                    }
+                }
+            }
+
             return mapper.toDTO(cursoRepository.save(curso));
         }).orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado"));
     }
     @DeleteMapping("/cursos/{id}")
     public void deleteCurso(@PathVariable Long id) {
         throw new ForbiddenException("La malla de cursos es fija. Los cursos no se eliminan desde administración.");
+    }
+
+    public static class CloneRequest {
+        public String nivel;
+        public String grado;
+        public String turno;
+        public String seccionOrigen;
+        public String seccionDestino;
+    }
+
+    @PostMapping("/cursos/clonar")
+    public List<CursoDTO> clonarCursos(@RequestBody CloneRequest req) {
+        if (req.nivel == null || req.grado == null || req.turno == null || req.seccionOrigen == null || req.seccionDestino == null) {
+            throw new org.example.shidell.exception.BadRequestException("Todos los campos son obligatorios.");
+        }
+        if (req.seccionOrigen.equalsIgnoreCase(req.seccionDestino)) {
+            throw new org.example.shidell.exception.BadRequestException("La sección origen y destino no pueden ser iguales.");
+        }
+
+        // Buscar cursos de origen
+        List<Curso> origenCursos = cursoRepository.findByGrupoAcademico(req.nivel, req.grado, req.seccionOrigen, req.turno);
+        if (origenCursos.isEmpty()) {
+            throw new org.example.shidell.exception.BadRequestException("No hay cursos en la sección origen para clonar.");
+        }
+
+        // Verificar si el destino ya tiene cursos
+        List<Curso> destinoCursos = cursoRepository.findByGrupoAcademico(req.nivel, req.grado, req.seccionDestino, req.turno);
+        if (!destinoCursos.isEmpty()) {
+            throw new org.example.shidell.exception.BadRequestException("La sección destino ya tiene cursos creados.");
+        }
+
+        // Obtener o crear aula de destino
+        org.example.shidell.model.entity.Aula aulaDestino = aulaRepository.findByNivelAndGradoAndSeccionAndTurnoAndAnioEscolar(
+                req.nivel, req.grado, req.seccionDestino, req.turno, 2026)
+                .orElseGet(() -> aulaRepository.save(new org.example.shidell.model.entity.Aula(req.nivel, req.grado, req.seccionDestino, req.turno, 2026)));
+
+        // Clonar
+        List<Curso> clones = new java.util.ArrayList<>();
+        for (Curso c : origenCursos) {
+            Curso clone = new Curso();
+            clone.setNombre(c.getNombre());
+            clone.setAula(aulaDestino);
+            clone.setColor(c.getColor());
+            clone.setIcono(c.getIcono());
+            clone.setDiaSemana(c.getDiaSemana());
+            clone.setHoraInicio(c.getHoraInicio());
+            clone.setHoraFin(c.getHoraFin());
+            clone.setProfesor(null); // No copiar profesor
+            clones.add(clone);
+        }
+
+        return cursoRepository.saveAll(clones).stream().map(mapper::toDTO).toList();
     }
 
     @GetMapping("/padres/{id}/hijos")
