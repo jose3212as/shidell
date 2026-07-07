@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s # By default, scrape targets every 15 seconds.
+
+scrape_configs:
+  - job_name: 'shidell-spring-boot'
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+    static_configs:
+      # In Docker on Windows, host.docker.internal resolves to the host machine
+      - targets: ['host.docker.internal:8080']
