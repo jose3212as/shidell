@@ -99,7 +99,7 @@ function normalizarPerfilSuperior(nombreCompleto) {
             const enlace = document.createElement('a');
             enlace.href = 'configuracion.html';
             enlace.style.textDecoration = 'none';
-            enlace.innerHTML = '<span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span>';
+            enlace.innerHTML = '<span class="user-action">Ver perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span>';
             detalles.appendChild(enlace);
         }
 
@@ -117,7 +117,7 @@ function actualizarAvatarPerfil(user = usuarioSesionActual) {
     document.querySelectorAll('.top-user-info .avatar, .user-profile-card .avatar').forEach(avatar => {
         avatar.innerHTML = fotoPerfil
             ? `<img src="${escapeHtml(fotoPerfil)}" alt="Foto de perfil">`
-            : '<i class="ph-fill ph-user" style="font-size:24px;color:var(--primary);"></i>';
+            : '<img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width: 24px; height: 24px;">';
     });
 }
 
@@ -139,8 +139,8 @@ function configurarMenuCuenta() {
         const dropdown = document.createElement('div');
         dropdown.className = 'account-dropdown';
         dropdown.innerHTML = `
-            <a href="configuracion.html"><i class="ph ph-user-circle"></i> Ver perfil</a>
-            <button type="button" class="account-logout"><i class="ph ph-sign-out"></i> Cerrar sesion</button>
+            <a href="configuracion.html"><img src="../icons/regular/user-circle.svg" class="icon-img" alt="user-circle"> Ver perfil</a>
+            <button type="button" class="account-logout"><img src="../icons/regular/sign-out.svg" class="icon-img" alt="sign-out"> Cerrar sesion</button>
         `;
         menu.appendChild(dropdown);
 
@@ -196,21 +196,23 @@ async function cargarTareasDashboard(user) {
         const response = await fetch(`/api/tareas/estudiante/${user.id}`);
         const data = response.ok ? await response.json() : {};
         const tareas = Array.isArray(data.tareas) ? data.tareas : [];
-        const pendientes = tareas.filter(tarea => tarea.status === 'Pendiente');
+        const pendientes = tareas.filter(item => (item.status || item.tarea?.estado) === 'Pendiente');
 
         if (!pendientes.length) {
             container.innerHTML = '<p style="padding:20px;color:var(--text-muted);">No hay tareas pendientes.</p>';
             return;
         }
 
-        container.innerHTML = pendientes.slice(0, 4).map(tarea => {
+        container.innerHTML = pendientes.slice(0, 4).map(item => {
+            const tarea = item.tarea ? { ...item.tarea, status: item.status } : item;
             const prioridad = tarea.prioridad || 'Media';
             const priorityClass = prioridad === 'Alta' ? 'bg-red-light' : prioridad === 'Media' ? 'bg-yellow-light' : 'bg-green-light';
             const priorityIcon = prioridad === 'Alta' ? '^' : prioridad === 'Media' ? '-' : 'v';
             const curso = tarea.curso?.nombre || 'General';
+            const urlDetalle = tarea.id ? `tareadetalle.html?id=${encodeURIComponent(tarea.id)}` : 'tareas.html';
 
             return `
-                <div class="task-item">
+                <div class="task-item" onclick="window.location.href='${urlDetalle}'" style="cursor:pointer;">
                     <div class="check-circle"></div>
                     <div class="task-main">
                         <h4 class="item-title">${escapeHtml(tarea.titulo || 'Tarea')}</h4>
@@ -258,7 +260,7 @@ function actualizarMotivacionSidebar(mensaje) {
     actualizarTexto('motivacion-texto', texto);
 
     const icon = document.getElementById('motivacion-icono');
-    if (icon) icon.innerHTML = `<i class="ph-fill ${escapeHtml(icono)}"></i>`;
+    if (icon) icon.innerHTML = `${iconImg(escapeHtml(icono), 'fill')}`;
 }
 
 async function cargarClasesDashboard(user) {
@@ -296,10 +298,10 @@ async function cargarClasesDashboard(user) {
 
             return `
                 <div class="panel-item">
-                    <div class="item-icon-box bg-${escapeHtml(color)}-light"><i class="ph-fill ${escapeHtml(icono)}"></i></div>
+                    <div class="item-icon-box bg-${escapeHtml(color)}-light">${iconImg(escapeHtml(icono), 'fill')}</div>
                     <div class="item-main">
                         <h4 class="item-title">${escapeHtml(evento.curso || evento.titulo || 'Clase')}</h4>
-                        <div class="item-subtitle"><i class="ph ph-clock"></i> ${escapeHtml(horario)}</div>
+                        <div class="item-subtitle"><img src="../icons/regular/clock.svg" class="icon-img" alt="clock"> ${escapeHtml(horario)}</div>
                     </div>
                     <span class="item-badge bg-blue-light">${escapeHtml(etiqueta)}</span>
                 </div>`;
@@ -331,7 +333,7 @@ async function cargarMensajesDashboard(user) {
             return `
                 <div class="message-card" onclick="window.location.href='mensajes.html?chatId=${contacto.id}'" style="cursor:pointer;">
                     <div class="msg-avatar">
-                        <i class="ph-fill ph-user-circle" style="font-size:40px;color:var(--primary);"></i>
+                        <img src="../icons/fill/user-circle.svg" class="icon-img" alt="user-circle" style="width: 40px; height: 40px;">
                     </div>
                     <div class="msg-body">
                         <div class="msg-header">
@@ -426,7 +428,7 @@ function renderProgresoPorCurso(cursos) {
         return `
             <div class="p-course-item">
                 <div class="p-course-icon bg-${escapeHtml(color)}-light" style="color:var(--${escapeHtml(color)});">
-                    <i class="ph-fill ${escapeHtml(icono)}"></i>
+                    ${iconImg(escapeHtml(icono), 'fill')}
                 </div>
                 <div class="p-course-name">${escapeHtml(limpiarTexto(curso.nombre || 'Curso'))}</div>
                 <div class="p-course-bar-container">
@@ -478,7 +480,7 @@ async function cargarConfiguracionGlobal() {
         
         const elAño = document.getElementById('school-year-display');
         if (elAño) {
-            elAño.innerHTML = `<i class="ph ph-calendar-dots"></i>
+            elAño.innerHTML = `<img src="../icons/regular/calendar-dots.svg" class="icon-img" alt="calendar-dots">
                 <div>
                     <strong>Año escolar Perú ${config.año}: ${config.totalSemanas} semanas lectivas</strong>
                     <span>Organizado en 4 bloques de 9 semanas. Cada semana queda fija y el docente puede publicar tema, foro, actividades y archivos.</span>
@@ -487,7 +489,7 @@ async function cargarConfiguracionGlobal() {
         
         const elBannerTitle = document.getElementById('home-banner-title');
         if (elBannerTitle && config.mensajeGlobal) {
-            elBannerTitle.innerHTML = `<i class="ph-fill ph-chart-line-up"></i> ${config.mensajeGlobal}`;
+            elBannerTitle.innerHTML = `<img src="../icons/fill/chart-line-up.svg" class="icon-img" alt="chart-line-up"> ${config.mensajeGlobal}`;
         }
     } catch (e) {
         console.warn('No se pudo cargar la configuración global:', e);

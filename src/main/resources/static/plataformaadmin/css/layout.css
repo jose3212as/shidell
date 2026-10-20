@@ -83,7 +83,7 @@
   font-weight: 700; font-size: 14px;
 }
 .sidebar-user-info { flex: 1; min-width: 0; }
-.sidebar-user-info strong { display: block; font-size: 13px; color: var(--sidebar-text-primary); truncate; }
+.sidebar-user-info strong { display: block; font-size: 13px; color: var(--sidebar-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .sidebar-user-info span { display: block; font-size: 11px; color: var(--sidebar-text-tertiary); }
 .sidebar-user-arrow { font-size: 14px; color: var(--sidebar-text-tertiary); }
 

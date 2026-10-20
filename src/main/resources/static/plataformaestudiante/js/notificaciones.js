@@ -7,7 +7,7 @@
         if (!currentUser || !currentUser.id) return;
         prepararNotificaciones();
         cargarNotificacionesEstudiante();
-        setInterval(cargarNotificacionesEstudiante, 30000);
+        setInterval(cargarNotificacionesEstudiante, 10000);
     });
 
     function prepararNotificaciones() {
@@ -55,8 +55,8 @@
     function actualizarBadges(total) {
         document.querySelectorAll('.notification-btn .badge').forEach(badge => {
             if (total > 0) {
-                badge.textContent = '';
-                badge.style.display = 'block';
+                badge.textContent = total > 99 ? '99+' : String(total);
+                badge.style.display = 'flex';
             } else {
                 badge.textContent = '';
                 badge.style.display = 'none';
@@ -68,8 +68,26 @@
         if (!panel) return;
         const isVisible = panel.classList.contains('visible');
         panel.classList.toggle('visible', !isVisible);
-        panel.style.top = `${btn.offsetTop + btn.offsetHeight + 10}px`;
-        panel.style.right = '0px';
+        const rect = btn.getBoundingClientRect();
+        panel.style.position = 'fixed';
+        panel.style.top = `${rect.bottom + 10}px`;
+        panel.style.right = `${Math.max(16, window.innerWidth - rect.right)}px`;
+    }
+
+    function obtenerIconoNotificacion(titulo) {
+        const t = String(titulo || '').toLowerCase();
+        if (t.includes('tarea')) return '../icons/regular/clipboard-text.svg';
+        if (t.includes('calificaci') || t.includes('nota')) return '../icons/regular/star.svg';
+        if (t.includes('material')) return '../icons/regular/book-open.svg';
+        return '../icons/regular/bell.svg';
+    }
+
+    function obtenerDestinoNotificacion(titulo) {
+        const t = String(titulo || '').toLowerCase();
+        if (t.includes('tarea')) return 'tareas.html';
+        if (t.includes('calificaci') || t.includes('nota')) return 'calificaciones.html';
+        if (t.includes('material')) return 'miscursos.html';
+        return '';
     }
 
     function renderPanel(notificaciones, mensajesNoLeidos) {
@@ -85,8 +103,8 @@
         const items = [];
         if (mensajesNoLeidos > 0) {
             items.push(`
-                <button class="notif-row" onclick="window.location.href='mensajes.html'">
-                    <span class="notif-icon"><i class="ph ph-chat-circle-dots"></i></span>
+                <button class="notif-row unread" onclick="window.location.href='mensajes.html'">
+                    <span class="notif-icon"><img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots"></span>
                     <span class="notif-content">
                         <strong>Mensajes nuevos</strong>
                         <small>${mensajesNoLeidos} mensaje(s) sin leer</small>
@@ -95,14 +113,16 @@
             `);
         }
 
-        notificaciones.slice(0, 10).forEach(n => {
+        notificaciones.slice(0, 12).forEach(n => {
+            const icono = obtenerIconoNotificacion(n.titulo);
+            const destino = obtenerDestinoNotificacion(n.titulo);
             items.push(`
-                <button class="notif-row ${n.leida ? '' : 'unread'}" onclick="marcarNotificacionLeida(${n.id})">
-                    <span class="notif-icon"><i class="ph ph-bell"></i></span>
+                <button class="notif-row ${n.leida ? '' : 'unread'}" onclick="marcarNotificacionLeida(${n.id}, '${destino}')">
+                    <span class="notif-icon"><img src="${icono}" class="icon-img" alt="notif"></span>
                     <span class="notif-content">
                         <strong>${n.titulo || 'Notificación'}</strong>
                         <small>${n.mensaje || ''}</small>
-                        <span class="time">${new Date(n.fecha).toLocaleString()}</span>
+                        <span class="time">${new Date(n.fecha).toLocaleString('es-PE')}</span>
                     </span>
                 </button>
             `);
@@ -111,17 +131,20 @@
         panel.innerHTML = `
             <div class="notification-panel-header">
                 <h3>Notificaciones</h3>
-                <button onclick="marcarTodasNotificaciones()" title="Marcar como leídas"><i class="ph ph-checks"></i></button>
+                <button onclick="marcarTodasNotificaciones()" title="Marcar todas como leídas"><img src="../icons/regular/checks.svg" class="icon-img" alt="checks"></button>
             </div>
             <div class="notification-panel-list">
-                ${items.length ? items.join('') : '<div class="notif-empty"><i class="ph ph-bell-slash"></i><p>No tienes notificaciones pendientes.</p></div>'}
+                ${items.length ? items.join('') : '<div class="notif-empty"><img src="../icons/regular/bell-slash.svg" class="icon-img" alt="bell-slash"><p>No tienes notificaciones pendientes.</p></div>'}
             </div>
         `;
     }
 
-    window.marcarNotificacionLeida = async function (id) {
+    window.marcarNotificacionLeida = async function (id, destino) {
         await fetch(`/api/notificaciones/${id}/leer`, { method: 'PUT' }).catch(() => {});
         await cargarNotificacionesEstudiante();
+        if (destino && !window.location.pathname.endsWith(destino)) {
+            window.location.href = destino;
+        }
     };
 
     window.marcarTodasNotificaciones = async function () {

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shidell - Calendario</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505f">
+    <script src="../js/icon-helper.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
     <link rel="stylesheet" href="../css/calendario.css">
     <style>
         @keyframes spin {
@@ -317,23 +317,23 @@
     <div class="dashboard">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="logo-icon"><i class="ph-fill ph-graduation-cap"></i></div>
+                <div class="logo-icon"><img src="../icons/fill/graduation-cap.svg" class="icon-img" alt="graduation-cap"></div>
                 <div class="logo-text">
                     <h2>Shidell</h2>
                     <p>Portal Estudiante</p>
                 </div>
             </div>
             <nav class="sidebar-nav">
-                <a href="portalestudiante.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
-                <a href="miscursos.html" class="nav-item"><i class="ph ph-book-open"></i><span>Mis cursos</span></a>
-                <a href="tareas.html" class="nav-item"><i class="ph ph-clipboard-text"></i><span>Tareas</span></a>
-                <a href="calificaciones.html" class="nav-item"><i class="ph ph-star"></i><span>Calificaciones</span></a>
-                <a href="calendario.html" class="nav-item active"><i
-                        class="ph ph-calendar-blank"></i><span>Calendario</span></a>
-                <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
-                <a href="miprogreso.html" class="nav-item"><i class="ph ph-shield-check"></i><span>Mi
+                <a href="portalestudiante.html" class="nav-item"><img src="../icons/regular/house.svg" class="icon-img" alt="house"><span>Inicio</span></a>
+                <a href="miscursos.html" class="nav-item"><img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open"><span>Mis cursos</span></a>
+                <a href="tareas.html" class="nav-item"><img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text"><span>Tareas</span></a>
+                <a href="calificaciones.html" class="nav-item"><img src="../icons/regular/star.svg" class="icon-img" alt="star"><span>Calificaciones</span></a>
+                <a href="calendario.html" class="nav-item active"><img
+                        src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"><span>Calendario</span></a>
+                <a href="mensajes.html" class="nav-item"><img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots"><span>Mensajes</span></a>
+                <a href="miprogreso.html" class="nav-item"><img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check"><span>Mi
                         progreso</span></a>
-                <a href="configuracion.html" class="nav-item"><i class="ph ph-gear"></i><span>Configuración</span></a>
+                <a href="configuracion.html" class="nav-item"><img src="../icons/regular/gear.svg" class="icon-img" alt="gear"><span>Configuración</span></a>
             </nav>
         </aside>
 
@@ -344,14 +344,14 @@
                     <p>Tus clases, tareas y exámenes en un solo lugar.</p>
                 </div>
                 <div class="topbar-actions">
-                    <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
+                    <button class="notification-btn"><img src="../icons/regular/bell.svg" class="icon-img" alt="bell"><span class="badge"></span></button>
                     <div class="top-user-info">
                         <div class="user-details">
                             <span class="user-name">Estudiante</span>
                             <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver
-                                    perfil <i class="ph ph-caret-right"></i></span></a>
+                                    perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span></a>
                         </div>
-                        <div class="avatar"><i class="ph-fill ph-user" style="font-size:24px;color:var(--primary);"></i>
+                        <div class="avatar"><img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width:24px;height:24px;">
                         </div>
                     </div>
                 </div>
@@ -370,16 +370,16 @@
                             <div class="calendar-controls">
                                 <button class="btn-hoy" id="btnHoy">Hoy</button>
                                 <div class="nav-arrows">
-                                    <button class="nav-arrow" id="btnPrev"><i class="ph ph-caret-left"></i></button>
-                                    <button class="nav-arrow" id="btnNext"><i class="ph ph-caret-right"></i></button>
+                                    <button class="nav-arrow" id="btnPrev"><img src="../icons/regular/caret-left.svg" class="icon-img" alt="caret-left"></button>
+                                    <button class="nav-arrow" id="btnNext"><img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></button>
                                 </div>
-                                <button class="month-dropdown" id="mesLabel">Cargando... <i
-                                        class="ph ph-caret-down"></i></button>
+                                <button class="month-dropdown" id="mesLabel">Cargando... <img
+                                        src="../icons/regular/caret-down.svg" class="icon-img" alt="caret-down"></button>
                             </div>
                             <div class="calendar-controls">
                                 <div style="position:relative;">
-                                    <button class="btn-filter" id="btnFiltro"><i class="ph ph-faders"></i> Filtros <i
-                                            class="ph ph-caret-down"></i></button>
+                                    <button class="btn-filter" id="btnFiltro"><img src="../icons/regular/faders.svg" class="icon-img" alt="faders"> Filtros <img
+                                            src="../icons/regular/caret-down.svg" class="icon-img" alt="caret-down"></button>
                                     <div id="filtroMenu"
                                         style="display:none;position:absolute;right:0;top:40px;background:white;border:1px solid var(--border);border-radius:10px;padding:10px;z-index:200;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.12);">
                                         <label
@@ -410,8 +410,8 @@
                             </div>
                             <div class="calendar-body" id="calendarBody">
                                 <div style="padding:40px;text-align:center;color:var(--text-muted);">
-                                    <i class="ph ph-spinner"
-                                        style="font-size:28px;animation:spin 1s linear infinite;display:block;margin-bottom:8px;"></i>
+                                    <img src="../icons/regular/spinner.svg" class="icon-img icon-spin" alt="spinner"
+                                        style="width:28px;height:28px;animation:spin 1s linear infinite;display:block;margin:0 auto 8px;">
                                     Cargando eventos...
                                 </div>
                             </div>
@@ -437,7 +437,7 @@
                         <div class="widget-panel" id="dayPanel">
                             <div class="day-panel-header">
                                 <h3 id="dayPanelTitle">Selecciona un día</h3>
-                                <button class="day-panel-close" id="dayPanelClose"><i class="ph ph-x"></i></button>
+                                <button class="day-panel-close" id="dayPanelClose"><img src="../icons/regular/x.svg" class="icon-img" alt="x"></button>
                             </div>
                             <div class="timeline" id="dayTimeline"></div>
                         </div>
@@ -469,26 +469,26 @@
                             <div class="summary-grid">
                                 <div class="summary-box"
                                     style="background:var(--purple-light,#ede9fe);border-color:rgba(124,58,237,.2);">
-                                    <div class="summary-icon" style="color:var(--purple,#7c3aed);"><i
-                                            class="ph ph-exam"></i></div>
+                                    <div class="summary-icon" style="color:var(--purple,#7c3aed);"><img
+                                            src="../icons/regular/exam.svg" class="icon-img" alt="exam"></div>
                                     <div class="summary-val" id="sumExamenes">0</div>
                                     <div class="summary-lbl">Exámenes</div>
                                 </div>
                                 <div class="summary-box"
                                     style="background:var(--green-light);border-color:rgba(16,185,129,.2);">
-                                    <div class="summary-icon text-green"><i class="ph ph-check-square"></i></div>
+                                    <div class="summary-icon text-green"><img src="../icons/regular/check-square.svg" class="icon-img" alt="check-square"></div>
                                     <div class="summary-val" id="sumTareas">0</div>
                                     <div class="summary-lbl">Tareas</div>
                                 </div>
                                 <div class="summary-box"
                                     style="background:var(--blue-light);border-color:rgba(59,130,246,.2);">
-                                    <div class="summary-icon text-blue"><i class="ph ph-book-open"></i></div>
+                                    <div class="summary-icon text-blue"><img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open"></div>
                                     <div class="summary-val" id="sumClases">0</div>
                                     <div class="summary-lbl">Clases</div>
                                 </div>
                                 <div class="summary-box"
                                     style="background:var(--yellow-light);border-color:rgba(245,158,11,.2);">
-                                    <div class="summary-icon text-yellow"><i class="ph ph-flag"></i></div>
+                                    <div class="summary-icon text-yellow"><img src="../icons/regular/flag.svg" class="icon-img" alt="flag"></div>
                                     <div class="summary-val" id="sumTotal">0</div>
                                     <div class="summary-lbl">Total</div>
                                 </div>
@@ -646,7 +646,7 @@
                 return `
                     <div class="course-card">
                         <div class="course-card-icon" style="background:${colorCurso(c.color)}">
-                            <i class="ph ${c.icono || 'ph-book-open'}"></i>
+                            ${iconImg(c.icono || 'ph-book-open')}
                         </div>
                         <div class="course-card-body">
                             <h4>${c.nombre}</h4>
@@ -677,7 +677,7 @@
         };
 
         function renderCalendario() {
-            document.getElementById('mesLabel').innerHTML = `${MESES[viewMonth]} ${viewYear} <i class="ph ph-caret-down"></i>`;
+            document.getElementById('mesLabel').innerHTML = `${MESES[viewMonth]} ${viewYear} <img src="../icons/regular/caret-down.svg" class="icon-img" alt="caret-down">`;
             document.getElementById('calTitulo').textContent = `${MESES[viewMonth]} ${viewYear}`;
 
             const hoy = new Date();
@@ -742,7 +742,7 @@
             proxPanel.style.display = 'none';
 
             if (evs.length === 0) {
-                timeline.innerHTML = `<div class="no-events"><i class="ph ph-calendar-blank"></i><p>No hay eventos este día</p></div>`;
+                timeline.innerHTML = `<div class="no-events"><img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"><p>No hay eventos este día</p></div>`;
                 return;
             }
 
@@ -766,7 +766,7 @@
         <div class="timeline-item ${tipoCls}">
             <div class="tl-time">${horaStr}</div>
             <div class="tl-body">
-                <h4><i class="ph ${iconMap[ev.tipo]}" style="margin-right:4px;"></i>${ev.titulo}</h4>
+                <h4>${iconImg(iconMap[ev.tipo], 'regular', 'margin-right:4px;')}${ev.titulo}</h4>
                 ${curso}
                 ${docente}
                 <span class="tl-badge ${badgeCls}">${tipoLabel}</span>
@@ -807,7 +807,7 @@
                 const exColor = ev.tipo === 'EXAMEN' ? 'color:var(--purple,#7c3aed);' : '';
                 return `
         <div class="event-row" style="cursor:pointer;" onclick="seleccionarDia(${fecha.getFullYear()},${fecha.getMonth()},${fecha.getDate()})">
-            <div class="event-icon ${color}" style="${exColor}"><i class="ph-fill ${icon}"></i></div>
+            <div class="event-icon ${color}" style="${exColor}">${iconImg(icon, 'fill')}</div>
             <div class="event-info">
                 <h4>${ev.titulo}</h4>
                 <p>${ev.curso || ev.tipo}</p>
@@ -870,8 +870,14 @@
 
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
+    <script src="/vendor/alertas.js?v=20261019d"></script>
 
 </body>
 
 </html>
+
+
+
+
+
+

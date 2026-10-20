@@ -169,7 +169,7 @@
         if (!contenedor) return;
 
         if (!cursosResumen.length) {
-            contenedor.innerHTML = '<div class="cal-state empty"><i class="ph ph-books"></i><strong>No hay cursos para mostrar.</strong><span>Los cursos se leen desde el API del estudiante.</span></div>';
+            contenedor.innerHTML = '<div class="cal-state empty"><img src="../icons/regular/books.svg" class="icon-img" alt="books"><strong>No hay cursos para mostrar.</strong><span>Los cursos se leen desde el API del estudiante.</span></div>';
             return;
         }
 
@@ -179,7 +179,7 @@
                 <button class="cal-item cal-item-button" data-course-id="${escapeHtml(curso.id)}">
                     <div class="cal-course-info">
                         <div class="cal-icon bg-${escapeHtml(curso.color)}-light" style="color: var(--${escapeHtml(curso.color)}, var(--primary));">
-                            <i class="ph-fill ${escapeHtml(curso.icono)}"></i>
+                            ${iconImg(escapeHtml(curso.icono), 'fill')}
                         </div>
                         <div class="cal-course-details">
                             <h4>${escapeHtml(curso.nombre)}</h4>
@@ -188,7 +188,7 @@
                     </div>
                     <div class="cal-score">${curso.promedio.toFixed(1)} <span>/ 20</span></div>
                     <div><span class="cal-status-tag ${estado.clase}">${estado.texto}</span></div>
-                    <div class="cal-arrow"><i class="ph ph-caret-right"></i></div>
+                    <div class="cal-arrow"><img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></div>
                 </button>`;
         }).join('');
 
@@ -226,7 +226,7 @@
         contenedor.innerHTML = lista.map(cal => `
             <div class="eval-item">
                 <div class="eval-icon bg-${escapeHtml(cal.curso.color)}-light" style="color: var(--${escapeHtml(cal.curso.color)}, var(--primary));">
-                    <i class="ph-fill ${escapeHtml(cal.curso.icono)}"></i>
+                    ${iconImg(escapeHtml(cal.curso.icono), 'fill')}
                 </div>
                 <div class="eval-info">
                     <h4>${escapeHtml(cal.actividad)}</h4>
@@ -280,7 +280,7 @@
         if (!contenedor) return;
 
         if (!cursosResumen.length) {
-            contenedor.innerHTML = '<div class="cal-state empty"><i class="ph ph-books"></i><strong>No hay cursos.</strong></div>';
+            contenedor.innerHTML = '<div class="cal-state empty"><img src="../icons/regular/books.svg" class="icon-img" alt="books"><strong>No hay cursos.</strong></div>';
             return;
         }
 
@@ -290,7 +290,7 @@
                 <button class="course-select-btn" data-select-course-id="${escapeHtml(curso.id)}">
                     <div class="course-select-info">
                         <div class="cal-icon bg-${escapeHtml(curso.color)}-light" style="color: var(--${escapeHtml(curso.color)}, var(--primary)); font-size: 16px; width: 32px; height: 32px; border-radius: 8px;">
-                            <i class="ph-fill ${escapeHtml(curso.icono)}"></i>
+                            ${iconImg(escapeHtml(curso.icono), 'fill')}
                         </div>
                         <div class="course-select-details">
                             <h4>${escapeHtml(curso.nombre)}</h4>
@@ -301,7 +301,7 @@
                         <span class="score-val">${promedioStr}</span>
                         <span class="score-lbl">Promedio</span>
                     </div>
-                    <div class="course-select-arrow"><i class="ph ph-caret-right"></i></div>
+                    <div class="course-select-arrow"><img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></div>
                 </button>`;
         }).join('');
 
@@ -344,7 +344,7 @@
         if (iconBox) {
             iconBox.className = `course-detail-icon bg-${curso.color}-light`;
             iconBox.style.color = `var(--${curso.color}, var(--primary))`;
-            iconBox.innerHTML = `<i class="ph-fill ${curso.icono}"></i>`;
+            iconBox.innerHTML = `${iconImg(curso.icono, 'fill')}`;
         }
 
         const evals = calificaciones
@@ -400,7 +400,7 @@
                 <div class="detail-row">
                     <div class="detail-main">
                         <div class="cal-icon bg-${escapeHtml(cal.curso.color)}-light" style="color: var(--${escapeHtml(cal.curso.color)}, var(--primary));">
-                            <i class="ph-fill ${escapeHtml(cal.curso.icono)}"></i>
+                            ${iconImg(escapeHtml(cal.curso.icono), 'fill')}
                         </div>
                         <div>
                             <strong>${escapeHtml(cal.curso.nombre)}</strong>
@@ -445,7 +445,7 @@
                 <div class="detail-row">
                     <div class="detail-main">
                         <div class="cal-icon bg-${escapeHtml(curso.color)}-light" style="color: var(--${escapeHtml(curso.color)}, var(--primary));">
-                            <i class="ph-fill ${escapeHtml(curso.icono)}"></i>
+                            ${iconImg(escapeHtml(curso.icono), 'fill')}
                         </div>
                         <strong>${escapeHtml(curso.nombre)}</strong>
                     </div>

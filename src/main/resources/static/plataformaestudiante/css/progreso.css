@@ -13,8 +13,9 @@
 }
 
 .progreso-page-header h2 {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 800;
+    letter-spacing: -0.02em;
     color: var(--text-primary);
     display: flex;
     align-items: center;
@@ -30,7 +31,7 @@
 .progreso-stats-row {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
+    gap: 20px;
     margin-bottom: 24px;
     margin-top: 8px;
 }
@@ -42,7 +43,7 @@
 .p-stat-card {
     background: #ffffff;
     border-radius: 20px;
-    padding: 22px;
+    padding: 24px;
     border: 1px solid var(--border-color-dark);
     display: flex;
     flex-direction: column;
@@ -57,15 +58,15 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--primary), #38bdf8);
+    background: var(--primary);
     border-radius: 20px 20px 0 0;
     opacity: 0;
     transition: opacity 0.2s;
 }
 
 .p-stat-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(37,99,235,0.10);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(20, 23, 26, 0.08);
 }
 
 .p-stat-card:hover::before { opacity: 1; }
@@ -78,8 +79,8 @@
 }
 
 .p-stat-icon {
-    width: 50px;
-    height: 50px;
+    width: 52px;
+    height: 52px;
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -91,20 +92,20 @@
 .p-stat-info {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 4px;
     flex: 1;
 }
 
 .p-stat-info .label {
-    font-size: 12px;
+    font-size: 13.5px;
     color: var(--text-secondary);
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .p-stat-info .value {
-    font-size: 30px;
+    font-size: 34px;
     font-weight: 800;
     color: var(--text-primary);
     display: flex;
@@ -114,7 +115,7 @@
 }
 
 .p-stat-info .value span {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-tertiary);
     font-weight: 600;
 }
@@ -122,28 +123,28 @@
 .p-stat-badge {
     display: inline-flex;
     align-items: center;
-    padding: 3px 10px;
+    padding: 5px 12px;
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     margin-top: 6px;
     width: fit-content;
 }
 
 .p-stat-subtext {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--text-secondary);
-    margin-top: 2px;
+    margin-top: 4px;
 }
 
 /* Progress bar inside stat card */
 .p-stat-progress {
-    margin: 8px 0;
+    margin: 10px 0;
 }
 
 .p-progress-bar-bg {
     width: 100%;
-    height: 8px;
+    height: 9px;
     background: var(--bg-main);
     border-radius: 99px;
     overflow: hidden;
@@ -162,11 +163,11 @@
     margin-top: auto;
     padding-top: 14px;
     border-top: 1px solid var(--border-color);
-    font-size: 12px;
-    font-weight: 500;
+    font-size: 13.5px;
+    font-weight: 600;
 }
 
-.p-stat-footer .left  { color: var(--text-tertiary); }
+.p-stat-footer .left  { color: var(--text-secondary); }
 .p-stat-footer .right { font-weight: 700; }
 .p-stat-footer .right.up { color: var(--green); }
 .p-stat-footer .right.down { color: var(--red); }
@@ -187,7 +188,7 @@
     background: #ffffff;
     border-radius: 20px;
     border: 1px solid var(--border-color-dark);
-    padding: 24px;
+    padding: 26px;
     display: flex;
     flex-direction: column;
     transition: box-shadow 0.2s;
@@ -198,21 +199,21 @@
 }
 
 .p-panel > h3 {
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 800;
     color: var(--text-primary);
     margin-bottom: 20px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .p-panel > h3::before {
     content: '';
     display: inline-block;
     width: 4px;
-    height: 16px;
-    background: linear-gradient(180deg, var(--primary), #38bdf8);
+    height: 18px;
+    background: var(--primary);
     border-radius: 2px;
 }
 
@@ -227,9 +228,9 @@
 .p-course-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 12px;
-    border-radius: 12px;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
     background: var(--bg-main);
     transition: background 0.2s;
 }
@@ -239,13 +240,13 @@
 }
 
 .p-course-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 20px;
     flex-shrink: 0;
 }
 

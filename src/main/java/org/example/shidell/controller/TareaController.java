@@ -41,6 +41,12 @@ public class TareaController {
     @Autowired
     private EntityMapper mapper;
 
+    @Autowired
+    private org.example.shidell.service.DocenteService docenteService;
+
+    @Autowired
+    private org.example.shidell.service.NotificacionService notificacionService;
+
     @GetMapping
     public List<TareaDTO> getAllTareas() {
         return tareaRepository.findAll().stream().map(mapper::toDTO).toList();
@@ -93,7 +99,12 @@ public class TareaController {
 
     @PostMapping
     public TareaDTO createTarea(@RequestBody Tarea tarea) {
-        return mapper.toDTO(tareaRepository.save(tarea));
+        Tarea guardada = tareaRepository.save(tarea);
+        if (guardada.getCurso() != null && guardada.getCurso().getId() != null) {
+            List<UserEntity> estudiantes = docenteService.obtenerEstudiantesPorCurso(guardada.getCurso().getId());
+            notificacionService.notificarNuevaTareaAEstudiantes(guardada, estudiantes);
+        }
+        return mapper.toDTO(guardada);
     }
 
     @PutMapping("/{id}")

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
+    <script src="../js/icon-helper.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
 </head>
 
 <body>
@@ -18,9 +18,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="logo-icon">
-                    <i class="ph-fill ph-graduation-cap"></i>
-                </div>
+                <div class="logo-icon"><img src="../icons/fill/graduation-cap.svg" class="icon-img" alt="graduation-cap"></div>
                 <div class="logo-text">
                     <h2>Shidell</h2>
                     <p>Portal Estudiante</p>
@@ -29,35 +27,35 @@
 
             <nav class="sidebar-nav">
                 <a href="portalestudiante.html" class="nav-item active">
-                    <i class="ph ph-house"></i>
+                    <img src="../icons/regular/house.svg" class="icon-img" alt="house">
                     <span>Inicio</span>
                 </a>
                 <a href="miscursos.html" class="nav-item">
-                    <i class="ph ph-book-open"></i>
+                    <img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open">
                     <span>Mis cursos</span>
                 </a>
                 <a href="tareas.html" class="nav-item">
-                    <i class="ph ph-clipboard-text"></i>
+                    <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text">
                     <span>Tareas</span>
                 </a>
                 <a href="calificaciones.html" class="nav-item">
-                    <i class="ph ph-star"></i>
+                    <img src="../icons/regular/star.svg" class="icon-img" alt="star">
                     <span>Calificaciones</span>
                 </a>
                 <a href="calendario.html" class="nav-item">
-                    <i class="ph ph-calendar-blank"></i>
+                    <img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank">
                     <span>Calendario</span>
                 </a>
                 <a href="mensajes.html" class="nav-item">
-                    <i class="ph ph-chat-circle-dots"></i>
+                    <img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots">
                     <span>Mensajes</span>
                 </a>
                 <a href="miprogreso.html" class="nav-item">
-                    <i class="ph ph-shield-check"></i>
+                    <img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check">
                     <span>Mi progreso</span>
                 </a>
                 <a href="configuracion.html" class="nav-item">
-                    <i class="ph ph-gear"></i>
+                    <img src="../icons/regular/gear.svg" class="icon-img" alt="gear">
                     <span>Configuración</span>
                 </a>
             </nav>
@@ -76,18 +74,16 @@
                 <div class="topbar-actions">
 
                     <button class="notification-btn">
-                        <i class="ph ph-bell"></i>
+                        <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
                         <span class="badge"></span>
                     </button>
 
                     <div class="top-user-info">
                         <div class="user-details">
                             <span class="user-name">Estudiante</span>
-                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span></a>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span></a>
                         </div>
-                        <div class="avatar">
-                            <i class="ph-fill ph-user" style="font-size: 24px; color: var(--primary);"></i>
-                        </div>
+                        <div class="avatar"><img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width: 24px; height: 24px;"></div>
                     </div>
                 </div>
             </header>
@@ -100,55 +96,52 @@
                     <div class="stat-item">
                         <div class="stat-top">
                             <div class="stat-icon-circle bg-blue-light">
-                                <i class="ph ph-book-open"></i>
+                                <img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open">
                             </div>
                             <span class="stat-val" id="dashboard-cursos">0</span>
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Cursos inscritos</p>
-                            <a href="miscursos.html" class="stat-footer-link">Ver cursos <i
-                                    class="ph ph-arrow-right"></i></a>
+                            <a href="miscursos.html" class="stat-footer-link">Ver cursos <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                         </div>
                     </div>
 
                     <div class="stat-item">
                         <div class="stat-top">
                             <div class="stat-icon-circle bg-green-light">
-                                <i class="ph ph-clipboard-text"></i>
+                                <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text">
                             </div>
                             <span class="stat-val" id="dashboard-tareas">0</span>
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Tareas pendientes</p>
-                            <a href="tareas.html" class="stat-footer-link">Ver tareas <i
-                                    class="ph ph-arrow-right"></i></a>
+                            <a href="tareas.html" class="stat-footer-link">Ver tareas <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                         </div>
                     </div>
 
                     <div class="stat-item">
                         <div class="stat-top">
                             <div class="stat-icon-circle bg-purple-light">
-                                <i class="ph ph-clock"></i>
+                                <img src="../icons/regular/clock.svg" class="icon-img" alt="clock">
                             </div>
                             <span class="stat-val" id="dashboard-horas">0</span>
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Horas de estudio esta semana</p>
-                            <a href="miprogreso.html" class="stat-footer-link">Ver reporte <i class="ph ph-arrow-right"></i></a>
+                            <a href="miprogreso.html" class="stat-footer-link">Ver reporte <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                         </div>
                     </div>
 
                     <div class="stat-item">
                         <div class="stat-top">
                             <div class="stat-icon-circle bg-yellow-light">
-                                <i class="ph ph-star"></i>
+                                <img src="../icons/regular/star.svg" class="icon-img" alt="star">
                             </div>
                             <span class="stat-val" id="dashboard-promedio">0.0</span>
                         </div>
                         <div class="stat-info">
                             <p class="stat-label">Promedio general</p>
-                            <a href="calificaciones.html" class="stat-footer-link">Ver calificaciones <i
-                                    class="ph ph-arrow-right"></i></a>
+                            <a href="calificaciones.html" class="stat-footer-link">Ver calificaciones <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                         </div>
                     </div>
                 </div>
@@ -158,8 +151,8 @@
                     <!-- Próximas Clases -->
                     <div class="main-panel">
                         <div class="panel-top">
-                            <h3 class="panel-title"><i class="ph ph-calendar-blank"></i> Próximas clases</h3>
-                            <a href="calendario.html" class="panel-link">Ver todas <i class="ph ph-arrow-right"></i></a>
+                            <h3 class="panel-title"><img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"> Próximas clases</h3>
+                            <a href="calendario.html" class="panel-link">Ver todas <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                         </div>
                         <div class="panel-list" id="upcomingClassesList">
                             <div class="panel-item">
@@ -173,8 +166,8 @@
                     <!-- Tareas Pendientes -->
                     <div class="main-panel">
                         <div class="panel-top">
-                            <h3 class="panel-title"><i class="ph ph-check-square"></i> Tareas pendientes</h3>
-                            <a href="tareas.html" class="panel-link">Ver todas <i class="ph ph-arrow-right"></i></a>
+                            <h3 class="panel-title"><img src="../icons/regular/check-square.svg" class="icon-img" alt="check-square"> Tareas pendientes</h3>
+                            <a href="tareas.html" class="panel-link">Ver todas <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                         </div>
                         <div class="panel-list" id="taskList">
                             <!-- Las tareas se cargarán dinámicamente -->
@@ -190,8 +183,8 @@
                 <!-- Messages Section -->
                 <div class="messages-row">
                     <div class="panel-top">
-                        <h3 class="panel-title"><i class="ph ph-chat-centered-text"></i> Mensajes recientes</h3>
-                        <a href="mensajes.html" class="panel-link">Ver todos <i class="ph ph-arrow-right"></i></a>
+                        <h3 class="panel-title"><img src="../icons/regular/chat-centered-text.svg" class="icon-img" alt="chat-centered-text"> Mensajes recientes</h3>
+                        <a href="mensajes.html" class="panel-link">Ver todos <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                     </div>
                     <div id="messageList">
                         <!-- Los mensajes se cargarán dinámicamente -->
@@ -204,7 +197,7 @@
                         <img src="https://img.icons8.com/color/144/books.png" alt="books">
                     </div>
                     <div class="banner-center">
-                        <p class="banner-quote" id="home-banner-title"><i class="ph-fill ph-chart-line-up"></i> Cargando tu avance...</p>
+                        <p class="banner-quote" id="home-banner-title"><img src="../icons/fill/chart-line-up.svg" class="icon-img" alt="chart-line-up"> Cargando tu avance...</p>
                         <span class="banner-author" id="home-banner-text">Tu resumen se actualiza con tus cursos, tareas y notas reales.</span>
                     </div>
                     <div class="banner-right-img">
@@ -220,8 +213,11 @@
 
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
+    <script src="/vendor/alertas.js?v=20261019d"></script>
 
 </body>
 
 </html>
+
+
+

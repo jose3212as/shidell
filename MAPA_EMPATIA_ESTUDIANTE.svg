@@ -1,0 +1,213 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%" style="background:#0f172a; font-family:'Segoe UI', system-ui, -apple-system, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+
+    <linearGradient id="purpleCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#581c87" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1e293b" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <linearGradient id="blueCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1e293b" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <linearGradient id="indigoCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#312e81" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1e293b" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <linearGradient id="skyCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#075985" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1e293b" stop-opacity="0.8"/>
+    </linearGradient>
+
+    <linearGradient id="painCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#881337" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1e293b" stop-opacity="0.85"/>
+    </linearGradient>
+
+    <linearGradient id="gainCard" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#064e3b" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1e293b" stop-opacity="0.85"/>
+    </linearGradient>
+
+    <linearGradient id="avatarRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="50%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#ec4899"/>
+    </linearGradient>
+
+    <filter id="cardShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1600" height="1000" fill="url(#bgGrad)"/>
+
+  <!-- ==================== HEADER ==================== -->
+  <g transform="translate(800, 60)" text-anchor="middle">
+    <!-- Tag Pill -->
+    <rect x="-140" y="-35" width="280" height="26" rx="13" fill="#1e3a8a" fill-opacity="0.4" stroke="#3b82f6" stroke-width="1"/>
+    <text x="0" y="-18" fill="#60a5fa" font-size="12" font-weight="700" letter-spacing="1.5">METODOLOGÍA DESIGN THINKING</text>
+    
+    <!-- Title -->
+    <text x="0" y="22" fill="#ffffff" font-size="32" font-weight="900" letter-spacing="1">MAPA DE EMPATÍA <tspan fill="#818cf8">• ACTOR: ESTUDIANTE</tspan></text>
+    <text x="0" y="48" fill="#94a3b8" font-size="15" font-weight="400">Perfil: Estudiante Universitario / Plataforma de Gestión Académica (Shidell)</text>
+  </g>
+
+  <!-- ==================== 1. TOP CARD: ¿QUÉ PIENSA Y SIENTE? ==================== -->
+  <g transform="translate(520, 140)" filter="url(#cardShadow)">
+    <rect width="560" height="195" rx="16" fill="url(#purpleCard)" stroke="#a855f7" stroke-width="1.5"/>
+    <rect x="20" y="16" width="38" height="38" rx="8" fill="#a855f7" fill-opacity="0.2"/>
+    <text x="39" y="41" font-size="20" text-anchor="middle">🧠</text>
+    
+    <text x="70" y="32" fill="#e9d5ff" font-size="16" font-weight="800">¿QUÉ PIENSA Y SIENTE?</text>
+    <text x="70" y="48" fill="#c084fc" font-size="12" font-weight="500">Creencias internas, motivaciones profundas y emociones</text>
+    
+    <g transform="translate(25, 75)" font-size="13" fill="#cbd5e1">
+      <text x="0" y="0"><tspan fill="#c084fc" font-weight="bold">• </tspan><tspan fill="#f8fafc" font-style="italic">"¿Lograré entregar todo a tiempo sin amanecerme?"</tspan></text>
+      <text x="0" y="24"><tspan fill="#c084fc" font-weight="bold">• </tspan>Ansiedad ante acumulación de fechas límite y exámenes parciales/finales.</text>
+      <text x="0" y="48"><tspan fill="#c084fc" font-weight="bold">• </tspan>Deseo de aprender de verdad y no solo memorizar por una nota.</text>
+      <text x="0" y="72"><tspan fill="#c084fc" font-weight="bold">• </tspan>Frustración cuando la plataforma es confusa o no encuentra los recursos.</text>
+      <text x="0" y="96"><tspan fill="#c084fc" font-weight="bold">• </tspan>Necesidad de certidumbre sobre sus notas y ponderación acumulada.</text>
+    </g>
+  </g>
+
+  <!-- ==================== 2. LEFT CARD: ¿QUÉ OYE? ==================== -->
+  <g transform="translate(60, 220)" filter="url(#cardShadow)">
+    <rect width="420" height="360" rx="16" fill="url(#indigoCard)" stroke="#6366f1" stroke-width="1.5"/>
+    <rect x="20" y="18" width="38" height="38" rx="8" fill="#6366f1" fill-opacity="0.2"/>
+    <text x="39" y="43" font-size="20" text-anchor="middle">👂</text>
+    
+    <text x="70" y="34" fill="#e0e7ff" font-size="16" font-weight="800">¿QUÉ OYE?</text>
+    <text x="70" y="50" fill="#818cf8" font-size="12" font-weight="500">Influencias externas y mensajes cotidianos</text>
+    
+    <g transform="translate(25, 80)" font-size="13" fill="#cbd5e1">
+      <text x="0" y="0"><tspan fill="#818cf8" font-weight="bold">Docentes:</tspan></text>
+      <text x="12" y="20"><tspan fill="#94a3b8">"Suban el archivo antes de las 23:59 sin prórroga"</tspan></text>
+      <text x="12" y="38"><tspan fill="#94a3b8">"Revisen la rúbrica antes de consultar"</tspan></text>
+
+      <text x="0" y="72"><tspan fill="#818cf8" font-weight="bold">Compañeros de clase:</tspan></text>
+      <text x="12" y="92"><tspan fill="#94a3b8">"¿El profesor ya subió las notas al sistema?"</tspan></text>
+      <text x="12" y="110"><tspan fill="#94a3b8">"¿Alguien sabe qué formato pidió para el informe?"</tspan></text>
+      <text x="12" y="128"><tspan fill="#94a3b8">"Ojalá no colapse la plataforma en la noche"</tspan></text>
+
+      <text x="0" y="162"><tspan fill="#818cf8" font-weight="bold">Familia y entorno:</tspan></text>
+      <text x="12" y="182"><tspan fill="#94a3b8">"Concéntrate en tus cursos para mantener buen promedio"</tspan></text>
+      <text x="12" y="200"><tspan fill="#94a3b8">"Organiza mejor tus horas de estudio"</tspan></text>
+
+      <text x="0" y="234"><tspan fill="#818cf8" font-weight="bold">Redes / Comunidad:</tspan></text>
+      <text x="12" y="254"><tspan fill="#94a3b8">Hacks de productividad, apps de notas y quejas de UX</tspan></text>
+    </g>
+  </g>
+
+  <!-- ==================== CENTER: USER PERSONA AVATAR ==================== -->
+  <g transform="translate(800, 425)">
+    <!-- Glow Ring -->
+    <circle cx="0" cy="0" r="54" fill="none" stroke="url(#avatarRing)" stroke-width="4" filter="url(#glow)"/>
+    <circle cx="0" cy="0" r="50" fill="#0f172a" stroke="#475569" stroke-width="2"/>
+    <text x="0" y="15" font-size="44" text-anchor="middle">🎓</text>
+    
+    <!-- Active Status Badge -->
+    <rect x="25" y="28" width="46" height="18" rx="9" fill="#10b981" stroke="#0f172a" stroke-width="2"/>
+    <text x="48" y="41" fill="#ffffff" font-size="9" font-weight="900" text-anchor="middle">ACTIVO</text>
+
+    <!-- Name Label -->
+    <text x="0" y="78" fill="#ffffff" font-size="16" font-weight="800" text-anchor="middle">Mateo / Andrea (20 años)</text>
+    <text x="0" y="96" fill="#60a5fa" font-size="12" font-weight="600" text-anchor="middle">Estudiante Universitario • Shidell</text>
+  </g>
+
+  <!-- ==================== 3. RIGHT CARD: ¿QUÉ VE? ==================== -->
+  <g transform="translate(1120, 220)" filter="url(#cardShadow)">
+    <rect width="420" height="360" rx="16" fill="url(#blueCard)" stroke="#3b82f6" stroke-width="1.5"/>
+    <rect x="20" y="18" width="38" height="38" rx="8" fill="#3b82f6" fill-opacity="0.2"/>
+    <text x="39" y="43" font-size="20" text-anchor="middle">👁️</text>
+    
+    <text x="70" y="34" fill="#dbeafe" font-size="16" font-weight="800">¿QUÉ VE?</text>
+    <text x="70" y="50" fill="#60a5fa" font-size="12" font-weight="500">Entorno visual, herramientas y contexto diario</text>
+    
+    <g transform="translate(25, 80)" font-size="13" fill="#cbd5e1">
+      <text x="0" y="0"><tspan fill="#60a5fa" font-weight="bold">Entorno académico:</tspan></text>
+      <text x="12" y="20"><tspan fill="#94a3b8">Aulas virtuales con múltiples materias y enlaces dispersos</tspan></text>
+      <text x="12" y="38"><tspan fill="#94a3b8">Calendarios saturados de actividades simultáneas</tspan></text>
+
+      <text x="0" y="72"><tspan fill="#60a5fa" font-weight="bold">Compañeros y dinámicas:</tspan></text>
+      <text x="12" y="92"><tspan fill="#94a3b8">Grupos de WhatsApp buscando apuntes de última hora</tspan></text>
+      <text x="12" y="110"><tspan fill="#94a3b8">Estudiantes estresados coordinando trabajos grupales</tspan></text>
+
+      <text x="0" y="144"><tspan fill="#60a5fa" font-weight="bold">Tecnología de referencia:</tspan></text>
+      <text x="12" y="164"><tspan fill="#94a3b8">Apps modernas e intuitivas (Notion, Google Drive, Canvas)</tspan></text>
+      <text x="12" y="182"><tspan fill="#94a3b8">Interfaces oscuras, limpias y rápidas en sus teléfonos</tspan></text>
+
+      <text x="0" y="216"><tspan fill="#60a5fa" font-weight="bold">Alertas y avisos:</tspan></text>
+      <text x="12" y="236"><tspan fill="#94a3b8">Notificaciones por correo de tareas próximas a vencer</tspan></text>
+    </g>
+  </g>
+
+  <!-- ==================== 4. BOTTOM-CENTER CARD: ¿QUÉ DICE Y HACE? ==================== -->
+  <g transform="translate(520, 535)" filter="url(#cardShadow)">
+    <rect width="560" height="195" rx="16" fill="url(#skyCard)" stroke="#0ea5e9" stroke-width="1.5"/>
+    <rect x="20" y="16" width="38" height="38" rx="8" fill="#0ea5e9" fill-opacity="0.2"/>
+    <text x="39" y="41" font-size="20" text-anchor="middle">🗣️</text>
+    
+    <text x="70" y="32" fill="#e0f2fe" font-size="16" font-weight="800">¿QUÉ DICE Y HACE?</text>
+    <text x="70" y="48" fill="#38bdf8" font-size="12" font-weight="500">Comportamiento visible, hábitos y acciones reales</text>
+    
+    <g transform="translate(25, 75)" font-size="13" fill="#cbd5e1">
+      <text x="0" y="0"><tspan fill="#38bdf8" font-weight="bold">• </tspan><tspan fill="#f8fafc">Dice:</tspan> "Esta semana avanzaré el informe con tiempo", pero pospone por tareas urgentes.</text>
+      <text x="0" y="24"><tspan fill="#38bdf8" font-weight="bold">• </tspan>Accede al portal desde el celular durante el trayecto en transporte público.</text>
+      <text x="0" y="48"><tspan fill="#38bdf8" font-weight="bold">• </tspan>Descarga diapositivas y guías minutos antes de iniciar cada clase.</text>
+      <text x="0" y="72"><tspan fill="#38bdf8" font-weight="bold">• </tspan>Pregunta dudas en foros y grupos antes de consultar formalmente al docente.</text>
+      <text x="0" y="96"><tspan fill="#38bdf8" font-weight="bold">• </tspan>Actualiza constantemente la pantalla de calificaciones en semana de exámenes.</text>
+    </g>
+  </g>
+
+  <!-- ==================== 5. BOTTOM ROW: DOLORES (PAINS) ==================== -->
+  <g transform="translate(60, 755)" filter="url(#cardShadow)">
+    <rect width="720" height="215" rx="16" fill="url(#painCard)" stroke="#f43f5e" stroke-width="1.5"/>
+    <rect x="20" y="16" width="38" height="38" rx="8" fill="#f43f5e" fill-opacity="0.2"/>
+    <text x="39" y="41" font-size="20" text-anchor="middle">⚠️</text>
+    
+    <text x="70" y="32" fill="#ffe4e6" font-size="16" font-weight="800">ESFUERZOS / DOLORES (PAINS)</text>
+    <text x="70" y="48" fill="#fb7185" font-size="12" font-weight="500">Frustraciones, obstáculos y temores del estudiante</text>
+    
+    <g transform="translate(25, 75)" font-size="13" fill="#cbd5e1">
+      <text x="0" y="0"><tspan fill="#f43f5e" font-weight="bold">✕ </tspan><tspan fill="#f8fafc" font-weight="bold">Fallas en el momento crítico:</tspan> Temor a que la web se caiga o rechace el archivo al filo del plazo (23:59).</text>
+      <text x="0" y="26"><tspan fill="#f43f5e" font-weight="bold">✕ </tspan><tspan fill="#f8fafc" font-weight="bold">Falta de retroalimentación:</tspan> Notas publicadas tarde o sin justificación clara de la rúbrica.</text>
+      <text x="0" y="52"><tspan fill="#f43f5e" font-weight="bold">✕ </tspan><tspan fill="#f8fafc" font-weight="bold">Desorganización de contenidos:</tspan> Enlaces rotos, PDFs dispersos y anuncios no notificados.</text>
+      <text x="0" y="78"><tspan fill="#f43f5e" font-weight="bold">✕ </tspan><tspan fill="#f8fafc" font-weight="bold">Sobrecarga cognitiva:</tspan> Estrés por calcular manualmente si aprueba el curso con los pesos de notas.</text>
+      <text x="0" y="104"><tspan fill="#f43f5e" font-weight="bold">✕ </tspan><tspan fill="#f8fafc" font-weight="bold">Interfaz no responsiva:</tspan> Dificultad para revisar notas o subir archivos cómodamente desde el móvil.</text>
+    </g>
+  </g>
+
+  <!-- ==================== 6. BOTTOM ROW: GANANCIAS (GAINS) ==================== -->
+  <g transform="translate(820, 755)" filter="url(#cardShadow)">
+    <rect width="720" height="215" rx="16" fill="url(#gainCard)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="20" y="16" width="38" height="38" rx="8" fill="#10b981" fill-opacity="0.2"/>
+    <text x="39" y="41" font-size="20" text-anchor="middle">🎯</text>
+    
+    <text x="70" y="32" fill="#d1fae5" font-size="16" font-weight="800">RESULTADOS / GANANCIAS (GAINS)</text>
+    <text x="70" y="48" fill="#34d399" font-size="12" font-weight="500">Aspiraciones, beneficios deseados y métricas de éxito</text>
+    
+    <g transform="translate(25, 75)" font-size="13" fill="#cbd5e1">
+      <text x="0" y="0"><tspan fill="#10b981" font-weight="bold">✓ </tspan><tspan fill="#f8fafc" font-weight="bold">Dashboard centralizado:</tspan> Calendario unificado de entregas con alertas preventivas y cuenta regresiva.</text>
+      <text x="0" y="26"><tspan fill="#10b981" font-weight="bold">✓ </tspan><tspan fill="#f8fafc" font-weight="bold">Confirmación y tranquilidad:</tspan> Comprobante inmediato de entrega exitosa con fecha y hora exacta.</text>
+      <text x="0" y="52"><tspan fill="#10b981" font-weight="bold">✓ </tspan><tspan fill="#f8fafc" font-weight="bold">Transparencia académica:</tspan> Cálculo automático de promedio ponderado y retroalimentación legible.</text>
+      <text x="0" y="78"><tspan fill="#10b981" font-weight="bold">✓ </tspan><tspan fill="#f8fafc" font-weight="bold">Experiencia móvil ágil:</tspan> Acceso rápido y fluido desde cualquier dispositivo sin fricciones.</text>
+      <text x="0" y="104"><tspan fill="#10b981" font-weight="bold">✓ </tspan><tspan fill="#f8fafc" font-weight="bold">Éxito académico y balance:</tspan> Aprobar sus materias a tiempo, reducir el estrés y mantener tiempo libre.</text>
+    </g>
+  </g>
+
+</svg>

@@ -196,18 +196,21 @@
             }
         });
 
-        // Intro Animation logic
+        // Intro Animation logic (ágil y solo la primera vez en la sesión)
         document.addEventListener("DOMContentLoaded", () => {
             const splash = document.getElementById("intro-splash");
             if (splash) {
-                // Remove splash screen after 2.5 seconds
+                if (sessionStorage.getItem("shidell_splash_seen") === "1") {
+                    splash.remove();
+                    return;
+                }
+                sessionStorage.setItem("shidell_splash_seen", "1");
                 setTimeout(() => {
                     splash.classList.add("fade-out");
-                    // Remove from DOM after animation completes
                     setTimeout(() => {
                         splash.remove();
-                    }, 800);
-                }, 2500);
+                    }, 600);
+                }, 750);
             }
         });
     </script>
@@ -215,6 +218,7 @@
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/vendor/alertas.js"></script>
+    <script src="/vendor/mobile-shell.js?v=20261018"></script>
 
 </body>
 </html>

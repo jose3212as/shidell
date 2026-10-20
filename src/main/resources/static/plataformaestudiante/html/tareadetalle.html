@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shidell - Detalle y Entrega de Tarea</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
+    <script src="../js/icon-helper.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
+    <link rel="stylesheet" href="../css/tareas.css?v=20261019e">
+    <style>
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        .td-breadcrumb-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 22px;
+        }
+
+        .td-back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color-dark);
+            background: #ffffff;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .td-back-link:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .td-breadcrumbs {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .td-breadcrumbs a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .td-breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+
+        .td-breadcrumbs .sep {
+            color: var(--text-tertiary);
+        }
+
+        /* Hero Banner of the Task */
+        .td-hero-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 20px;
+            padding: 28px 30px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+        }
+
+        .td-hero-left {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .td-hero-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .td-hero-info h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.25;
+            margin-bottom: 10px;
+        }
+
+        .td-meta-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .td-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 13px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid var(--border-color-dark);
+            background: #f8fafc;
+            color: var(--text-secondary);
+        }
+
+        .td-pill.status-pendiente {
+            background: var(--yellow-light);
+            color: var(--yellow);
+            border-color: rgba(180, 83, 9, 0.25);
+        }
+
+        .td-pill.status-completada {
+            background: var(--green-light);
+            color: var(--green);
+            border-color: rgba(21, 115, 71, 0.25);
+        }
+
+        .td-pill.status-vencido {
+            background: var(--red-light);
+            color: var(--red);
+            border-color: rgba(185, 28, 28, 0.25);
+        }
+
+        /* Layout Grid */
+        .td-grid {
+            display: grid;
+            grid-template-columns: 1.9fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .td-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .td-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 20px;
+            padding: 26px 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.03);
+        }
+
+        .td-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding-bottom: 16px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .td-card-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .td-card-header-title span.eyebrow {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .td-card-header-title h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .td-consigna-body {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 18px 20px;
+            color: var(--text-primary);
+            font-size: 15px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .td-material-box {
+            margin-top: 16px;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 1px solid #dbeafe;
+            background: #eff6ff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .td-material-box.is-hidden {
+            display: none;
+        }
+
+        .td-material-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .td-material-info strong {
+            display: block;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .td-material-info small {
+            color: var(--text-secondary);
+            font-size: 12.5px;
+        }
+
+        .td-btn-material {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 16px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+
+        .td-btn-material:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Formulario de Entrega en Página */
+        .td-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        @media (max-width: 768px) {
+            .td-upload-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .td-field-label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .td-field-label span {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+        }
+
+        .td-dropzone {
+            min-height: 210px;
+            border: 2px dashed #94a3b8;
+            border-radius: 16px;
+            background: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .td-dropzone:hover,
+        .td-dropzone.dragover,
+        .td-dropzone.has-file {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: inset 0 0 0 1px rgba(20, 66, 114, 0.12);
+        }
+
+        .td-dropzone input[type="file"] {
+            display: none;
+        }
+
+        .td-dropzone-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: #ffffff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+        }
+
+        .td-dropzone strong {
+            font-size: 15px;
+            color: var(--text-primary);
+            overflow-wrap: anywhere;
+        }
+
+        .td-dropzone small {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .td-dropzone em {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            font-style: normal;
+        }
+
+        .td-textarea {
+            width: 100%;
+            min-height: 210px;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 16px;
+            padding: 14px 16px;
+            font: inherit;
+            font-size: 14.5px;
+            color: var(--text-primary);
+            resize: vertical;
+            outline: none;
+            background: #ffffff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .td-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(20, 66, 114, 0.12);
+        }
+
+        .td-feedback {
+            display: none;
+            margin-top: 16px;
+            padding: 13px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .td-feedback.show { display: block; }
+        .td-feedback.error { background: var(--red-light); color: var(--red); border: 1px solid rgba(185, 28, 28, 0.2); }
+        .td-feedback.success { background: var(--green-light); color: var(--green); border: 1px solid rgba(21, 115, 71, 0.2); }
+
+        .td-actions-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .td-btn {
+            min-height: 46px;
+            padding: 11px 22px;
+            border-radius: 12px;
+            font-size: 14.5px;
+            font-weight: 800;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .td-btn-secondary {
+            background: #ffffff;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color-dark);
+        }
+
+        .td-btn-secondary:hover {
+            background: var(--bg-main);
+        }
+
+        .td-btn-primary {
+            background: var(--primary);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 8px 20px rgba(20, 66, 114, 0.2);
+        }
+
+        .td-btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .td-btn-primary:disabled {
+            opacity: 0.7;
+            cursor: wait;
+            transform: none;
+        }
+
+        /* Estado de Entrega Realizada */
+        .td-submitted-banner {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border: 1px solid #a7f3d0;
+            border-radius: 16px;
+            padding: 20px 22px;
+            margin-bottom: 20px;
+        }
+
+        .td-submitted-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .td-submitted-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #059669;
+            color: #ffffff;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .td-submitted-code {
+            font-family: monospace;
+            font-size: 14px;
+            font-weight: 800;
+            color: #065f46;
+            background: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px dashed #6ee7b7;
+        }
+
+        .td-submitted-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #d1fae5;
+        }
+
+        .td-detail-item small {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-tertiary);
+            margin-bottom: 4px;
+        }
+
+        .td-detail-item strong,
+        .td-detail-item a {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            word-break: break-word;
+        }
+
+        .td-detail-item a {
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .td-detail-item a:hover {
+            text-decoration: underline;
+        }
+
+        /* Ficha lateral derecha */
+        .td-info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .td-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .td-info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .td-info-row .lbl {
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .td-info-row .val {
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon"><img src="../icons/fill/graduation-cap.svg" class="icon-img" alt="graduation-cap"></div>
+                <div class="logo-text">
+                    <h2>Shidell</h2>
+                    <p>Portal Estudiante</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="portalestudiante.html" class="nav-item">
+                    <img src="../icons/regular/house.svg" class="icon-img" alt="house">
+                    <span>Inicio</span>
+                </a>
+                <a href="miscursos.html" class="nav-item">
+                    <img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open">
+                    <span>Mis cursos</span>
+                </a>
+                <a href="tareas.html" class="nav-item active">
+                    <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text">
+                    <span>Tareas</span>
+                </a>
+                <a href="calificaciones.html" class="nav-item">
+                    <img src="../icons/regular/star.svg" class="icon-img" alt="star">
+                    <span>Calificaciones</span>
+                </a>
+                <a href="calendario.html" class="nav-item">
+                    <img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank">
+                    <span>Calendario</span>
+                </a>
+                <a href="mensajes.html" class="nav-item">
+                    <img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots">
+                    <span>Mensajes</span>
+                </a>
+                <a href="miprogreso.html" class="nav-item">
+                    <img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check">
+                    <span>Mi progreso</span>
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <img src="../icons/regular/gear.svg" class="icon-img" alt="gear">
+                    <span>Configuración</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-wrapper">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="greeting">
+                    <h1>¡Hola, Estudiante! 👋</h1>
+                    <p id="user-academic-info">Detalle y entrega de actividad académica</p>
+                </div>
+
+                <div class="topbar-actions">
+                    <button class="notification-btn">
+                        <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
+                        <span class="badge"></span>
+                    </button>
+
+                    <div class="top-user-info">
+                        <div class="user-details">
+                            <span class="user-name">Estudiante</span>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span></a>
+                        </div>
+                        <div class="avatar"><img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width: 24px; height: 24px;"></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <!-- Barra de retorno y migas de pan -->
+                <div class="td-breadcrumb-bar">
+                    <a href="tareas.html" class="td-back-link" id="btnVolverLista">
+                        <img src="../icons/regular/arrow-left.svg" class="icon-img" alt="volver">
+                        Volver a Mis Tareas
+                    </a>
+                    <nav class="td-breadcrumbs" aria-label="Breadcrumb">
+                        <a href="tareas.html">Mis Tareas</a>
+                        <span class="sep">&gt;</span>
+                        <a href="miscursos.html" id="bcCursoLink">Curso</a>
+                        <span class="sep">&gt;</span>
+                        <span id="bcTareaTitulo">Cargando tarea...</span>
+                    </nav>
+                </div>
+
+                <!-- Estado de carga inicial -->
+                <div id="tdLoadingState" class="td-card" style="padding: 56px; text-align: center; color: var(--text-muted);">
+                    <img src="../icons/regular/spinner.svg" class="icon-img" alt="spinner" style="width: 36px; height: 36px; margin-bottom: 12px; animation: spin 1s linear infinite;">
+                    <p>Cargando información de la tarea...</p>
+                </div>
+
+                <!-- Contenido principal de la tarea -->
+                <div id="tdMainContent" style="display: none;">
+
+                    <!-- Encabezado de la tarea creada -->
+                    <section class="td-hero-card">
+                        <div class="td-hero-left">
+                            <div class="td-hero-icon bg-blue-light" id="tdHeroIcon">
+                                <img src="../icons/fill/clipboard-text.svg" class="icon-img" alt="tarea">
+                            </div>
+                            <div class="td-hero-info">
+                                <h2 id="tdTitulo">Título de la tarea</h2>
+                                <div class="td-meta-pills">
+                                    <span class="td-pill" id="tdCursoPill">
+                                        <img src="../icons/regular/book-open.svg" class="icon-img" alt="curso"> Curso
+                                    </span>
+                                    <span class="td-pill" id="tdFechaPill">
+                                        <img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="fecha"> Vence: --
+                                    </span>
+                                    <span class="td-pill" id="tdPrioridadPill">
+                                        <img src="../icons/regular/flag.svg" class="icon-img" alt="prioridad"> Prioridad Media
+                                    </span>
+                                    <span class="td-pill status-pendiente" id="tdEstadoPill">
+                                        Pendiente
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="td-grid">
+                        <!-- Columna Izquierda: Consigna + Entrega en la misma página -->
+                        <div class="td-left-col">
+
+                            <!-- 1. Consigna del Docente -->
+                            <section class="td-card">
+                                <div class="td-card-header">
+                                    <div class="td-card-header-title">
+                                        <div>
+                                            <span class="eyebrow">Consigna del docente</span>
+                                            <h3>Indicaciones de la tarea</h3>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="td-consigna-body" id="tdDescripcion">
+                                    Cargando descripción...
+                                </div>
+
+                                <div class="td-material-box is-hidden" id="tdMaterialBox">
+                                    <div class="td-material-info">
+                                        <img src="../icons/regular/file-text.svg" class="icon-img" alt="material" style="width: 28px; height: 28px;">
+                                        <div>
+                                            <strong>Material de apoyo adjunto por el docente</strong>
+                                            <small>Descarga o revisa la guía antes de subir tu solución</small>
+                                        </div>
+                                    </div>
+                                    <a href="#" target="_blank" rel="noopener" class="td-btn-material" id="tdMaterialLink">
+                                        <img src="../icons/regular/file-arrow-down.svg" class="icon-img" alt="descargar" style="filter: brightness(0) invert(1);">
+                                        Ver material
+                                    </a>
+                                </div>
+                            </section>
+
+                            <!-- 2. Resumen de Entrega Registrada (visible cuando ya fue entregada) -->
+                            <section class="td-card" id="tdEntregaRegistradaCard" style="display: none;">
+                                <div class="td-card-header">
+                                    <div class="td-card-header-title">
+                                        <div>
+                                            <span class="eyebrow">Trabajo enviado</span>
+                                            <h3>Tu entrega registrada</h3>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn-comprobante" id="btnVerComprobantePagina">
+                                        <img src="../icons/regular/file-text.svg" class="icon-img" alt="comprobante"> Ver / Imprimir Comprobante
+                                    </button>
+                                </div>
+
+                                <div class="td-submitted-banner">
+                                    <div class="td-submitted-top">
+                                        <span class="td-submitted-badge">
+                                            <img src="../icons/regular/check-circle.svg" class="icon-img" alt="ok" style="filter: brightness(0) invert(1);">
+                                            Entrega Recibida Conforme
+                                        </span>
+                                        <span class="td-submitted-code" id="tdCodigoRecibo">REC-SHD-2026-0000</span>
+                                    </div>
+
+                                    <div class="td-submitted-details">
+                                        <div class="td-detail-item">
+                                            <small>Archivo enviado</small>
+                                            <a href="#" target="_blank" rel="noopener" id="tdArchivoEnviadoLink">
+                                                <img src="../icons/regular/file-arrow-down.svg" class="icon-img" alt="archivo">
+                                                <span id="tdArchivoEnviadoNombre">documento.pdf</span>
+                                            </a>
+                                        </div>
+                                        <div class="td-detail-item">
+                                            <small>Fecha y hora de registro</small>
+                                            <strong id="tdFechaEntregaRealizada">--/--/---- --:-- hrs</strong>
+                                        </div>
+                                        <div class="td-detail-item">
+                                            <small>Tu comentario</small>
+                                            <strong id="tdComentarioEstudianteTexto">Sin comentario adicional</strong>
+                                        </div>
+                                        <div class="td-detail-item">
+                                            <small>Calificación del docente</small>
+                                            <strong id="tdCalificacionDocente">Pendiente de revisión</strong>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end;">
+                                    <button type="button" class="td-btn td-btn-secondary" id="btnReemplazarEntrega">
+                                        <img src="../icons/regular/upload-simple.svg" class="icon-img" alt="actualizar">
+                                        Enviar una nueva versión
+                                    </button>
+                                </div>
+                            </section>
+
+                            <!-- 3. Formulario de Entrega de Tarea en la Página -->
+                            <section class="td-card" id="tdFormularioCard">
+                                <div class="td-card-header">
+                                    <div class="td-card-header-title">
+                                        <div>
+                                            <span class="eyebrow">Realizar entrega</span>
+                                            <h3 id="tdFormTitle">Subir mi tarea</h3>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form id="formEntregaPagina">
+                                    <input type="hidden" id="tareaIdInput">
+
+                                    <div class="td-upload-grid">
+                                        <div>
+                                            <div class="td-field-label">
+                                                <label for="archivoTarea">Archivo de solución</label>
+                                                <span>Obligatorio (PDF, DOC, DOCX)</span>
+                                            </div>
+                                            <label class="td-dropzone" for="archivoTarea" id="entregaFileBox">
+                                                <input type="file" id="archivoTarea" name="archivo" accept=".pdf,.doc,.docx">
+                                                <span class="td-dropzone-icon">
+                                                    <img src="../icons/regular/upload-simple.svg" class="icon-img" alt="subir" style="width: 26px; height: 26px;">
+                                                </span>
+                                                <strong id="archivoNombre">Seleccionar o arrastrar archivo aquí</strong>
+                                                <small id="archivoAyuda">Formatos permitidos: PDF, DOC o DOCX</small>
+                                                <em>Tamaño máximo recomendado: 10 MB</em>
+                                            </label>
+                                        </div>
+
+                                        <div>
+                                            <div class="td-field-label">
+                                                <label for="comentarioTarea">Comentario para el docente</label>
+                                                <span id="comentarioContador">0/500</span>
+                                            </div>
+                                            <textarea id="comentarioTarea" class="td-textarea" name="comentario" maxlength="500" placeholder="Escribe aquí un mensaje o nota breve sobre tu entrega (opcional)..."></textarea>
+                                        </div>
+                                    </div>
+
+                                    <p id="entregaFeedback" class="td-feedback" aria-live="polite"></p>
+
+                                    <div class="td-actions-bar">
+                                        <a href="tareas.html" class="td-btn td-btn-secondary" id="btnCancelarEdicion">
+                                            <img src="../icons/regular/arrow-left.svg" class="icon-img" alt="volver">
+                                            Cancelar y volver
+                                        </a>
+                                        <button type="submit" class="td-btn td-btn-primary" id="btnEnviarEntrega">
+                                            <img src="../icons/regular/paper-plane-tilt.svg" class="icon-img" alt="enviar" style="filter: brightness(0) invert(1);">
+                                            Entregar tarea ahora
+                                        </button>
+                                    </div>
+                                </form>
+                            </section>
+
+                        </div>
+
+                        <!-- Columna Derecha: Ficha de la Tarea -->
+                        <aside class="td-right-col">
+                            <div class="widget-panel">
+                                <h3>Detalles de la asignación</h3>
+                                <div class="td-info-list">
+                                    <div class="td-info-row">
+                                        <span class="lbl"><img src="../icons/regular/info.svg" class="icon-img" alt=""> Estado</span>
+                                        <span class="val" id="sideEstado">Pendiente</span>
+                                    </div>
+                                    <div class="td-info-row">
+                                        <span class="lbl"><img src="../icons/regular/book-open.svg" class="icon-img" alt=""> Curso</span>
+                                        <span class="val" id="sideCurso">--</span>
+                                    </div>
+                                    <div class="td-info-row">
+                                        <span class="lbl"><img src="../icons/regular/calendar-blank.svg" class="icon-img" alt=""> Fecha de inicio</span>
+                                        <span class="val" id="sideFechaInicio">--</span>
+                                    </div>
+                                    <div class="td-info-row">
+                                        <span class="lbl"><img src="../icons/regular/clock.svg" class="icon-img" alt=""> Fecha límite</span>
+                                        <span class="val" id="sideFechaVencimiento">--</span>
+                                    </div>
+                                    <div class="td-info-row">
+                                        <span class="lbl"><img src="../icons/regular/flag.svg" class="icon-img" alt=""> Prioridad</span>
+                                        <span class="val" id="sidePrioridad">Media</span>
+                                    </div>
+                                    <div class="td-info-row">
+                                        <span class="lbl"><img src="../icons/regular/star.svg" class="icon-img" alt=""> Calificación</span>
+                                        <span class="val" id="sideNota">Sin calificar</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="widget-panel" id="sideRetroalimentacionPanel" style="display: none;">
+                                <h3>Retroalimentación del docente</h3>
+                                <p id="sideComentarioProfesor" style="font-size: 14px; color: var(--text-secondary); line-height: 1.6; background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid var(--border-color);"></p>
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal de Impresión de Comprobante Oficial -->
+    <div id="comprobanteOverlay" class="comprobante-overlay" aria-hidden="true">
+        <div class="comprobante-card" role="dialog" aria-modal="true" aria-labelledby="cmpHeaderTitle">
+            <header class="comprobante-header">
+                <div class="comprobante-brand">
+                    <div class="comprobante-brand-icon">
+                        <img src="../icons/fill/shield-check.svg" class="icon-img" alt="shield-check" style="filter: brightness(0) invert(1); width:24px; height:24px;">
+                    </div>
+                    <div class="comprobante-brand-text">
+                        <h3 id="cmpHeaderTitle">Shidell Académico</h3>
+                        <p>Constancia Oficial de Entrega</p>
+                    </div>
+                </div>
+                <div class="comprobante-badge-status">
+                    <img src="../icons/regular/check-circle.svg" class="icon-img" alt="check-circle"> Conforme
+                </div>
+            </header>
+
+            <div class="comprobante-body">
+                <div class="comprobante-code-box">
+                    <span class="label">Código de Verificación:</span>
+                    <span class="code" id="cmpCodigo">REC-SHD-2026-0000</span>
+                </div>
+
+                <div class="comprobante-timestamp-highlight">
+                    <img src="../icons/regular/clock.svg" class="icon-img" alt="clock" style="width:24px;height:24px;">
+                    <div class="time-info">
+                        <div>Registro Oficial en Servidor (Timestamp inalterable):</div>
+                        <div class="time-val" id="cmpTimestamp">--/--/---- --:--:-- hrs</div>
+                    </div>
+                </div>
+
+                <div class="comprobante-grid">
+                    <div class="comprobante-item">
+                        <span class="item-title">Estudiante</span>
+                        <span class="item-val" id="cmpEstudiante">Estudiante</span>
+                    </div>
+                    <div class="comprobante-item">
+                        <span class="item-title">Correo Institucional</span>
+                        <span class="item-val" id="cmpCorreo">correo@institucion.edu.pe</span>
+                    </div>
+                    <div class="comprobante-item">
+                        <span class="item-title">Curso / Asignatura</span>
+                        <span class="item-val" id="cmpCurso">Curso</span>
+                    </div>
+                    <div class="comprobante-item">
+                        <span class="item-title">Asignación / Tarea</span>
+                        <span class="item-val" id="cmpTarea">Tarea</span>
+                    </div>
+                    <div class="comprobante-item full-width">
+                        <span class="item-title">Archivo Registrado</span>
+                        <span class="item-val" id="cmpArchivo" style="color:var(--primary); font-family:monospace;">archivo.pdf</span>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="comprobante-footer">
+                <button type="button" class="btn-print-comprobante" id="btnImprimirComprobante">
+                    <img src="../icons/regular/printer.svg" class="icon-img" alt="printer"> Imprimir / Guardar Constancia
+                </button>
+                <button type="button" class="btn-close-comprobante" id="btnCerrarComprobante">
+                    Aceptar y Cerrar
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+    let user = {};
+    let tareaActual = null;
+    let entregaActual = null;
+    const params = new URLSearchParams(window.location.search);
+    const tareaIdParam = Number(params.get('id'));
+    const cursoIdOrigen = params.get('cursoId');
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        user = await window.shidellSession?.obtenerUsuario() || {};
+        document.querySelectorAll('.user-name').forEach(el => {
+            el.textContent = [user.nombres, user.apellidos].filter(Boolean).join(' ') || 'Estudiante';
+        });
+        const greetingH1 = document.querySelector('.greeting h1');
+        if (greetingH1) {
+            greetingH1.textContent = `¡Hola, ${user.nombres || 'Estudiante'}! 👋`;
+        }
+
+        if (cursoIdOrigen) {
+            const btnVolver = document.getElementById('btnVolverLista');
+            const btnCancelar = document.getElementById('btnCancelarEdicion');
+            if (btnVolver) {
+                btnVolver.href = `cursodetalleestudiante.html?id=${encodeURIComponent(cursoIdOrigen)}`;
+                btnVolver.innerHTML = `<img src="../icons/regular/arrow-left.svg" class="icon-img" alt="volver"> Volver al Curso`;
+            }
+            if (btnCancelar) {
+                btnCancelar.href = `cursodetalleestudiante.html?id=${encodeURIComponent(cursoIdOrigen)}`;
+            }
+        }
+
+        configurarFormularioEntrega();
+        configurarComprobante();
+        await cargarDetalleTarea();
+
+        if (window.location.hash === '#comprobante' && entregaActual && tareaActual) {
+            abrirComprobante(entregaActual, tareaActual);
+        }
+    });
+
+    async function cargarDetalleTarea() {
+        const loadingEl = document.getElementById('tdLoadingState');
+        const mainEl = document.getElementById('tdMainContent');
+
+        if (!tareaIdParam) {
+            loadingEl.innerHTML = `
+                <img src="../icons/regular/warning.svg" class="icon-img" alt="warning" style="width:42px;height:42px;margin-bottom:10px;">
+                <p style="color:var(--red);font-weight:700;">No se especificó ninguna tarea para mostrar.</p>
+                <div style="margin-top:16px;"><a href="tareas.html" class="td-back-link">Ir a Mis Tareas</a></div>
+            `;
+            return;
+        }
+
+        try {
+            let encontrada = null;
+            let entrega = null;
+
+            if (user?.id) {
+                const resEst = await fetch(`/api/tareas/estudiante/${user.id}`, { credentials: 'same-origin' });
+                if (resEst.ok) {
+                    const data = await resEst.json();
+                    if (data.estudiante?.id) Object.assign(user, data.estudiante);
+                    const lista = Array.isArray(data.tareas) ? data.tareas : [];
+                    const item = lista.find(it => Number(it?.tarea?.id ?? it?.id) === tareaIdParam);
+                    if (item) {
+                        encontrada = item.tarea ? { ...item.tarea, status: item.status } : item;
+                        entrega = item.entrega || null;
+                    }
+                }
+            }
+
+            if (!encontrada) {
+                const resAll = await fetch('/api/tareas', { credentials: 'same-origin' });
+                if (resAll.ok) {
+                    const todas = await resAll.json();
+                    encontrada = (Array.isArray(todas) ? todas : []).find(t => Number(t.id) === tareaIdParam) || null;
+                }
+            }
+
+            if (encontrada && !entrega && user?.id) {
+                const resEnt = await fetch(`/api/entregas/usuario/${user.id}`, { credentials: 'same-origin' });
+                if (resEnt.ok) {
+                    const entregas = await resEnt.json();
+                    entrega = (Array.isArray(entregas) ? entregas : []).find(e => Number(e?.tarea?.id) === tareaIdParam) || null;
+                }
+            }
+
+            if (!encontrada) {
+                throw new Error('No se encontró la tarea solicitada.');
+            }
+
+            tareaActual = encontrada;
+            entregaActual = entrega;
+
+            renderizarPaginaTarea(tareaActual, entregaActual);
+            loadingEl.style.display = 'none';
+            mainEl.style.display = 'block';
+
+        } catch (err) {
+            console.error('Error cargando la tarea:', err);
+            loadingEl.innerHTML = `
+                <img src="../icons/regular/warning.svg" class="icon-img" alt="warning" style="width:42px;height:42px;margin-bottom:10px;">
+                <p style="color:var(--red);font-weight:700;">${escapeHtml(err.message || 'Error al cargar la tarea.')}</p>
+                <div style="margin-top:16px;"><a href="tareas.html" class="td-back-link">Volver a Mis Tareas</a></div>
+            `;
+        }
+    }
+
+    function calcularEstadoActual(tarea, entrega) {
+        if (entrega) return 'Completada';
+        if (tarea?.status && ['Completada', 'Vencido', 'Pendiente'].includes(tarea.status)) {
+            return tarea.status;
+        }
+        if (tarea?.fechaVencimiento) {
+            const hoy = new Date();
+            hoy.setHours(0, 0, 0, 0);
+            const vence = new Date(tarea.fechaVencimiento + 'T00:00:00');
+            if (hoy > vence) return 'Vencido';
+        }
+        return 'Pendiente';
+    }
+
+    function renderizarPaginaTarea(tarea, entrega) {
+        const status = calcularEstadoActual(tarea, entrega);
+        const cursoNombre = tarea.curso?.nombre || 'Curso General';
+        const cursoId = tarea.curso?.id || cursoIdOrigen;
+        const color = tarea.curso?.color || 'blue';
+        const icono = tarea.curso?.icono || 'ph-clipboard-text';
+        const prioridad = tarea.prioridad || 'Media';
+
+        document.title = `Shidell - ${tarea.titulo || 'Tarea'}`;
+        document.getElementById('tareaIdInput').value = tarea.id;
+
+        // Breadcrumbs
+        const bcCurso = document.getElementById('bcCursoLink');
+        bcCurso.textContent = cursoNombre;
+        bcCurso.href = cursoId ? `cursodetalleestudiante.html?id=${encodeURIComponent(cursoId)}` : 'miscursos.html';
+        document.getElementById('bcTareaTitulo').textContent = tarea.titulo || 'Detalle de tarea';
+
+        // Hero
+        const heroIcon = document.getElementById('tdHeroIcon');
+        heroIcon.className = `td-hero-icon bg-${escapeHtml(color)}-light`;
+        heroIcon.innerHTML = iconImg(escapeHtml(icono), 'fill');
+
+        document.getElementById('tdTitulo').textContent = tarea.titulo || 'Tarea';
+        document.getElementById('tdCursoPill').innerHTML = `<img src="../icons/regular/book-open.svg" class="icon-img" alt=""> ${escapeHtml(cursoNombre)}`;
+        document.getElementById('tdFechaPill').innerHTML = `<img src="../icons/regular/calendar-blank.svg" class="icon-img" alt=""> Vence: ${formatearFechaCorta(tarea.fechaVencimiento)}`;
+        document.getElementById('tdPrioridadPill').innerHTML = `<img src="../icons/regular/flag.svg" class="icon-img" alt=""> Prioridad ${escapeHtml(prioridad)}`;
+
+        const estadoPill = document.getElementById('tdEstadoPill');
+        estadoPill.className = `td-pill status-${status.toLowerCase()}`;
+        estadoPill.textContent = status === 'Completada' ? '✔ Entregada' : (status === 'Vencido' ? '⚠ Vencida' : '⏳ Pendiente de entrega');
+
+        // Consigna y material del docente
+        const descTexto = String(tarea.descripcion || '').trim();
+        document.getElementById('tdDescripcion').textContent = descTexto || 'El docente no registró indicaciones adicionales para esta tarea. Adjunta tu archivo de solución en la sección inferior.';
+
+        const materialBox = document.getElementById('tdMaterialBox');
+        const materialLink = document.getElementById('tdMaterialLink');
+        if (tarea.pdfUrl && String(tarea.pdfUrl).trim()) {
+            materialBox.classList.remove('is-hidden');
+            materialLink.href = String(tarea.pdfUrl).trim();
+        } else {
+            materialBox.classList.add('is-hidden');
+            materialLink.removeAttribute('href');
+        }
+
+        // Panel lateral derecho
+        document.getElementById('sideEstado').textContent = status === 'Completada' ? 'Entregada' : status;
+        document.getElementById('sideEstado').style.color = status === 'Completada' ? 'var(--green)' : (status === 'Vencido' ? 'var(--red)' : 'var(--yellow)');
+        document.getElementById('sideCurso').textContent = cursoNombre;
+        document.getElementById('sideFechaInicio').textContent = formatearFechaCorta(tarea.fechaInicio);
+        document.getElementById('sideFechaVencimiento').textContent = formatearFechaCorta(tarea.fechaVencimiento);
+        document.getElementById('sidePrioridad').textContent = prioridad;
+
+        // Estado de Entrega
+        const cardRegistrada = document.getElementById('tdEntregaRegistradaCard');
+        const cardFormulario = document.getElementById('tdFormularioCard');
+        const retroPanel = document.getElementById('sideRetroalimentacionPanel');
+
+        if (entrega) {
+            cardRegistrada.style.display = 'block';
+            cardFormulario.style.display = 'none';
+
+            const codigo = `REC-SHD-2026-${String(entrega.id || 0).padStart(4, '0')}`;
+            document.getElementById('tdCodigoRecibo').textContent = codigo;
+
+            const nombreArchivo = entrega.archivoUrl ? entrega.archivoUrl.split('/').pop() : 'Documento enviado';
+            const linkArchivo = document.getElementById('tdArchivoEnviadoLink');
+            document.getElementById('tdArchivoEnviadoNombre').textContent = nombreArchivo;
+            if (entrega.archivoUrl) {
+                linkArchivo.href = entrega.archivoUrl;
+            } else {
+                linkArchivo.removeAttribute('href');
+            }
+
+            const fechaStr = entrega.fechaEntrega
+                ? new Date(entrega.fechaEntrega).toLocaleString('es-PE', {
+                    day: '2-digit', month: '2-digit', year: 'numeric',
+                    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+                }) + ' hrs'
+                : 'Registrado';
+            document.getElementById('tdFechaEntregaRealizada').textContent = fechaStr;
+            document.getElementById('tdComentarioEstudianteTexto').textContent = entrega.comentarioEstudiante || 'Sin comentario adicional';
+
+            if (entrega.nota !== null && entrega.nota !== undefined) {
+                document.getElementById('tdCalificacionDocente').textContent = `${Number(entrega.nota).toFixed(1)} / 20`;
+                document.getElementById('tdCalificacionDocente').style.color = 'var(--green)';
+                document.getElementById('sideNota').textContent = `${Number(entrega.nota).toFixed(1)} / 20`;
+            } else {
+                document.getElementById('tdCalificacionDocente').textContent = 'Pendiente de calificación';
+                document.getElementById('sideNota').textContent = 'En revisión';
+            }
+
+            if (entrega.comentarioProfesor) {
+                retroPanel.style.display = 'block';
+                document.getElementById('sideComentarioProfesor').textContent = entrega.comentarioProfesor;
+            } else {
+                retroPanel.style.display = 'none';
+            }
+        } else {
+            cardRegistrada.style.display = 'none';
+            cardFormulario.style.display = 'block';
+            retroPanel.style.display = 'none';
+            document.getElementById('sideNota').textContent = 'Sin calificar';
+        }
+    }
+
+    function configurarFormularioEntrega() {
+        const archivoInput = document.getElementById('archivoTarea');
+        const comentarioInput = document.getElementById('comentarioTarea');
+        const fileBox = document.getElementById('entregaFileBox');
+        const btnReemplazar = document.getElementById('btnReemplazarEntrega');
+        const btnVerComprobante = document.getElementById('btnVerComprobantePagina');
+
+        archivoInput.addEventListener('change', actualizarArchivoSeleccionado);
+        comentarioInput.addEventListener('input', () => {
+            document.getElementById('comentarioContador').textContent = `${comentarioInput.value.length}/500`;
+        });
+
+        // Soporte Drag & Drop
+        ['dragenter', 'dragover'].forEach(evt => {
+            fileBox.addEventListener(evt, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                fileBox.classList.add('dragover');
+            });
+        });
+        ['dragleave', 'drop'].forEach(evt => {
+            fileBox.addEventListener(evt, e => {
+                e.preventDefault();
+                e.stopPropagation();
+                fileBox.classList.remove('dragover');
+            });
+        });
+        fileBox.addEventListener('drop', e => {
+            const files = e.dataTransfer?.files;
+            if (files && files.length > 0) {
+                archivoInput.files = files;
+                actualizarArchivoSeleccionado();
+            }
+        });
+
+        if (btnReemplazar) {
+            btnReemplazar.addEventListener('click', () => {
+                const cardFormulario = document.getElementById('tdFormularioCard');
+                document.getElementById('tdFormTitle').textContent = 'Actualizar archivo de entrega';
+                cardFormulario.style.display = 'block';
+                cardFormulario.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        }
+
+        if (btnVerComprobante) {
+            btnVerComprobante.addEventListener('click', () => {
+                if (entregaActual && tareaActual) {
+                    abrirComprobante(entregaActual, tareaActual);
+                }
+            });
+        }
+
+        document.getElementById('formEntregaPagina').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviarEntrega');
+            const archivo = archivoInput.files[0];
+
+            if (!archivo) {
+                mostrarFeedbackEntrega('Selecciona un archivo PDF, DOC o DOCX antes de entregar.', 'error');
+                return;
+            }
+            if (!archivoValido(archivo)) return;
+
+            mostrarFeedbackEntrega('', '');
+            btn.disabled = true;
+            btn.innerHTML = '<img src="../icons/regular/spinner.svg" class="icon-img" alt="spinner" style="animation: spin 1s linear infinite; filter: brightness(0) invert(1);"> Enviando entrega...';
+
+            const formData = new FormData();
+            formData.append('tareaId', tareaActual?.id || tareaIdParam);
+            formData.append('estudianteId', user.id);
+            formData.append('comentario', comentarioInput.value.trim());
+            formData.append('archivo', archivo);
+
+            try {
+                const res = await fetch('/api/entregas', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'same-origin'
+                });
+
+                if (res.ok) {
+                    const savedEntrega = await res.json().catch(() => null);
+                    entregaActual = savedEntrega;
+                    mostrarFeedbackEntrega('¡Tu tarea ha sido entregada exitosamente!', 'success');
+                    document.getElementById('formEntregaPagina').reset();
+                    actualizarArchivoSeleccionado();
+                    document.getElementById('comentarioContador').textContent = '0/500';
+
+                    await cargarDetalleTarea();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    abrirComprobante(savedEntrega, tareaActual);
+                } else {
+                    const detalle = await leerErrorEntrega(res);
+                    mostrarFeedbackEntrega(detalle || 'No se pudo registrar la entrega. Intenta nuevamente.', 'error');
+                }
+            } catch (err) {
+                mostrarFeedbackEntrega('Error de conexión con el servidor.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<img src="../icons/regular/paper-plane-tilt.svg" class="icon-img" alt="enviar" style="filter: brightness(0) invert(1);"> Entregar tarea ahora';
+            }
+        });
+    }
+
+    function actualizarArchivoSeleccionado() {
+        const input = document.getElementById('archivoTarea');
+        const fileBox = document.getElementById('entregaFileBox');
+        const nombre = document.getElementById('archivoNombre');
+        const ayuda = document.getElementById('archivoAyuda');
+        const file = input.files[0];
+
+        if (!file) {
+            fileBox.classList.remove('has-file');
+            nombre.textContent = 'Seleccionar o arrastrar archivo aquí';
+            ayuda.textContent = 'Formatos permitidos: PDF, DOC o DOCX';
+            return;
+        }
+
+        if (!archivoValido(file)) return;
+
+        fileBox.classList.add('has-file');
+        nombre.textContent = file.name;
+        ayuda.textContent = `${formatearPesoArchivo(file.size)} listo para entregar`;
+        mostrarFeedbackEntrega('', '');
+    }
+
+    function archivoValido(file) {
+        const extension = file.name.split('.').pop().toLowerCase();
+        const permitidas = ['pdf', 'doc', 'docx'];
+        const maxBytes = 10 * 1024 * 1024;
+
+        if (!permitidas.includes(extension)) {
+            mostrarFeedbackEntrega('El archivo debe estar en formato PDF, DOC o DOCX.', 'error');
+            document.getElementById('archivoTarea').value = '';
+            return false;
+        }
+
+        if (file.size > maxBytes) {
+            mostrarFeedbackEntrega('El archivo supera el límite máximo de 10 MB.', 'error');
+            document.getElementById('archivoTarea').value = '';
+            return false;
+        }
+
+        return true;
+    }
+
+    async function leerErrorEntrega(res) {
+        if (res.status === 401) return 'Tu sesión expiró. Vuelve a iniciar sesión.';
+        if (res.status === 413) return 'El archivo supera el tamaño máximo permitido (10 MB).';
+        try {
+            const data = await res.json();
+            return data.error || data.message || '';
+        } catch {
+            return '';
+        }
+    }
+
+    function mostrarFeedbackEntrega(mensaje, tipo) {
+        const feedback = document.getElementById('entregaFeedback');
+        feedback.textContent = mensaje;
+        feedback.className = 'td-feedback';
+        if (mensaje) feedback.classList.add('show', tipo);
+    }
+
+    function formatearPesoArchivo(bytes) {
+        if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    function formatearFechaCorta(fecha) {
+        if (!fecha) return 'Sin fecha';
+        const [year, month, day] = String(fecha).split('-').map(Number);
+        const date = year && month && day ? new Date(year, month - 1, day) : new Date(fecha);
+        return date.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[char]));
+    }
+
+    // ─── Comprobante Oficial ──────────────────────────────────────────────────
+    function configurarComprobante() {
+        const btnCerrar = document.getElementById('btnCerrarComprobante');
+        const btnImprimir = document.getElementById('btnImprimirComprobante');
+        const overlay = document.getElementById('comprobanteOverlay');
+
+        if (btnCerrar) btnCerrar.addEventListener('click', cerrarComprobante);
+        if (btnImprimir) btnImprimir.addEventListener('click', () => window.print());
+        if (overlay) {
+            overlay.addEventListener('click', e => {
+                if (e.target.id === 'comprobanteOverlay') cerrarComprobante();
+            });
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape' && overlay?.classList.contains('open')) {
+                cerrarComprobante();
+            }
+        });
+    }
+
+    function abrirComprobante(entrega, tarea) {
+        const overlay = document.getElementById('comprobanteOverlay');
+        if (!overlay) return;
+
+        const entregaId = entrega?.id || Math.floor(1000 + Math.random() * 9000);
+        const codigo = `REC-SHD-2026-${String(entregaId).padStart(4, '0')}`;
+
+        const fechaObj = entrega?.fechaEntrega ? new Date(entrega.fechaEntrega) : new Date();
+        const timestampStr = fechaObj.toLocaleString('es-PE', {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+        }) + ' hrs';
+
+        const nombreEstudiante = [user.nombres, user.apellidos].filter(Boolean).join(' ') || 'Estudiante';
+        const correoEstudiante = user.email || 'correo@institucion.edu.pe';
+        const tituloTarea = tarea?.titulo || entrega?.tarea?.titulo || 'Tarea Académica';
+        const nombreCurso = tarea?.curso?.nombre || entrega?.tarea?.curso?.nombre || 'Curso Regular';
+        const archivoNombre = entrega?.archivoUrl ? entrega.archivoUrl.split('/').pop() : 'Documento adjunto verificado';
+
+        document.getElementById('cmpCodigo').textContent = codigo;
+        document.getElementById('cmpEstudiante').textContent = nombreEstudiante;
+        document.getElementById('cmpCorreo').textContent = correoEstudiante;
+        document.getElementById('cmpCurso').textContent = nombreCurso;
+        document.getElementById('cmpTarea').textContent = tituloTarea;
+        document.getElementById('cmpArchivo').textContent = archivoNombre;
+        document.getElementById('cmpTimestamp').textContent = timestampStr;
+
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+    }
+
+    function cerrarComprobante() {
+        const overlay = document.getElementById('comprobanteOverlay');
+        if (overlay) {
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    window.cerrarSesion = () => window.shidellSession?.cerrarSesion?.();
+    </script>
+    <script src="../js/app.js?v=apiestudiante20260512i"></script>
+    <script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/vendor/alertas.js?v=20261019d"></script>
+</body>
+
+</html>

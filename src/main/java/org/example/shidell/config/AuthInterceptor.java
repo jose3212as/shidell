@@ -23,7 +23,17 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String path = request.getRequestURI();
-        if (!path.startsWith("/api/") || path.startsWith("/api/auth/")) return true;
+
+        // 1. Proteger acceso directo a vistas HTML de portales
+        if (isProtectedPortalView(path)) {
+            return handlePortalViewAccess(request, response, path);
+        }
+
+        // 2. Si no es ruta de la API, permitir otros recursos estáticos
+        if (!path.startsWith("/api/")) return true;
+
+        // 3. Rutas públicas de autenticación
+        if (path.startsWith("/api/auth/")) return true;
 
         AuthSessionService authSessionService = authSessionServiceProvider.getIfAvailable();
         if (authSessionService == null) return true;
@@ -117,5 +127,64 @@ public class AuthInterceptor implements HandlerInterceptor {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.getWriter().write("{\"error\":\"" + message + "\"}");
         return false;
+    }
+
+    private boolean isProtectedPortalView(String path) {
+        if (path.startsWith("/plataformaestudiante")
+                || path.startsWith("/plataformadocente")
+                || path.startsWith("/plataformapadres")
+                || path.startsWith("/plataformaadmin")) {
+            String filename = path.substring(path.lastIndexOf('/') + 1);
+            return path.endsWith(".html") || path.endsWith("/") || !filename.contains(".");
+        }
+        return false;
+    }
+
+    private boolean handlePortalViewAccess(HttpServletRequest request, HttpServletResponse response, String path) throws IOException {
+        AuthSessionService authSessionService = authSessionServiceProvider.getIfAvailable();
+        UserEntity user = authSessionService != null ? authSessionService.authenticate(extractToken(request)).orElse(null) : null;
+
+        if (user == null) {
+            response.sendRedirect("/auth/login.html");
+            return false;
+        }
+
+        String rol = user.getRol() == null ? "" : user.getRol().toUpperCase();
+        if (isAdmin(rol)) {
+            return true;
+        }
+
+        if (path.startsWith("/plataformaadmin")) {
+            response.sendRedirect(obtenerRutaPorRol(rol));
+            return false;
+        }
+
+        if (path.startsWith("/plataformadocente") && !"DOCENTE".equals(rol)) {
+            response.sendRedirect(obtenerRutaPorRol(rol));
+            return false;
+        }
+
+        if (path.startsWith("/plataformapadres") && !"PADRE".equals(rol)) {
+            response.sendRedirect(obtenerRutaPorRol(rol));
+            return false;
+        }
+
+        if (path.startsWith("/plataformaestudiante") && !"ESTUDIANTE".equals(rol)) {
+            response.sendRedirect(obtenerRutaPorRol(rol));
+            return false;
+        }
+
+        return true;
+    }
+
+    private String obtenerRutaPorRol(String rol) {
+        if (rol == null) return "/auth/login.html";
+        return switch (rol.toUpperCase()) {
+            case "ADMIN", "ADMINISTRADOR" -> "/plataformaadmin/html/dashboard.html";
+            case "DOCENTE" -> "/plataformadocente/index.html";
+            case "PADRE" -> "/plataformapadres/html/portalpadres.html";
+            case "ESTUDIANTE" -> "/plataformaestudiante/html/portalestudiante.html";
+            default -> "/auth/login.html";
+        };
     }
 }

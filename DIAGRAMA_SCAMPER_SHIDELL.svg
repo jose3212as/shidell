@@ -1,0 +1,230 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="100%" height="100%">
+  <defs>
+    <!-- Background Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0f1d" />
+      <stop offset="50%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+
+    <!-- Card Glow / Shadows -->
+    <filter id="glow-card" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+
+    <!-- Gradients for SCAMPER Letters -->
+    <linearGradient id="grad-s" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" /><stop offset="100%" stop-color="#b91c1c" />
+    </linearGradient>
+    <linearGradient id="grad-c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316" /><stop offset="100%" stop-color="#c2410c" />
+    </linearGradient>
+    <linearGradient id="grad-a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eab308" /><stop offset="100%" stop-color="#a16207" />
+    </linearGradient>
+    <linearGradient id="grad-m" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" /><stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="grad-p" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4" /><stop offset="100%" stop-color="#0e7490" />
+    </linearGradient>
+    <linearGradient id="grad-e" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" /><stop offset="100%" stop-color="#4338ca" />
+    </linearGradient>
+    <linearGradient id="grad-r" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899" /><stop offset="100%" stop-color="#be185d" />
+    </linearGradient>
+
+    <!-- Card Backgrounds -->
+    <linearGradient id="card-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#0f172a" stop-opacity="0.95" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    .title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 800; fill: #ffffff; }
+    .subtitle { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 400; fill: #94a3b8; }
+    .badge-text { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 900; fill: #ffffff; }
+    .card-title { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 700; font-size: 19px; }
+    .card-sub { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 600; font-size: 13px; fill: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+    .card-body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; font-weight: 400; font-size: 13.5px; fill: #cbd5e1; }
+    .card-border { fill: url(#card-bg); stroke-width: 1.5; rx: 16; }
+  </style>
+
+  <!-- Background Base -->
+  <rect width="1600" height="900" fill="url(#bg-grad)" />
+
+  <!-- Decorative Grid / Glow Effects -->
+  <circle cx="800" cy="450" r="380" fill="#3b82f6" opacity="0.04" />
+  <circle cx="200" cy="150" r="250" fill="#6366f1" opacity="0.03" />
+  <circle cx="1400" cy="750" r="300" fill="#06b6d4" opacity="0.03" />
+
+  <!-- Header Section -->
+  <g transform="translate(800, 75)" text-anchor="middle">
+    <rect x="-140" y="-38" width="280" height="28" rx="14" fill="#1e293b" stroke="#334155" />
+    <text y="-20" class="card-sub" fill="#38bdf8">Técnica de Innovación de Producto</text>
+    <text y="24" class="title" font-size="36">METODOLOGÍA SCAMPER • SHIDELL</text>
+    <text y="54" class="subtitle" font-size="16">Optimización y Transformación Digital de la Gestión Académica Escolar</text>
+  </g>
+
+  <!-- Central Connecting Lines (Subtle) -->
+  <path d="M 235 280 L 520 280 L 800 280 L 1080 280 L 1365 280" stroke="#334155" stroke-width="2" stroke-dasharray="6,6" opacity="0.4"/>
+  <path d="M 380 620 L 800 620 L 1220 620" stroke="#334155" stroke-width="2" stroke-dasharray="6,6" opacity="0.4"/>
+
+  <!-- ================= TOP ROW: S - C - A - M ================= -->
+
+  <!-- CARD 1: S - SUSTITUIR -->
+  <g transform="translate(95, 175)" filter="url(#glow-card)">
+    <rect width="320" height="285" class="card-border" stroke="#ef4444" stroke-opacity="0.4"/>
+    <circle cx="48" cy="48" r="28" fill="url(#grad-s)"/>
+    <text x="48" y="58" class="badge-text" font-size="28" text-anchor="middle">S</text>
+    <text x="90" y="42" class="card-sub">Acción 01</text>
+    <text x="90" y="64" class="card-title" fill="#f87171">SUSTITUIR</text>
+    
+    <g transform="translate(24, 105)">
+      <circle cx="6" cy="10" r="4" fill="#ef4444"/>
+      <text x="20" y="14" class="card-body">Sustituye registros físicos en</text>
+      <text x="20" y="32" class="card-body"><tspan font-weight="700" fill="#ffffff">papel y cuadernos de control</tspan></text>
+      <text x="20" y="50" class="card-body">por base de datos PostgreSQL.</text>
+
+      <circle cx="6" cy="85" r="4" fill="#ef4444"/>
+      <text x="20" y="89" class="card-body">Sustituye canales informales por</text>
+      <text x="20" y="107" class="card-body"><tspan font-weight="700" fill="#ffffff">mensajería interna segura</tspan> con</text>
+      <text x="20" y="125" class="card-body">trazabilidad institucional.</text>
+    </g>
+  </g>
+
+  <!-- CARD 2: C - COMBINAR -->
+  <g transform="translate(445, 175)" filter="url(#glow-card)">
+    <rect width="320" height="285" class="card-border" stroke="#f97316" stroke-opacity="0.4"/>
+    <circle cx="48" cy="48" r="28" fill="url(#grad-c)"/>
+    <text x="48" y="58" class="badge-text" font-size="28" text-anchor="middle">C</text>
+    <text x="90" y="42" class="card-sub">Acción 02</text>
+    <text x="90" y="64" class="card-title" fill="#fb923c">COMBINAR</text>
+    
+    <g transform="translate(24, 105)">
+      <circle cx="6" cy="10" r="4" fill="#f97316"/>
+      <text x="20" y="14" class="card-body">Combina <tspan font-weight="700" fill="#ffffff">calificaciones, asistencia</tspan></text>
+      <text x="20" y="32" class="card-body">y <tspan font-weight="700" fill="#ffffff">entrega de tareas</tspan> virtuales</text>
+      <text x="20" y="50" class="card-body">en una sola plataforma.</text>
+
+      <circle cx="6" cy="85" r="4" fill="#f97316"/>
+      <text x="20" y="89" class="card-body">Integra el <tspan font-weight="700" fill="#ffffff">calendario MINEDU</tspan></text>
+      <text x="20" y="107" class="card-body">con el cronograma de exámenes</text>
+      <text x="20" y="125" class="card-body">y avisos escolares.</text>
+    </g>
+  </g>
+
+  <!-- CARD 3: A - ADAPTAR -->
+  <g transform="translate(795, 175)" filter="url(#glow-card)">
+    <rect width="320" height="285" class="card-border" stroke="#eab308" stroke-opacity="0.4"/>
+    <circle cx="48" cy="48" r="28" fill="url(#grad-a)"/>
+    <text x="48" y="58" class="badge-text" font-size="28" text-anchor="middle">A</text>
+    <text x="90" y="42" class="card-sub">Acción 03</text>
+    <text x="90" y="64" class="card-title" fill="#facc15">ADAPTAR</text>
+    
+    <g transform="translate(24, 105)">
+      <circle cx="6" cy="10" r="4" fill="#eab308"/>
+      <text x="20" y="14" class="card-body">Adapta <tspan font-weight="700" fill="#ffffff">4 portales especializados</tspan></text>
+      <text x="20" y="32" class="card-body">por rol: Estudiante, Docente,</text>
+      <text x="20" y="50" class="card-body">Padres y Administrador.</text>
+
+      <circle cx="6" cy="85" r="4" fill="#eab308"/>
+      <text x="20" y="89" class="card-body">Diseño adaptativo <tspan font-weight="700" fill="#ffffff">Responsive</tspan></text>
+      <text x="20" y="107" class="card-body">para consultas fluidas desde</text>
+      <text x="20" y="125" class="card-body">smartphones y computadoras.</text>
+    </g>
+  </g>
+
+  <!-- CARD 4: M - MODIFICAR -->
+  <g transform="translate(1145, 175)" filter="url(#glow-card)">
+    <rect width="320" height="285" class="card-border" stroke="#10b981" stroke-opacity="0.4"/>
+    <circle cx="48" cy="48" r="28" fill="url(#grad-m)"/>
+    <text x="48" y="58" class="badge-text" font-size="28" text-anchor="middle">M</text>
+    <text x="90" y="42" class="card-sub">Acción 04</text>
+    <text x="90" y="64" class="card-title" fill="#34d399">MODIFICAR</text>
+    
+    <g transform="translate(24, 105)">
+      <circle cx="6" cy="10" r="4" fill="#10b981"/>
+      <text x="20" y="14" class="card-body">Modifica el pase de asistencia</text>
+      <text x="20" y="32" class="card-body">por <tspan font-weight="700" fill="#ffffff">registro masivo en lote</tspan></text>
+      <text x="20" y="50" class="card-body">con un solo clic.</text>
+
+      <circle cx="6" cy="85" r="4" fill="#10b981"/>
+      <text x="20" y="89" class="card-body">Magnifica la retroalimentación con</text>
+      <text x="20" y="107" class="card-body"><tspan font-weight="700" fill="#ffffff">barras de progreso visual</tspan> y</text>
+      <text x="20" y="125" class="card-body">comentarios pedagógicos.</text>
+    </g>
+  </g>
+
+  <!-- ================= BOTTOM ROW: P - E - R ================= -->
+
+  <!-- CARD 5: P - PROPONER OTROS USOS -->
+  <g transform="translate(235, 495)" filter="url(#glow-card)">
+    <rect width="340" height="285" class="card-border" stroke="#06b6d4" stroke-opacity="0.4"/>
+    <circle cx="48" cy="48" r="28" fill="url(#grad-p)"/>
+    <text x="48" y="58" class="badge-text" font-size="28" text-anchor="middle">P</text>
+    <text x="90" y="42" class="card-sub">Acción 05</text>
+    <text x="90" y="64" class="card-title" fill="#22d3ee">PROPONER OTROS USOS</text>
+    
+    <g transform="translate(24, 105)">
+      <circle cx="6" cy="10" r="4" fill="#06b6d4"/>
+      <text x="20" y="14" class="card-body">Uso de métricas como <tspan font-weight="700" fill="#ffffff">Sistema de</tspan></text>
+      <text x="20" y="32" class="card-body"><tspan font-weight="700" fill="#ffffff">Alerta Temprana</tspan> contra la</text>
+      <text x="20" y="50" class="card-body">deserción y bajo rendimiento.</text>
+
+      <circle cx="6" cy="85" r="4" fill="#06b6d4"/>
+      <text x="20" y="89" class="card-body">Canal oficial de <tspan font-weight="700" fill="#ffffff">justificación</tspan></text>
+      <text x="20" y="107" class="card-body"><tspan font-weight="700" fill="#ffffff">digital de inasistencias</tspan> y</text>
+      <text x="20" y="125" class="card-body">comunicación con tutores.</text>
+    </g>
+  </g>
+
+  <!-- CARD 6: E - ELIMINAR -->
+  <g transform="translate(630, 495)" filter="url(#glow-card)">
+    <rect width="340" height="285" class="card-border" stroke="#6366f1" stroke-opacity="0.4"/>
+    <circle cx="48" cy="48" r="28" fill="url(#grad-e)"/>
+    <text x="48" y="58" class="badge-text" font-size="28" text-anchor="middle">E</text>
+    <text x="90" y="42" class="card-sub">Acción 06</text>
+    <text x="90" y="64" class="card-title" fill="#818cf8">ELIMINAR</text>
+    
+    <g transform="translate(24, 105)">
+      <circle cx="6" cy="10" r="4" fill="#6366f1"/>
+      <text x="20" y="14" class="card-body">Elimina el <tspan font-weight="700" fill="#ffffff">retraso de semanas</tspan></text>
+      <text x="20" y="32" class="card-body">en la entrega física de libretas</text>
+      <text x="20" y="50" class="card-body">y actas de notas.</text>
+
+      <circle cx="6" cy="85" r="4" fill="#6366f1"/>
+      <text x="20" y="89" class="card-body">Elimina la <tspan font-weight="700" fill="#ffffff">duplicidad de registros</tspan></text>
+      <text x="20" y="107" class="card-body">y los errores manuales en el</text>
+      <text x="20" y="125" class="card-body">cálculo de promedios.</text>
+    </g>
+  </g>
+
+  <!-- CARD 7: R - REORGANIZAR -->
+  <g transform="translate(1025, 495)" filter="url(#glow-card)">
+    <rect width="340" height="285" class="card-border" stroke="#ec4899" stroke-opacity="0.4"/>
+    <circle cx="48" cy="48" r="28" fill="url(#grad-r)"/>
+    <text x="48" y="58" class="badge-text" font-size="28" text-anchor="middle">R</text>
+    <text x="90" y="42" class="card-sub">Acción 07</text>
+    <text x="90" y="64" class="card-title" fill="#f472b6">REORGANIZAR</text>
+    
+    <g transform="translate(24, 105)">
+      <circle cx="6" cy="10" r="4" fill="#ec4899"/>
+      <text x="20" y="14" class="card-body">Reorganiza el flujo pedagógico:</text>
+      <text x="20" y="32" class="card-body"><tspan font-weight="700" fill="#ffffff">calificación inmediata</tspan> con</text>
+      <text x="20" y="50" class="card-body">notificación instantánea al alumno.</text>
+
+      <circle cx="6" cy="85" r="4" fill="#ec4899"/>
+      <text x="20" y="89" class="card-body">Estructura dinámica de mallas</text>
+      <text x="20" y="107" class="card-body">académicas organizadas por</text>
+      <text x="20" y="125" class="card-body"><tspan font-weight="700" fill="#ffffff">aula, turno, materia y tutor</tspan>.</text>
+    </g>
+  </g>
+
+  <!-- Footer Branding -->
+  <text x="800" y="855" class="subtitle" font-size="14" text-anchor="middle" fill="#475569">
+    Proyecto Shidell • Curso Integrador I: Sistemas - Software • UTP 2026
+  </text>
+</svg>

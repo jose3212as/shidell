@@ -1,4 +1,23 @@
 (function () {
+    // ─── Guardia Inmediata de Autenticación ────────────────────
+    const storedUser = localStorage.getItem('shidell_user');
+    if (!storedUser) {
+        window.location.replace('/auth/login.html');
+        return;
+    }
+    try {
+        const parsed = JSON.parse(storedUser);
+        if (!parsed || !parsed.sessionToken || (parsed.rol !== 'ESTUDIANTE' && parsed.rol !== 'ADMINISTRADOR' && parsed.rol !== 'ADMIN')) {
+            localStorage.removeItem('shidell_user');
+            window.location.replace('/auth/login.html');
+            return;
+        }
+    } catch (e) {
+        localStorage.removeItem('shidell_user');
+        window.location.replace('/auth/login.html');
+        return;
+    }
+
     let usuarioPromise = null;
     let usuarioCache = null;
     const originalFetch = window.fetch.bind(window);
@@ -66,7 +85,8 @@
             method: 'POST',
             credentials: 'same-origin'
         }).catch(() => {});
-        window.location.href = '/login.html';
+        localStorage.removeItem('shidell_user');
+        window.location.href = '/auth/login.html';
     }
 
     window.shidellSession = {

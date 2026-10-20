@@ -1,0 +1,18 @@
+key,slug,text_es,text_en,category,description
+login.title,iniciar-sesion,Iniciar Sesión,Sign In,Header,Título principal de la pantalla de login
+login.subtitle,subtitulo-login,Ingresa tus credenciales para acceder a la plataforma,Enter your credentials to access the platform,Header,Subtítulo instructivo
+login.email.label,etiqueta-correo,Correo Electrónico,Email Address,Form,Etiqueta del campo de correo
+login.email.placeholder,placeholder-correo,ejemplo@dominio.com,name@domain.com,Form,Placeholder del campo correo
+login.password.label,etiqueta-contrasena,Contraseña,Password,Form,Etiqueta del campo contraseña
+login.password.placeholder,placeholder-contrasena,••••••••,••••••••,Form,Placeholder del campo contraseña
+login.remember_me,recordar-sesion,Recordar mi sesión,Remember me,Form,Opción para guardar credenciales
+login.forgot_password,olvide-contrasena,¿Olvidaste tu contraseña?,Forgot password?,Form,Enlace de recuperación de clave
+login.button.submit,boton-iniciar-sesion,Iniciar Sesión,Sign In,Button,Boton principal de envío
+login.button.google,boton-google,Continuar con Google,Continue with Google,Button,Botón de autenticación social Google
+login.button.microsoft,boton-microsoft,Continuar con Microsoft,Continue with Microsoft,Button,Botón de autenticación social Microsoft
+login.register.prompt,pregunta-registro,¿No tienes una cuenta?,Don't have an account?,Footer,Texto previo al enlace de registro
+login.register.link,enlace-registro,Regístrate aquí,Sign up here,Footer,Enlace hacia la pantalla de registro
+login.error.required_fields,error-campos-requeridos,Por favor completa todos los campos,Please fill in all required fields,Validation,Mensaje de error por campos vacíos
+login.error.invalid_email,error-correo-invalido,El formato del correo electrónico no es válido,Invalid email address format,Validation,Mensaje de formato de correo incorrecto
+login.error.bad_credentials,error-credenciales-incorrectas,El correo o la contraseña son incorrectos,Invalid email or password,Validation,Mensaje de credenciales erróneas
+login.error.account_locked,error-cuenta-bloqueada,Cuenta bloqueada por demasiados intentos fallidos,Account locked due to too many failed attempts,Validation,Mensaje de bloqueo temporal

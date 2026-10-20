@@ -115,23 +115,35 @@ public class CalendarioController {
 
     private List<Map<String, Object>> expandirCurso(Curso c) {
         List<Map<String, Object>> evs = new ArrayList<>();
-        LocalDate fecha = LocalDate.of(2026, 3, 16); // Inicio estimado
-        LocalDate fin = LocalDate.of(2026, 12, 20);
-        
-        while (fecha.getDayOfWeek().getValue() != c.getDiaSemana()) fecha = fecha.plusDays(1);
-        
-        while (!fecha.isAfter(fin)) {
-            Map<String, Object> m = new HashMap<>();
-            m.put("id", "c-" + c.getId() + "-" + fecha);
-            m.put("titulo", TextUtils.limpiarTexto(c.getNombre()));
-            m.put("tipo", "CLASE");
-            m.put("color", c.getColor());
-            m.put("fechaInicio", fecha.toString());
-            m.put("hora", c.getHoraInicio());
-            m.put("cursoId", c.getId());
-            m.put("curso", TextUtils.limpiarTexto(c.getNombre()));
-            evs.add(m);
-            fecha = fecha.plusWeeks(1);
+        int diaSemana = c.getDiaSemana() != null ? c.getDiaSemana() : 1;
+        String hora = c.getHoraInicio() != null ? c.getHoraInicio() : "08:00";
+        int anio = LocalDate.now().getYear();
+
+        List<LocalDate> iniciosBloques = List.of(
+                LocalDate.of(anio, 3, 16),
+                LocalDate.of(anio, 5, 25),
+                LocalDate.of(anio, 8, 10),
+                LocalDate.of(anio, 10, 19)
+        );
+
+        for (int b = 0; b < 4; b++) {
+            LocalDate inicioBloque = iniciosBloques.get(b);
+            for (int s = 0; s < 9; s++) {
+                LocalDate fechaInicioSemana = inicioBloque.plusWeeks(s);
+                LocalDate fechaClase = fechaInicioSemana.plusDays(diaSemana - 1);
+                
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", "c-" + c.getId() + "-" + fechaClase);
+                m.put("titulo", TextUtils.limpiarTexto(c.getNombre()));
+                m.put("tipo", "CLASE");
+                m.put("color", c.getColor());
+                m.put("fechaInicio", fechaClase.toString());
+                m.put("fecha", fechaClase.toString());
+                m.put("hora", hora);
+                m.put("cursoId", c.getId());
+                m.put("curso", TextUtils.limpiarTexto(c.getNombre()));
+                evs.add(m);
+            }
         }
         return evs;
     }

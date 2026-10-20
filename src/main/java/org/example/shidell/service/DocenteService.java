@@ -141,6 +141,7 @@ public class DocenteService {
         c.setFecha(LocalDate.now());
 
         Calificacion guardada = calificacionRepository.save(c);
+        notificacionService.notificarNuevaCalificacionAEstudiante(guardada);
         notificacionService.alertarPadrePorBajaNota(guardada);
         return guardada;
     }
@@ -153,7 +154,12 @@ public class DocenteService {
         if (tarea.getEstado() == null) tarea.setEstado("Pendiente");
         String pdfUrl = FileUploadUtil.saveFile("tareas", archivo);
         if (pdfUrl != null) tarea.setPdfUrl(pdfUrl);
-        return tareaRepository.save(tarea);
+        Tarea guardada = tareaRepository.save(tarea);
+        if (guardada.getCurso() != null && guardada.getCurso().getId() != null) {
+            List<UserEntity> estudiantes = obtenerEstudiantesPorCurso(guardada.getCurso().getId());
+            notificacionService.notificarNuevaTareaAEstudiantes(guardada, estudiantes);
+        }
+        return guardada;
     }
 
     public List<Asistencia> guardarAsistencias(Long cursoId, LocalDate fecha, List<RegistroAsistencia> registros) {
@@ -239,7 +245,10 @@ public class DocenteService {
             m.setArchivoNombre(archivo.getOriginalFilename());
         }
 
-        return materialCursoRepository.save(m);
+        MaterialCurso guardado = materialCursoRepository.save(m);
+        List<UserEntity> estudiantes = obtenerEstudiantesPorCurso(cursoId);
+        notificacionService.notificarNuevoMaterialAEstudiantes(guardado, estudiantes);
+        return guardado;
     }
 
     private List<Curso> deduplicarCursos(List<Curso> cursos) {

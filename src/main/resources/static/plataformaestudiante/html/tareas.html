@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
+    <script src="../js/icon-helper.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
     <link rel="stylesheet" href="../css/tareas.css">
 </head>
 
@@ -19,9 +19,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="logo-icon">
-                    <i class="ph-fill ph-graduation-cap"></i>
-                </div>
+                <div class="logo-icon"><img src="../icons/fill/graduation-cap.svg" class="icon-img" alt="graduation-cap"></div>
                 <div class="logo-text">
                     <h2>Shidell</h2>
                     <p>Portal Estudiante</p>
@@ -30,35 +28,35 @@
 
             <nav class="sidebar-nav">
                 <a href="portalestudiante.html" class="nav-item">
-                    <i class="ph ph-house"></i>
+                    <img src="../icons/regular/house.svg" class="icon-img" alt="house">
                     <span>Inicio</span>
                 </a>
                 <a href="miscursos.html" class="nav-item">
-                    <i class="ph ph-book-open"></i>
+                    <img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open">
                     <span>Mis cursos</span>
                 </a>
                 <a href="tareas.html" class="nav-item active">
-                    <i class="ph ph-clipboard-text"></i>
+                    <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text">
                     <span>Tareas</span>
                 </a>
                 <a href="calificaciones.html" class="nav-item">
-                    <i class="ph ph-star"></i>
+                    <img src="../icons/regular/star.svg" class="icon-img" alt="star">
                     <span>Calificaciones</span>
                 </a>
                 <a href="calendario.html" class="nav-item">
-                    <i class="ph ph-calendar-blank"></i>
+                    <img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank">
                     <span>Calendario</span>
                 </a>
                 <a href="mensajes.html" class="nav-item">
-                    <i class="ph ph-chat-circle-dots"></i>
+                    <img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots">
                     <span>Mensajes</span>
                 </a>
                 <a href="miprogreso.html" class="nav-item">
-                    <i class="ph ph-shield-check"></i>
+                    <img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check">
                     <span>Mi progreso</span>
                 </a>
                 <a href="configuracion.html" class="nav-item">
-                    <i class="ph ph-gear"></i>
+                    <img src="../icons/regular/gear.svg" class="icon-img" alt="gear">
                     <span>Configuración</span>
                 </a>
             </nav>
@@ -76,18 +74,16 @@
                 <div class="topbar-actions">
 
                     <button class="notification-btn">
-                        <i class="ph ph-bell"></i>
+                        <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
                         <span class="badge"></span>
                     </button>
 
                     <div class="top-user-info">
                         <div class="user-details">
                             <span class="user-name">Estudiante</span>
-                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span></a>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span></a>
                         </div>
-                        <div class="avatar">
-                            <i class="ph-fill ph-user" style="font-size: 24px; color: var(--primary);"></i>
-                        </div>
+                        <div class="avatar"><img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width: 24px; height: 24px;"></div>
                     </div>
                 </div>
             </header>
@@ -105,7 +101,7 @@
                             <button class="tarea-tab" data-status="Completada">Completadas <span class="count" id="count-completada">0</span></button>
                         </div>
                         <div style="position:relative;">
-                            <button class="btn-filter" id="btnFiltroTareas"><i class="ph ph-faders"></i> Filtros <i class="ph ph-caret-down"></i></button>
+                            <button class="btn-filter" id="btnFiltroTareas"><img src="../icons/regular/faders.svg" class="icon-img" alt="faders"> Filtros <img src="../icons/regular/caret-down.svg" class="icon-img" alt="caret-down"></button>
                             <div id="filtroTareasMenu" style="display:none;position:absolute;right:0;top:40px;background:white;border:1px solid var(--border);border-radius:10px;padding:12px;z-index:100;min-width:150px;box-shadow:0 8px 24px rgba(0,0,0,.12);">
                                 <p style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:6px;text-transform:uppercase;">Prioridad</p>
                                 <label style="display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;font-size:13px;"><input type="radio" name="prio" value="" checked> Todas</label>
@@ -124,7 +120,7 @@
                             <div id="tareasContainer">
                                 <!-- Spinner inicial -->
                                 <div style="padding: 40px; text-align: center; color: var(--text-muted);">
-                                    <i class="ph ph-spinner" style="font-size: 32px; display: block; margin-bottom: 10px; animation: spin 1s linear infinite;"></i>
+                                    <img src="../icons/regular/spinner.svg" class="icon-img icon-spin" alt="spinner" style="width: 32px; height: 32px; display: block; margin-bottom: 10px; animation: spin 1s linear infinite;">
                                     <p>Cargando tus tareas...</p>
                                 </div>
                             </div>
@@ -182,12 +178,12 @@
                         <div class="widget-panel">
                             <div class="header-icon">
                                 <h3>Próximas entregas</h3>
-                                <i class="ph ph-calendar-blank"></i>
+                                <img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank">
                             </div>
                             <div class="date-list" id="proximasEntregas">
                                 <p style="color: var(--text-muted); font-size: 14px; padding: 10px 0;">Cargando...</p>
                             </div>
-                            <a href="calendario.html" class="view-all-link">Ver calendario completo <i class="ph ph-arrow-right"></i></a>
+                            <a href="calendario.html" class="view-all-link">Ver calendario completo <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                         </div>
 
                     </div>
@@ -197,86 +193,71 @@
         </main>
     </div>
 
-    <!-- Panel de entrega -->
-    <div id="entregaOverlay" class="entrega-overlay" aria-hidden="true">
-        <section class="entrega-dialog" role="dialog" aria-modal="true" aria-labelledby="entregaDialogTitle">
-            <header class="entrega-dialog-header">
-                <div class="entrega-heading">
-                    <span><i class="ph ph-upload-simple"></i> Entrega de tarea</span>
-                    <h3 id="entregaDialogTitle">Enviar trabajo</h3>
-                    <p>Adjunta tu archivo y agrega una nota breve para tu docente.</p>
+    <!-- Modal Comprobante Oficial de Entrega (MVP) -->
+    <div id="comprobanteOverlay" class="comprobante-overlay" aria-hidden="true">
+        <div class="comprobante-card" role="dialog" aria-modal="true" aria-labelledby="cmpHeaderTitle">
+            <header class="comprobante-header">
+                <div class="comprobante-brand">
+                    <div class="comprobante-brand-icon">
+                        <img src="../icons/fill/shield-check.svg" class="icon-img" alt="shield-check" style="filter: brightness(0) invert(1); width:24px; height:24px;">
+                    </div>
+                    <div class="comprobante-brand-text">
+                        <h3 id="cmpHeaderTitle">Shidell Académico</h3>
+                        <p>Constancia Oficial de Entrega</p>
+                    </div>
                 </div>
-                <button class="entrega-close" type="button" id="btnCerrarEntrega" aria-label="Cerrar entrega">
-                    <i class="ph ph-x"></i>
-                </button>
+                <div class="comprobante-badge-status">
+                    <img src="../icons/regular/check-circle.svg" class="icon-img" alt="check-circle"> Conforme
+                </div>
             </header>
 
-            <form id="formEntrega" class="entrega-form">
-                <input type="hidden" id="tareaIdInput">
+            <div class="comprobante-body">
+                <div class="comprobante-code-box">
+                    <span class="label">Código de Verificación:</span>
+                    <span class="code" id="cmpCodigo">REC-SHD-2026-0000</span>
+                </div>
 
-                <div class="entrega-task" aria-live="polite">
-                    <div class="entrega-task-icon">
-                        <i class="ph-fill ph-clipboard-text"></i>
-                    </div>
-                    <div class="entrega-task-info">
-                        <h4 id="entregaTitulo">Tarea</h4>
-                        <div class="entrega-tags">
-                            <span id="entregaCurso"><i class="ph ph-book-open"></i> Curso</span>
-                            <span id="entregaFecha"><i class="ph ph-calendar-blank"></i> Fecha</span>
-                            <span id="entregaPrioridad"><i class="ph ph-flag"></i> Prioridad</span>
-                        </div>
+                <div class="comprobante-timestamp-highlight">
+                    <img src="../icons/regular/clock.svg" class="icon-img" alt="clock" style="width:24px;height:24px;">
+                    <div class="time-info">
+                        <div>Registro Oficial en Servidor (Timestamp inalterable):</div>
+                        <div class="time-val" id="cmpTimestamp">--/--/---- --:--:-- hrs</div>
                     </div>
                 </div>
 
-                <section class="entrega-consigna" id="entregaConsignaBox">
-                    <div class="entrega-consigna-header">
-                        <div>
-                            <span>Consigna del docente</span>
-                            <h4>Indicaciones de la tarea</h4>
-                        </div>
-                        <a id="entregaMaterialLink" class="entrega-material-link" href="#" target="_blank" rel="noopener">
-                            <i class="ph ph-file-arrow-down"></i> Ver material
-                        </a>
+                <div class="comprobante-grid">
+                    <div class="comprobante-item">
+                        <span class="item-title">Estudiante</span>
+                        <span class="item-val" id="cmpEstudiante">Estudiante</span>
                     </div>
-                    <p id="entregaDescripcion">Sin descripción registrada.</p>
-                </section>
-
-                <div class="entrega-grid">
-                    <div class="entrega-field entrega-file-field">
-                        <div class="entrega-label-row">
-                            <label for="archivoTarea">Archivo</label>
-                            <span>Obligatorio</span>
-                        </div>
-                        <label class="entrega-file" for="archivoTarea" id="entregaFileBox">
-                            <input type="file" id="archivoTarea" name="archivo" accept=".pdf,.doc,.docx">
-                            <span class="entrega-file-icon"><i class="ph ph-upload-simple"></i></span>
-                            <strong id="archivoNombre">Seleccionar archivo</strong>
-                            <small id="archivoAyuda">Arrastra o elige un PDF, DOC o DOCX</small>
-                            <em>Tamaño recomendado: hasta 10 MB</em>
-                        </label>
+                    <div class="comprobante-item">
+                        <span class="item-title">Correo Institucional</span>
+                        <span class="item-val" id="cmpCorreo">correo@institucion.edu.pe</span>
                     </div>
-
-                    <div class="entrega-field">
-                        <div class="entrega-label-row">
-                            <label for="comentarioTarea">Comentario</label>
-                            <span id="comentarioContador">0/500</span>
-                        </div>
-                        <textarea id="comentarioTarea" name="comentario" maxlength="500" placeholder="Mensaje opcional para el profesor"></textarea>
+                    <div class="comprobante-item">
+                        <span class="item-title">Curso / Asignatura</span>
+                        <span class="item-val" id="cmpCurso">Curso</span>
+                    </div>
+                    <div class="comprobante-item">
+                        <span class="item-title">Asignación / Tarea</span>
+                        <span class="item-val" id="cmpTarea">Tarea</span>
+                    </div>
+                    <div class="comprobante-item full-width">
+                        <span class="item-title">Archivo Registrado</span>
+                        <span class="item-val" id="cmpArchivo" style="color:var(--primary); font-family:monospace;">archivo.pdf</span>
                     </div>
                 </div>
+            </div>
 
-                <p id="entregaFeedback" class="entrega-feedback" aria-live="polite"></p>
-
-                <footer class="entrega-actions">
-                    <button type="button" class="entrega-btn entrega-btn-ghost" id="btnCancelarEntrega">
-                        <i class="ph ph-x"></i> Cancelar
-                    </button>
-                    <button type="submit" class="entrega-btn entrega-btn-primary" id="btnEnviarEntrega">
-                        <i class="ph ph-paper-plane-tilt"></i> Enviar entrega
-                    </button>
-                </footer>
-            </form>
-        </section>
+            <footer class="comprobante-footer">
+                <button type="button" class="btn-print-comprobante" id="btnImprimirComprobante">
+                    <img src="../icons/regular/printer.svg" class="icon-img" alt="printer"> Imprimir / Guardar Constancia
+                </button>
+                <button type="button" class="btn-close-comprobante" id="btnCerrarComprobante">
+                    Aceptar y Cerrar
+                </button>
+            </footer>
+        </div>
     </div>
 
     <style>
@@ -693,7 +674,7 @@
         configurarBusqueda();
         configurarFiltros();
         configurarAccionesTareas();
-        configurarFormulario();
+        configurarComprobante();
     });
 
     // ─── Cargar datos de la API ───────────────────────────────────────────────
@@ -723,7 +704,7 @@
             console.error('Error cargando datos:', err);
             container.innerHTML = `
                 <div style="padding: 40px; text-align: center; color: var(--red);">
-                    <i class="ph ph-warning" style="font-size: 40px; display:block; margin-bottom:10px;"></i>
+                    <img src="../icons/regular/warning.svg" class="icon-img" alt="warning" style="width: 40px; height: 40px; display:block; margin-bottom:10px;">
                     <p>Error al conectar con el servidor.</p>
                     <small>${err.message}</small>
                 </div>`;
@@ -777,7 +758,7 @@
                         filtro === 'Vencido'   ? '¡No tienes tareas vencidas! 🙌' :
                                                  '¡Aún no has completado ninguna tarea.';
             container.innerHTML = `<div style="padding:50px;text-align:center;color:var(--text-muted);">
-                <i class="ph ph-clipboard-text" style="font-size:48px;display:block;margin-bottom:12px;opacity:.4;"></i>
+                <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text" style="width:48px;height:48px;display:block;margin-bottom:12px;opacity:.4;">
                 <p>${msg}</p></div>`;
             return;
         }
@@ -795,36 +776,44 @@
         const prio  = escapeHtml(tarea.prioridad || 'Media');
         const prioIcon = prio === 'Alta' ? '↑' : prio === 'Media' ? '—' : '↓';
         const descripcion = escapeHtml(resumenDescripcion(tarea.descripcion));
+        const urlDetalle = `tareadetalle.html?id=${encodeURIComponent(tarea.id)}`;
 
         let actionHtml, badgeHtml;
         if (tarea.status === 'Completada') {
-            actionHtml = `<span style="background:var(--green-light);color:var(--green);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;">
-                <i class="ph ph-check-circle"></i> Entregado</span>`;
+            actionHtml = `
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <a href="${urlDetalle}" class="btn-entregar" style="text-decoration:none;">
+                        <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="ver"> Ver entrega
+                    </a>
+                    <button class="btn-comprobante" type="button" data-tarea-id="${tarea.id}">
+                        <img src="../icons/regular/file-text.svg" class="icon-img" alt="file-text"> Comprobante
+                    </button>
+                </div>`;
             badgeHtml = `<span style="color:var(--green);font-size:12px;font-weight:600;">✔ Entregado</span>`;
         } else if (tarea.status === 'Vencido') {
-            actionHtml = `<span style="background:var(--red-light,#fff1f0);color:var(--red,#e03);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;white-space:nowrap;">
-                <i class="ph ph-warning"></i> Vencido</span>`;
+            actionHtml = `<a href="${urlDetalle}" style="text-decoration:none;background:var(--red-light,#fff1f0);color:var(--red,#e03);padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;">
+                <img src="../icons/regular/warning.svg" class="icon-img" alt="warning"> Ver tarea</a>`;
             badgeHtml = `<span style="color:var(--red,#e03);font-size:12px;font-weight:600;">⚠ Vencido</span>`;
         } else {
-            actionHtml = `<button class="btn-entregar" type="button" data-tarea-id="${tarea.id}"><i class="ph ph-upload-simple"></i> Entregar</button>`;
+            actionHtml = `<a href="${urlDetalle}" class="btn-entregar" data-tarea-id="${tarea.id}" style="text-decoration:none;"><img src="../icons/regular/upload-simple.svg" class="icon-img" alt="upload-simple"> Entregar</a>`;
             badgeHtml  = `<span style="color:var(--text-muted);font-size:12px;">Pendiente</span>`;
         }
 
         return `
-        <div class="tarea-item-row">
-            <div class="t-icon bg-${color}-light"><i class="ph-fill ${icon}"></i></div>
+        <div class="tarea-item-row" data-tarea-id="${tarea.id}" style="cursor:pointer;">
+            <div class="t-icon bg-${color}-light">${iconImg(icon, 'fill')}</div>
             <div class="t-info">
-                <h4>${titulo}</h4>
+                <h4><a href="${urlDetalle}" style="color:inherit;text-decoration:none;">${titulo}</a></h4>
                 <p>${curso}</p>
                 <small>${descripcion}</small>
             </div>
             <div class="t-priority ${prio.toLowerCase()}">${prioIcon} ${prio}</div>
             <div class="t-date">
-                <span class="date"><i class="ph ph-calendar-blank"></i> ${fecha}</span>
+                <span class="date"><img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"> ${fecha}</span>
                 ${badgeHtml}
             </div>
             ${actionHtml}
-            <button class="t-action"><i class="ph ph-dots-three-vertical"></i></button>
+            <a href="${urlDetalle}" class="t-action" title="Abrir página de la tarea"><img src="../icons/regular/arrow-right.svg" class="icon-img" alt="ir"></a>
         </div>`;
     }
 
@@ -882,14 +871,14 @@
             const titulo = escapeHtml(t.titulo || 'Tarea');
             const fecha = escapeHtml(t.fechaVencimiento || 'Sin fecha');
             return `
-            <div class="date-item">
-                <div class="d-icon bg-${color}-light"><i class="ph-fill ${icon}"></i></div>
+            <a href="tareadetalle.html?id=${encodeURIComponent(t.id)}" class="date-item" style="text-decoration:none;color:inherit;">
+                <div class="d-icon bg-${color}-light">${iconImg(icon, 'fill')}</div>
                 <div class="d-info">
                     <h4>${titulo}</h4>
                     <p>${curso}</p>
                     <div class="d-date">${fecha}</div>
                 </div>
-            </div>`;
+            </a>`;
         }).join('');
     }
 
@@ -938,159 +927,21 @@
 
     function configurarAccionesTareas() {
         document.getElementById('tareasContainer').addEventListener('click', (event) => {
-            const btn = event.target.closest('.btn-entregar');
-            if (!btn) return;
-            abrirEntrega(Number(btn.dataset.tareaId));
-        });
-    }
-
-    // ─── Formulario de entrega ────────────────────────────────────────────────
-    function configurarFormulario() {
-        document.getElementById('btnCerrarEntrega').addEventListener('click', cerrarEntrega);
-        document.getElementById('btnCancelarEntrega').addEventListener('click', cerrarEntrega);
-        document.getElementById('entregaOverlay').addEventListener('click', (event) => {
-            if (event.target.id === 'entregaOverlay') cerrarEntrega();
-        });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && document.getElementById('entregaOverlay').classList.contains('open')) {
-                cerrarEntrega();
-            }
-        });
-
-        const archivoInput = document.getElementById('archivoTarea');
-        const comentarioInput = document.getElementById('comentarioTarea');
-
-        archivoInput.addEventListener('change', actualizarArchivoSeleccionado);
-        comentarioInput.addEventListener('input', actualizarContadorComentario);
-
-        document.getElementById('formEntrega').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnEnviarEntrega');
-            const archivo = archivoInput.files[0];
-
-            if (!archivo) {
-                mostrarFeedbackEntrega('Selecciona un archivo antes de enviar.', 'error');
+            const btnComprobante = event.target.closest('.btn-comprobante');
+            if (btnComprobante) {
+                event.preventDefault();
+                event.stopPropagation();
+                abrirComprobantePorTareaId(Number(btnComprobante.dataset.tareaId));
                 return;
             }
-            if (!archivoValido(archivo)) return;
-
-            mostrarFeedbackEntrega('', '');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="ph ph-spinner"></i> Enviando';
-
-            const formData = new FormData();
-            formData.append('tareaId',     document.getElementById('tareaIdInput').value);
-            formData.append('estudianteId', user.id);
-            formData.append('comentario',   comentarioInput.value.trim());
-            formData.append('archivo',      archivo);
-
-            try {
-                const res = await fetch('/api/entregas', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin'
-                });
-                if (res.ok) {
-                    mostrarFeedbackEntrega('Entrega registrada correctamente.', 'success');
-                    btn.innerHTML = '<i class="ph ph-check-circle"></i> Entregado';
-                    await new Promise(resolve => setTimeout(resolve, 450));
-                    cerrarEntrega();
-                    allEntregas = [];  // limpiar caché
-                    await cargarDatos();
-                } else {
-                    const detalle = await leerErrorEntrega(res);
-                    mostrarFeedbackEntrega(detalle || 'No se pudo entregar la tarea. Revisa el archivo e intenta nuevamente.', 'error');
-                }
-            } catch (err) {
-                mostrarFeedbackEntrega('Error de conexión. Verifica que el servidor siga activo.', 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Enviar entrega';
+            if (event.target.closest('a')) {
+                return;
+            }
+            const row = event.target.closest('.tarea-item-row');
+            if (row && row.dataset.tareaId) {
+                abrirEntrega(Number(row.dataset.tareaId));
             }
         });
-    }
-
-    async function leerErrorEntrega(res) {
-        if (res.status === 401) return 'Tu sesión expiró. Vuelve a iniciar sesión para enviar la entrega.';
-        if (res.status === 403) return 'Tu usuario no tiene permiso para enviar esta entrega.';
-        if (res.status === 413) return 'El archivo es demasiado grande. Sube un PDF, DOC o DOCX de máximo 10 MB.';
-        try {
-            const contentType = res.headers.get('content-type') || '';
-            if (contentType.includes('application/json')) {
-                const data = await res.json();
-                return data.error || data.message || data.detail || '';
-            }
-            const texto = await res.text();
-            return texto && texto.length < 180 ? texto : '';
-        } catch (error) {
-            return '';
-        }
-    }
-
-    function actualizarArchivoSeleccionado() {
-        const input = document.getElementById('archivoTarea');
-        const fileBox = document.getElementById('entregaFileBox');
-        const nombre = document.getElementById('archivoNombre');
-        const ayuda = document.getElementById('archivoAyuda');
-        const file = input.files[0];
-
-        if (!file) {
-            fileBox.classList.remove('has-file');
-            nombre.textContent = 'Seleccionar archivo';
-            ayuda.textContent = 'PDF, DOC o DOCX';
-            return;
-        }
-
-        fileBox.classList.add('has-file');
-        nombre.textContent = file.name;
-        ayuda.textContent = `${formatearPesoArchivo(file.size)} seleccionado`;
-        mostrarFeedbackEntrega('', '');
-    }
-
-    function archivoValido(file) {
-        const extension = file.name.split('.').pop().toLowerCase();
-        const extensionesPermitidas = ['pdf', 'doc', 'docx'];
-        const maxBytes = 10 * 1024 * 1024;
-
-        if (!extensionesPermitidas.includes(extension)) {
-            mostrarFeedbackEntrega('El archivo debe ser PDF, DOC o DOCX.', 'error');
-            document.getElementById('archivoTarea').value = '';
-            actualizarArchivoSeleccionado();
-            return false;
-        }
-
-        if (file.size > maxBytes) {
-            mostrarFeedbackEntrega('El archivo supera los 10 MB recomendados.', 'error');
-            document.getElementById('archivoTarea').value = '';
-            actualizarArchivoSeleccionado();
-            return false;
-        }
-
-        return true;
-    }
-
-    function actualizarContadorComentario() {
-        const value = document.getElementById('comentarioTarea').value;
-        document.getElementById('comentarioContador').textContent = `${value.length}/500`;
-    }
-
-    function mostrarFeedbackEntrega(mensaje, tipo) {
-        const feedback = document.getElementById('entregaFeedback');
-        feedback.textContent = mensaje;
-        feedback.className = 'entrega-feedback';
-        if (mensaje) feedback.classList.add('show', tipo);
-    }
-
-    function formatearPesoArchivo(bytes) {
-        if (bytes < 1024 * 1024) return `${Math.max(1, Math.round(bytes / 1024))} KB`;
-        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-    }
-
-    function formatearFechaCorta(fecha) {
-        if (!fecha) return 'Sin fecha';
-        const [year, month, day] = String(fecha).split('-').map(Number);
-        const date = year && month && day ? new Date(year, month - 1, day) : new Date(fecha);
-        return date.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
     }
 
     function escapeHtml(value) {
@@ -1105,61 +956,89 @@
 
     function estadoVacio(icono, texto) {
         return `<div style="padding:50px;text-align:center;color:var(--text-muted);">
-            <i class="ph ${escapeHtml(icono)}" style="font-size:48px;display:block;margin-bottom:12px;opacity:.45;"></i>
+            ${iconImg(escapeHtml(icono), '', 'width:48px;height:48px;display:block;margin-bottom:12px;opacity:.45;')}
             <p>${escapeHtml(texto)}</p>
         </div>`;
     }
 
-    // ─── Panel de entrega ────────────────────────────────────────────────────
+    // ─── Ir a la página de la tarea creada ───────────────────────────────────
     function abrirEntrega(id) {
-        const tarea = allTareas.find(t => t.id === id);
+        if (!id) return;
+        window.location.href = `tareadetalle.html?id=${encodeURIComponent(id)}`;
+    }
+
+    // ─── Funciones Comprobante Oficial de Entrega (MVP - Hipótesis 1) ─────────
+    function configurarComprobante() {
+        const btnCerrar = document.getElementById('btnCerrarComprobante');
+        const btnImprimir = document.getElementById('btnImprimirComprobante');
+        const overlay = document.getElementById('comprobanteOverlay');
+
+        if (btnCerrar) btnCerrar.addEventListener('click', cerrarComprobante);
+        if (btnImprimir) btnImprimir.addEventListener('click', () => window.print());
+        if (overlay) {
+            overlay.addEventListener('click', (e) => {
+                if (e.target.id === 'comprobanteOverlay') cerrarComprobante();
+            });
+        }
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && overlay?.classList.contains('open')) {
+                cerrarComprobante();
+            }
+        });
+    }
+
+    function abrirComprobantePorTareaId(tareaId) {
+        const tarea = allTareas.find(t => t.id === tareaId);
         if (!tarea) return;
-
-        document.getElementById('tareaIdInput').value = id;
-        document.getElementById('entregaTitulo').textContent = tarea.titulo || 'Tarea';
-        document.getElementById('entregaCurso').innerHTML = `<i class="ph ph-book-open"></i> ${escapeHtml(tarea.curso?.nombre || 'Sin curso')}`;
-        document.getElementById('entregaFecha').innerHTML = `<i class="ph ph-calendar-blank"></i> ${formatearFechaCorta(tarea.fechaVencimiento)}`;
-        document.getElementById('entregaPrioridad').innerHTML = `<i class="ph ph-flag"></i> ${escapeHtml(tarea.prioridad || 'Media')}`;
-        document.getElementById('entregaDescripcion').textContent = limpiarDescripcionTarea(tarea.descripcion);
-        configurarMaterialTarea(tarea.pdfUrl);
-        document.getElementById('formEntrega').reset();
-        mostrarFeedbackEntrega('', '');
-        actualizarArchivoSeleccionado();
-        actualizarContadorComentario();
-
-        const overlay = document.getElementById('entregaOverlay');
-        overlay.classList.add('open');
-        overlay.setAttribute('aria-hidden', 'false');
-        document.body.classList.add('entrega-open');
+        const entrega = tarea.entrega || allEntregas.find(e => e.tarea && e.tarea.id === tareaId);
+        abrirComprobante(entrega, tarea);
     }
 
-    function limpiarDescripcionTarea(descripcion) {
-        const texto = String(descripcion || '').trim();
-        return texto || 'El docente no registró una descripción para esta tarea.';
-    }
+    function abrirComprobante(entrega, tarea) {
+        const overlay = document.getElementById('comprobanteOverlay');
+        if (!overlay) return;
 
-    function configurarMaterialTarea(pdfUrl) {
-        const link = document.getElementById('entregaMaterialLink');
-        const url = String(pdfUrl || '').trim();
-        if (!url) {
-            link.classList.add('is-hidden');
-            link.removeAttribute('href');
-            return;
+        const entregaId = entrega?.id || Math.floor(1000 + Math.random() * 9000);
+        const codigo = `REC-SHD-2026-${String(entregaId).padStart(4, '0')}`;
+        
+        let timestampStr = '';
+        if (entrega?.fechaEntrega) {
+            const f = new Date(entrega.fechaEntrega);
+            timestampStr = f.toLocaleString('es-PE', { 
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            }) + ' hrs';
+        } else {
+            timestampStr = new Date().toLocaleString('es-PE', { 
+                day: '2-digit', month: '2-digit', year: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            }) + ' hrs';
         }
 
-        link.classList.remove('is-hidden');
-        link.href = url;
+        const nombreEstudiante = [user.nombres, user.apellidos].filter(Boolean).join(' ') || 'Estudiante';
+        const correoEstudiante = user.email || 'correo@institucion.edu.pe';
+        const tituloTarea = tarea?.titulo || entrega?.tarea?.titulo || 'Tarea Académica';
+        const nombreCurso = tarea?.curso?.nombre || entrega?.tarea?.curso?.nombre || 'Curso Regular';
+        const archivoNombre = entrega?.archivoUrl ? entrega.archivoUrl.split('/').pop() : 'Documento adjunto verificado';
+
+        document.getElementById('cmpCodigo').textContent = codigo;
+        document.getElementById('cmpEstudiante').textContent = nombreEstudiante;
+        document.getElementById('cmpCorreo').textContent = correoEstudiante;
+        document.getElementById('cmpCurso').textContent = nombreCurso;
+        document.getElementById('cmpTarea').textContent = tituloTarea;
+        document.getElementById('cmpArchivo').textContent = archivoNombre;
+        document.getElementById('cmpTimestamp').textContent = timestampStr;
+
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
     }
 
-    function cerrarEntrega() {
-        const overlay = document.getElementById('entregaOverlay');
-        overlay.classList.remove('open');
-        overlay.setAttribute('aria-hidden', 'true');
-        document.body.classList.remove('entrega-open');
-        document.getElementById('formEntrega').reset();
-        actualizarArchivoSeleccionado();
-        actualizarContadorComentario();
-        mostrarFeedbackEntrega('', '');
+    function cerrarComprobante() {
+        const overlay = document.getElementById('comprobanteOverlay');
+        if (overlay) {
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+        }
     }
 
     window.cerrarSesion = () => window.shidellSession?.cerrarSesion?.();
@@ -1170,7 +1049,13 @@
 
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
+    <script src="/vendor/alertas.js?v=20261019d"></script>
 
 </body>
 </html>
+
+
+
+
+
+

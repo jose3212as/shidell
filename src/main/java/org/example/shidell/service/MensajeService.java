@@ -23,6 +23,8 @@ public class MensajeService {
     @Autowired
     private CursoRepository cursoRepository;
     @Autowired
+    private org.example.shidell.repository.MatriculaRepository matriculaRepository;
+    @Autowired
     private EntityMapper mapper;
     public Long contarMensajesNoLeidos(Long usuarioId) {
         UserEntity u = userRepository.findById(usuarioId).orElseThrow();
@@ -157,9 +159,29 @@ public class MensajeService {
     }
 
     private List<Curso> cursosDelEstudiante(UserEntity estudiante) {
-        if (estudiante.getNivel() == null || estudiante.getGrado() == null || estudiante.getSeccion() == null) return List.of();
+        if (estudiante == null) return List.of();
+        String nivel = estudiante.getNivel();
+        String grado = estudiante.getGrado();
+        String seccion = estudiante.getSeccion();
+        String turno = estudiante.getTurno();
+
+        if (nivel == null || grado == null || seccion == null) {
+            org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(estudiante, 2026).orElse(null);
+            if (m == null) {
+                List<org.example.shidell.model.entity.Matricula> list = matriculaRepository.findByEstudiante(estudiante);
+                if (!list.isEmpty()) m = list.get(0);
+            }
+            if (m != null && m.getAula() != null) {
+                nivel = m.getAula().getNivel();
+                grado = m.getAula().getGrado();
+                seccion = m.getAula().getSeccion();
+                turno = m.getAula().getTurno();
+            }
+        }
+        if (nivel == null || grado == null || seccion == null) return List.of();
+
         LinkedHashMap<String, Curso> cursos = new LinkedHashMap<>();
-        cursoRepository.findByGrupoAcademico(estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno())
+        cursoRepository.findByGrupoAcademico(nivel, grado, seccion, turno)
                 .forEach(c -> cursos.putIfAbsent(TextUtils.claveCurso(c.getNombre(), c.getId()), c));
         return new ArrayList<>(cursos.values());
     }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -7,31 +7,31 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
+    <script src="../js/icon-helper.js"></script>
     <script src="../vendor/jspdf.umd.min.js"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
+    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
     <link rel="stylesheet" href="../css/configuracion.css">
 </head>
 <body>
 <div class="dashboard">
     <aside class="sidebar">
         <div class="sidebar-header">
-            <div class="logo-icon"><i class="ph-fill ph-graduation-cap"></i></div>
+            <div class="logo-icon"><img src="../icons/fill/graduation-cap.svg" class="icon-img" alt="graduation-cap"></div>
             <div class="logo-text">
                 <h2>Shidell</h2>
                 <p>Portal Estudiante</p>
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a href="portalestudiante.html" class="nav-item"><i class="ph ph-house"></i><span>Inicio</span></a>
-            <a href="miscursos.html" class="nav-item"><i class="ph ph-book-open"></i><span>Mis cursos</span></a>
-            <a href="tareas.html" class="nav-item"><i class="ph ph-clipboard-text"></i><span>Tareas</span></a>
-            <a href="calificaciones.html" class="nav-item"><i class="ph ph-star"></i><span>Calificaciones</span></a>
-            <a href="calendario.html" class="nav-item"><i class="ph ph-calendar-blank"></i><span>Calendario</span></a>
-            <a href="mensajes.html" class="nav-item"><i class="ph ph-chat-circle-dots"></i><span>Mensajes</span></a>
-            <a href="miprogreso.html" class="nav-item"><i class="ph ph-shield-check"></i><span>Mi progreso</span></a>
-            <a href="configuracion.html" class="nav-item active"><i class="ph ph-gear"></i><span>Configuracion</span></a>
+            <a href="portalestudiante.html" class="nav-item"><img src="../icons/regular/house.svg" class="icon-img" alt="house"><span>Inicio</span></a>
+            <a href="miscursos.html" class="nav-item"><img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open"><span>Mis cursos</span></a>
+            <a href="tareas.html" class="nav-item"><img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text"><span>Tareas</span></a>
+            <a href="calificaciones.html" class="nav-item"><img src="../icons/regular/star.svg" class="icon-img" alt="star"><span>Calificaciones</span></a>
+            <a href="calendario.html" class="nav-item"><img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"><span>Calendario</span></a>
+            <a href="mensajes.html" class="nav-item"><img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots"><span>Mensajes</span></a>
+            <a href="miprogreso.html" class="nav-item"><img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check"><span>Mi progreso</span></a>
+            <a href="configuracion.html" class="nav-item active"><img src="../icons/regular/gear.svg" class="icon-img" alt="gear"><span>Configuracion</span></a>
         </nav>
     </aside>
 
@@ -43,18 +43,18 @@
             </div>
             <div class="topbar-actions">
                 <button class="notification-btn" type="button">
-                    <i class="ph ph-bell"></i>
+                    <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
                     <span class="badge"></span>
                 </button>
                 <div class="top-user-info">
                     <div class="user-details">
                         <span class="user-name">Estudiante</span>
-                        <span class="user-action">Mi cuenta <i class="ph ph-caret-right"></i></span>
+                        <span class="user-action">Mi cuenta <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span>
                     </div>
-                    <div class="avatar"><i class="ph-fill ph-user" style="font-size:24px;color:var(--primary);"></i></div>
+                    <div class="avatar"><img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width: 24px; height: 24px;"></div>
                     <div class="account-dropdown">
-                        <button type="button" id="account-ver-perfil"><i class="ph ph-user-circle"></i> Ver perfil</button>
-                        <button type="button" class="account-logout" id="account-cerrar-sesion"><i class="ph ph-sign-out"></i> Cerrar sesion</button>
+                        <button type="button" id="account-ver-perfil"><img src="../icons/regular/user-circle.svg" class="icon-img" alt="user-circle"> Ver perfil</button>
+                        <button type="button" class="account-logout" id="account-cerrar-sesion"><img src="../icons/regular/sign-out.svg" class="icon-img" alt="sign-out"> Cerrar sesion</button>
                     </div>
                 </div>
             </div>
@@ -63,15 +63,15 @@
         <div class="content-area">
             <div class="settings-page">
                 <nav class="settings-menu" aria-label="Menu de configuracion">
-                    <button type="button" class="settings-tab active" data-view="perfil"><i class="ph-fill ph-user"></i><span>Mi perfil</span></button>
-                    <button type="button" class="settings-tab" data-view="notificaciones"><i class="ph ph-bell"></i><span>Notificaciones</span></button>
-                    <button type="button" class="settings-tab" data-view="seguridad"><i class="ph ph-lock-key"></i><span>Seguridad</span></button>
-                    <button type="button" class="settings-tab" data-view="cuenta"><i class="ph ph-user-circle"></i><span>Cuenta</span></button>
+                    <button type="button" class="settings-tab active" data-view="perfil"><img src="../icons/fill/user.svg" class="icon-img" alt="user"><span>Mi perfil</span></button>
+                    <button type="button" class="settings-tab" data-view="notificaciones"><img src="../icons/regular/bell.svg" class="icon-img" alt="bell"><span>Notificaciones</span></button>
+                    <button type="button" class="settings-tab" data-view="seguridad"><img src="../icons/regular/lock-key.svg" class="icon-img" alt="lock-key"><span>Seguridad</span></button>
+                    <button type="button" class="settings-tab" data-view="cuenta"><img src="../icons/regular/user-circle.svg" class="icon-img" alt="user-circle"><span>Cuenta</span></button>
                 </nav>
 
                 <section id="settings-view" class="settings-view">
                     <div class="settings-loading">
-                        <i class="ph ph-circle-notch"></i>
+                        <img src="../icons/regular/circle-notch.svg" class="icon-img icon-spin" alt="circle-notch">
                         <strong>Cargando configuracion...</strong>
                         <span>Estamos preparando tu informacion.</span>
                     </div>
@@ -83,19 +83,19 @@
 
 <div class="settings-modal" id="modal-perfil" aria-hidden="true">
     <div class="settings-modal-card">
-        <button class="modal-close" type="button" data-close="modal-perfil"><i class="ph ph-x"></i></button>
+        <button class="modal-close" type="button" data-close="modal-perfil"><img src="../icons/regular/x.svg" class="icon-img" alt="x"></button>
         <h2>Editar perfil</h2>
         <form id="form-perfil" class="settings-form">
             <div class="photo-uploader">
                 <div class="photo-preview" id="cfg-foto-preview">
-                    <i class="ph-fill ph-user"></i>
+                    <img src="../icons/fill/user.svg" class="icon-img" alt="user">
                 </div>
                 <div class="photo-actions">
                     <strong>Foto de perfil</strong>
                     <span>Sube una imagen JPG, PNG o WebP.</span>
                     <div class="photo-buttons">
-                        <label class="btn-secondary-settings" for="cfg-foto"><i class="ph ph-upload-simple"></i> Subir foto</label>
-                        <button class="btn-ghost" type="button" id="btn-quitar-foto"><i class="ph ph-trash"></i> Quitar</button>
+                        <label class="btn-secondary-settings" for="cfg-foto"><img src="../icons/regular/upload-simple.svg" class="icon-img" alt="upload-simple"> Subir foto</label>
+                        <button class="btn-ghost" type="button" id="btn-quitar-foto"><img src="../icons/regular/trash.svg" class="icon-img" alt="trash"> Quitar</button>
                     </div>
                     <input id="cfg-foto" type="file" accept="image/png,image/jpeg,image/webp">
                 </div>
@@ -153,7 +153,7 @@
 
 <div class="settings-modal" id="modal-password" aria-hidden="true">
     <div class="settings-modal-card">
-        <button class="modal-close" type="button" data-close="modal-password"><i class="ph ph-x"></i></button>
+        <button class="modal-close" type="button" data-close="modal-password"><img src="../icons/regular/x.svg" class="icon-img" alt="x"></button>
         <h2>Cambiar contrasena</h2>
         <form id="form-password" class="settings-form">
             <label>Nueva contrasena<input id="cfg-password" type="password" minlength="4" required></label>
@@ -171,7 +171,13 @@
 
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
+    <script src="/vendor/alertas.js?v=20261019d"></script>
 
 </body>
 </html>
+
+
+
+
+
+

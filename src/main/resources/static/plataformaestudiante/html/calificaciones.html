@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -8,9 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
+    <script src="../js/icon-helper.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
     <link rel="stylesheet" href="../css/calificaciones.css">
 </head>
 
@@ -19,9 +19,7 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="logo-icon">
-                    <i class="ph-fill ph-graduation-cap"></i>
-                </div>
+                <div class="logo-icon"><img src="../icons/fill/graduation-cap.svg" class="icon-img" alt="graduation-cap"></div>
                 <div class="logo-text">
                     <h2>Shidell</h2>
                     <p>Portal Estudiante</p>
@@ -30,35 +28,35 @@
 
             <nav class="sidebar-nav">
                 <a href="portalestudiante.html" class="nav-item">
-                    <i class="ph ph-house"></i>
+                    <img src="../icons/regular/house.svg" class="icon-img" alt="house">
                     <span>Inicio</span>
                 </a>
                 <a href="miscursos.html" class="nav-item">
-                    <i class="ph ph-book-open"></i>
+                    <img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open">
                     <span>Mis cursos</span>
                 </a>
                 <a href="tareas.html" class="nav-item">
-                    <i class="ph ph-clipboard-text"></i>
+                    <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text">
                     <span>Tareas</span>
                 </a>
                 <a href="calificaciones.html" class="nav-item active">
-                    <i class="ph ph-star"></i>
+                    <img src="../icons/regular/star.svg" class="icon-img" alt="star">
                     <span>Calificaciones</span>
                 </a>
                 <a href="calendario.html" class="nav-item">
-                    <i class="ph ph-calendar-blank"></i>
+                    <img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank">
                     <span>Calendario</span>
                 </a>
                 <a href="mensajes.html" class="nav-item">
-                    <i class="ph ph-chat-circle-dots"></i>
+                    <img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots">
                     <span>Mensajes</span>
                 </a>
                 <a href="miprogreso.html" class="nav-item">
-                    <i class="ph ph-shield-check"></i>
+                    <img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check">
                     <span>Mi progreso</span>
                 </a>
                 <a href="configuracion.html" class="nav-item">
-                    <i class="ph ph-gear"></i>
+                    <img src="../icons/regular/gear.svg" class="icon-img" alt="gear">
                     <span>Configuración</span>
                 </a>
             </nav>
@@ -76,18 +74,16 @@
                 <div class="topbar-actions">
 
                     <button class="notification-btn">
-                        <i class="ph ph-bell"></i>
+                        <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
                         <span class="badge"></span>
                     </button>
 
                     <div class="top-user-info">
                         <div class="user-details">
                             <span class="user-name">Estudiante</span>
-                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span></a>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span></a>
                         </div>
-                        <div class="avatar">
-                            <i class="ph-fill ph-user" style="font-size: 24px; color: var(--primary);"></i>
-                        </div>
+                        <div class="avatar"><img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width: 24px; height: 24px;"></div>
                     </div>
                 </div>
             </header>
@@ -105,7 +101,7 @@
                             <button class="cal-tab" data-view="historial">Historial académico</button>
                         </div>
                         <button class="semester-dropdown" type="button" id="cal-api-source">
-                            <i class="ph ph-database"></i> Datos del estudiante
+                            <img src="../icons/regular/database.svg" class="icon-img" alt="database"> Datos del estudiante
                         </button>
                     </div>
                 </div>
@@ -115,7 +111,7 @@
                     <!-- Stats Row -->
                     <div class="cal-stats-row">
                         <div class="cal-stat-card">
-                            <div class="cal-stat-icon bg-yellow-light text-yellow"><i class="ph ph-star"></i></div>
+                            <div class="cal-stat-icon bg-yellow-light text-yellow"><img src="../icons/regular/star.svg" class="icon-img" alt="star"></div>
                             <div class="cal-stat-info">
                                 <span class="label">Promedio general</span>
                                 <div class="value" id="stat-promedio">0.0 <span>/ 20</span></div>
@@ -124,8 +120,7 @@
                         </div>
 
                         <div class="cal-stat-card">
-                            <div class="cal-stat-icon bg-purple-light" style="color: var(--purple);"><i
-                                    class="ph ph-trend-up"></i></div>
+                            <div class="cal-stat-icon bg-purple-light" style="color: var(--purple);"><img src="../icons/regular/trend-up.svg" class="icon-img" alt="trend-up"></div>
                             <div class="cal-stat-info">
                                 <span class="label">Cursos aprobados</span>
                                 <div class="value" id="stat-cursos">0 <span>/ 0</span></div>
@@ -134,7 +129,7 @@
                         </div>
 
                         <div class="cal-stat-card">
-                            <div class="cal-stat-icon bg-green-light text-green"><i class="ph ph-trend-up"></i></div>
+                            <div class="cal-stat-icon bg-green-light text-green"><img src="../icons/regular/trend-up.svg" class="icon-img" alt="trend-up"></div>
                             <div class="cal-stat-info">
                                 <span class="label">Mejora de promedio</span>
                                 <div class="value" id="stat-mejora">0.0</div>
@@ -143,7 +138,7 @@
                         </div>
 
                         <div class="cal-stat-card">
-                            <div class="cal-stat-icon bg-blue-light text-blue"><i class="ph ph-medal"></i></div>
+                            <div class="cal-stat-icon bg-blue-light text-blue"><img src="../icons/regular/medal.svg" class="icon-img" alt="medal"></div>
                             <div class="cal-stat-info">
                                 <span class="label">Evaluaciones</span>
                                 <div class="value" id="stat-evaluaciones">0</div>
@@ -169,8 +164,7 @@
                                     <div class="cal-state">Cargando calificaciones desde el API...</div>
                                 </div>
 
-                                <a href="#calificaciones-detalle" class="view-all-link">Ver todas las calificaciones detalladas <i
-                                        class="ph ph-arrow-right"></i></a>
+                                <a href="#calificaciones-detalle" class="view-all-link">Ver todas las calificaciones detalladas <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                             </div>
                         </div>
 
@@ -233,7 +227,7 @@
                                     <h4>¡Sigue así!</h4>
                                     <p>El mensaje se calculará con tus calificaciones reales.</p>
                                 </div>
-                                <div class="motivational-grade-icon"><i class="ph-fill ph-medal"></i></div>
+                                <div class="motivational-grade-icon"><img src="../icons/fill/medal.svg" class="icon-img" alt="medal"></div>
                             </div>
 
                         </div>
@@ -253,7 +247,7 @@
                             <div id="selected-course-detail-header" class="course-detail-header" style="display: none;">
                                 <div class="course-detail-title-wrap">
                                     <div class="course-detail-icon" id="course-detail-icon-box">
-                                        <i class="ph-fill ph-book-open"></i>
+                                        <img src="../icons/fill/book-open.svg" class="icon-img" alt="book-open">
                                     </div>
                                     <div>
                                         <h3 id="course-detail-name">Selecciona un curso</h3>
@@ -299,7 +293,7 @@
                                 <p id="eval-tab-count">Cargando evaluaciones...</p>
                             </div>
                             <div class="search-filter-box">
-                                <i class="ph ph-magnifying-glass"></i>
+                                <img src="../icons/regular/magnifying-glass.svg" class="icon-img" alt="magnifying-glass">
                                 <input type="text" id="eval-search-input" placeholder="Buscar por evaluación, curso o docente...">
                             </div>
                         </div>
@@ -328,7 +322,7 @@
                                 <p>Reporte oficial consolidado del rendimiento académico del estudiante.</p>
                             </div>
                             <button class="btn-print-report" id="btn-imprimir-historial" type="button">
-                                <i class="ph ph-printer"></i> Imprimir Reporte
+                                <img src="../icons/regular/printer.svg" class="icon-img" alt="printer"> Imprimir Reporte
                             </button>
                         </div>
                         
@@ -375,9 +369,15 @@
 
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
+    <script src="/vendor/alertas.js?v=20261019d"></script>
 
 </body>
 
 </html>
+
+
+
+
+
+
 

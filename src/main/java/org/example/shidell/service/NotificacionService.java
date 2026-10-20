@@ -85,4 +85,50 @@ public class NotificacionService {
                          " (Vencimiento: " + tarea.getFechaVencimiento().toString() + ").";
         crearNotificacion(padre, titulo, mensaje);
     }
+
+    // --- NOTIFICACIONES AUTOMÁTICAS PARA ESTUDIANTES ---
+
+    public void notificarNuevaTareaAEstudiantes(Tarea tarea, List<UserEntity> estudiantes) {
+        if (tarea == null || estudiantes == null || estudiantes.isEmpty()) return;
+        String cursoNombre = (tarea.getCurso() != null && tarea.getCurso().getNombre() != null)
+                ? tarea.getCurso().getNombre()
+                : "tu curso";
+        String vencimiento = tarea.getFechaVencimiento() != null
+                ? " (Entrega hasta: " + tarea.getFechaVencimiento() + ")"
+                : "";
+        String titulo = "Nueva tarea: " + cursoNombre;
+        String mensaje = "Tu docente publicó la tarea \"" + tarea.getTitulo() + "\"" + vencimiento + ".";
+
+        for (UserEntity estudiante : estudiantes) {
+            if (estudiante != null && "ESTUDIANTE".equalsIgnoreCase(estudiante.getRol())) {
+                crearNotificacion(estudiante, titulo, mensaje);
+            }
+        }
+    }
+
+    public void notificarNuevoMaterialAEstudiantes(MaterialCurso material, List<UserEntity> estudiantes) {
+        if (material == null || estudiantes == null || estudiantes.isEmpty()) return;
+        String cursoNombre = (material.getCurso() != null && material.getCurso().getNombre() != null)
+                ? material.getCurso().getNombre()
+                : "tu curso";
+        String titulo = "Nuevo material: " + cursoNombre;
+        String mensaje = "Se publicó el material \"" + material.getTitulo() + "\" en el aula virtual.";
+
+        for (UserEntity estudiante : estudiantes) {
+            if (estudiante != null && "ESTUDIANTE".equalsIgnoreCase(estudiante.getRol())) {
+                crearNotificacion(estudiante, titulo, mensaje);
+            }
+        }
+    }
+
+    public void notificarNuevaCalificacionAEstudiante(Calificacion calificacion) {
+        if (calificacion == null || calificacion.getEstudiante() == null) return;
+        String cursoNombre = (calificacion.getCurso() != null && calificacion.getCurso().getNombre() != null)
+                ? calificacion.getCurso().getNombre()
+                : "tu curso";
+        String titulo = "Calificación registrada: " + cursoNombre;
+        String mensaje = "Obtuviste " + calificacion.getNota() + " en \"" + calificacion.getActividad() + "\".";
+        crearNotificacion(calificacion.getEstudiante(), titulo, mensaje);
+    }
 }
+

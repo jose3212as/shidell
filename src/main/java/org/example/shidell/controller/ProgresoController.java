@@ -142,7 +142,11 @@ public class ProgresoController {
                 
         long total = tareas.stream().filter(t -> t.getCurso() != null && cursoIds.contains(t.getCurso().getId())).count();
         if (total == 0) return 0;
-        long done = entregas.stream().filter(e -> e.getTarea() != null && e.getTarea().getCurso() != null && cursoIds.contains(e.getTarea().getCurso().getId())).count();
+        long done = entregas.stream()
+                .filter(e -> e.getTarea() != null && e.getTarea().getCurso() != null && cursoIds.contains(e.getTarea().getCurso().getId()))
+                .map(e -> e.getTarea().getId())
+                .distinct()
+                .count();
         return (int) Math.round((double) done / total * 100.0);
     }
 

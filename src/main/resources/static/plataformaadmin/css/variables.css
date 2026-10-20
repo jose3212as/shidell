@@ -2,6 +2,8 @@
    SHIDELL ADMIN — DESIGN TOKENS
    Fuente única de verdad para todos los valores de diseño
    ========================================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+@import url('/vendor/mobile-shell.css?v=20261018');
 
 :root {
   /* ── Core Palette (Light Theme) ────────────────────────── */
@@ -19,6 +21,8 @@
   --primary-gradient:   linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
 
   /* ── Semantic Colors ───────────────────────────────────── */
+  --blue:               #3b82f6;
+  --blue-light:         rgba(59, 130, 246, 0.12);
   --purple:             #a855f7;
   --purple-light:       rgba(168, 85, 247, 0.12);
   --cyan:               #06b6d4;

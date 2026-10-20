@@ -1,0 +1,20 @@
+{
+  "name": "Shidell — Portal Académico",
+  "short_name": "Shidell",
+  "description": "Plataforma integral de gestión académica para estudiantes, docentes, padres y administradores.",
+  "start_url": "/auth/login.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f8fafc",
+  "theme_color": "#2563eb",
+  "lang": "es-PE",
+  "icons": [
+    {
+      "src": "/plataformaestudiante/icons/fill/graduation-cap.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

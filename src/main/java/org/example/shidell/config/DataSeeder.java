@@ -71,7 +71,7 @@ public class DataSeeder {
             UserEntity admin = asegurarAdministrador(userRepository, authSessionService);
             UserEntity padre = asegurarPadre(userRepository, "José", "Carlos", "padre@gmail.com", authSessionService);
             UserEntity tutorDemo = asegurarDocente(userRepository, authSessionService,
-                    codigoPrimaria("1", "A", TURNO_PRIMARIA), "Docente Primaria", "1A Mañana");
+                    codigoPrimaria("1", "A", TURNO_PRIMARIA), "Prof. Maritza", "Poma Huamán");
 
             asegurarMallaAcademica(cursoRepository, userRepository, aulaRepository, authSessionService, eventoRepository, mineduService);
             
@@ -81,9 +81,10 @@ public class DataSeeder {
             asegurarTareasDemo(cursoRepository, tareaRepository);
             
             try {
+                jdbcTemplate.execute("UPDATE cursos c SET docente_id = (SELECT u.id FROM usuarios u WHERE u.rol = 'DOCENTE' AND u.email LIKE '%@shidell.edu' LIMIT 1) WHERE c.docente_id IS NULL");
                 jdbcTemplate.execute("UPDATE usuarios SET rol = 'ARCHIVADO' WHERE rol = 'DOCENTE' AND email LIKE '%@shidell.edu' AND id NOT IN (SELECT DISTINCT docente_id FROM cursos WHERE docente_id IS NOT NULL)");
             } catch (Exception e) {
-                System.out.println(">>> [INFO] Limpieza de docentes omitida: " + e.getMessage());
+                System.out.println(">>> [INFO] Limpieza/asignación de docentes omitida: " + e.getMessage());
             }
 
             System.out.println("=================================================");
@@ -234,19 +235,62 @@ public class DataSeeder {
         int g = 0; try { g = Integer.parseInt(grado); } catch (Exception ignored) {}
         String t = abreviar(turno);
         if ("PRIMARIA".equals(nivel)) {
-            if (esAreaDeAulaPrimaria(area)) return asegurarDocente(repo, auth, "PLZ-PRI-AULA-" + grado + seccion + "-" + t, "Prof. de Aula", grado + "°" + seccion + " " + etiquetaTurno(turno));
-            if ("Religión".equals(area)) return asegurarDocente(repo, auth, "PLZ-PRI-REL-ESCUELA", "Docente Religión", "Primaria");
-            return asegurarDocente(repo, auth, "PLZ-PRI-" + abreviar(area) + "-" + t, "Docente " + area, "Primaria " + etiquetaTurno(turno));
+            if (esAreaDeAulaPrimaria(area)) {
+                String[] nom = nombreDocentePrimaria(g, seccion);
+                return asegurarDocente(repo, auth, "PLZ-PRI-AULA-" + grado + seccion + "-" + t, nom[0], nom[1]);
+            }
+            if ("Religión".equals(area)) {
+                return asegurarDocente(repo, auth, "PLZ-PRI-REL-ESCUELA", "Prof. Rosa", "Paredes Medina");
+            }
+            String[] nom = nombreDocenteArea(area);
+            return asegurarDocente(repo, auth, "PLZ-PRI-" + abreviar(area) + "-" + t, nom[0], nom[1]);
         }
         if ("Religión".equals(area) || "Tutoría".equals(area) || "DPCC".equals(area) || "EPT".equals(area) || "Educación Física".equals(area) || "Arte y Cultura".equals(area) || "Ciencias Sociales".equals(area) || "Inglés".equals(area)) {
-            return asegurarDocente(repo, auth, "PLZ-SEC-" + abreviar(area) + "-" + t, "Docente " + area, "Secundaria " + etiquetaTurno(turno));
+            String[] nom = nombreDocenteArea(area);
+            return asegurarDocente(repo, auth, "PLZ-SEC-" + abreviar(area) + "-" + t, nom[0], nom[1]);
         }
         if ("Ciencia y Tecnología".equals(area)) {
             String grupo = (g <= 3) ? "1-3" : "4-5";
-            return asegurarDocente(repo, auth, "PLZ-SEC-CYT-G" + grupo + "-" + t, "Docente CyT", "G" + grupo + " " + etiquetaTurno(turno));
+            String[] nomCyt = (g <= 3) ? new String[]{"Prof. Carlos", "Vargas Flores"} : new String[]{"Prof. Diana", "Salas Cornejo"};
+            return asegurarDocente(repo, auth, "PLZ-SEC-CYT-G" + grupo + "-" + t, nomCyt[0], nomCyt[1]);
+        }
+        if ("Matemática".equals(area)) {
+            String grupo = (g <= 2) ? "1-2" : "3-5";
+            String[] nomMat = (g <= 2) ? new String[]{"Prof. Roberto", "Alvarado Quispe"} : new String[]{"Prof. Javier", "Ortega Bellido"};
+            return asegurarDocente(repo, auth, "PLZ-SEC-MAT-G" + grupo + "-" + t, nomMat[0], nomMat[1]);
         }
         String grupo = (g <= 2) ? "1-2" : "3-5";
-        return asegurarDocente(repo, auth, "PLZ-SEC-" + abreviar(area) + "-G" + grupo + "-" + t, "Docente " + area, "G" + grupo + " " + etiquetaTurno(turno));
+        String[] nomCom = (g <= 2) ? new String[]{"Prof. Ana", "García Mendoza"} : new String[]{"Prof. Marleny", "Quiñones Soto"};
+        return asegurarDocente(repo, auth, "PLZ-SEC-" + abreviar(area) + "-G" + grupo + "-" + t, nomCom[0], nomCom[1]);
+    }
+
+    private String[] nombreDocentePrimaria(int grado, String seccion) {
+        return switch (grado) {
+            case 1 -> new String[]{"Prof. Maritza", "Poma Huamán"};
+            case 2 -> new String[]{"Prof. Gladys", "Chávez Luna"};
+            case 3 -> new String[]{"Prof. Raúl", "Espinoza Díaz"};
+            case 4 -> new String[]{"Prof. Teresa", "Valdez Silva"};
+            case 5 -> new String[]{"Prof. Víctor", "Mendoza Ramos"};
+            case 6 -> new String[]{"Prof. Sonia", "Cárdenas Ruiz"};
+            default -> new String[]{"Prof. Beatriz", "Montesinos Lara"};
+        };
+    }
+
+    private String[] nombreDocenteArea(String area) {
+        String a = normalizar(area).toLowerCase();
+        if (a.contains("matematica")) return new String[]{"Prof. Roberto", "Alvarado Quispe"};
+        if (a.contains("comunicacion")) return new String[]{"Prof. Ana", "García Mendoza"};
+        if (a.contains("ciencia")) return new String[]{"Prof. Carlos", "Vargas Flores"};
+        if (a.contains("sociales") || a.contains("personal")) return new String[]{"Prof. Patricia", "Sánchez Romero"};
+        if (a.contains("ingles")) return new String[]{"Prof. David", "Smith Miller"};
+        if (a.contains("dpcc")) return new String[]{"Prof. Carmen", "Ríos Delgado"};
+        if (a.contains("ept")) return new String[]{"Prof. Miguel", "Torres Castro"};
+        if (a.contains("fisica")) return new String[]{"Prof. Luis", "Guerrero Pérez"};
+        if (a.contains("arte")) return new String[]{"Prof. Elena", "Morales Vega"};
+        if (a.contains("religion")) return new String[]{"Prof. Rosa", "Paredes Medina"};
+        if (a.contains("tutoria")) return new String[]{"Prof. Fernando", "Gutiérrez Salazar"};
+        if (a.contains("refuerzo")) return new String[]{"Prof. Silvia", "Navarro Rivas"};
+        return new String[]{"Prof. Walter", "Gómez Villanueva"};
     }
 
     private boolean esAreaDeAulaPrimaria(String area) {
@@ -285,8 +329,8 @@ public class DataSeeder {
     private UserEntity asegurarDocente(UserRepository repo, AuthSessionService auth, String codigo, String nombres, String apellidos) {
         UserEntity u = repo.findByCodigoPlaza(codigo).orElseGet(UserEntity::new);
         u.setCodigoPlaza(codigo);
-        if (u.getNombres() == null) u.setNombres(nombres);
-        if (u.getApellidos() == null) u.setApellidos(apellidos);
+        u.setNombres(nombres);
+        u.setApellidos(apellidos);
         if (u.getEmail() == null) u.setEmail(emailPara(codigo));
         if (u.getPassword() == null) u.setPassword(auth.hashPassword(DEFAULT_PASSWORD));
         u.setRol("DOCENTE");

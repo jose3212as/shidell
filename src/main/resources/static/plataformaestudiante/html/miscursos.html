@@ -5,24 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shidell - Mis Cursos</title>
-    <meta name="description" content="Cursos activos del Portal Estudiante Shidell.">
+    <meta name="description" content="Cursos matriculados del Portal Estudiante Shidell.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=avatar20260505e">
-    <link rel="stylesheet" href="../css/cursos.css?v=detailwide20260512a">
+    <script src="../js/icon-helper.js"></script>
+    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
+    <link rel="stylesheet" href="../css/cursos.css?v=20261019d">
 </head>
 
 <body>
     <div class="dashboard">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="logo-icon">
-                    <i class="ph-fill ph-graduation-cap"></i>
-                </div>
+                <div class="logo-icon"><img src="../icons/fill/graduation-cap.svg" class="icon-img" alt="graduation-cap"></div>
                 <div class="logo-text">
                     <h2>Shidell</h2>
                     <p>Portal Estudiante</p>
@@ -31,579 +29,326 @@
 
             <nav class="sidebar-nav">
                 <a href="portalestudiante.html" class="nav-item">
-                    <i class="ph ph-house"></i><span>Inicio</span>
+                    <img src="../icons/regular/house.svg" class="icon-img" alt="house"><span>Inicio</span>
                 </a>
                 <a href="miscursos.html" class="nav-item active">
-                    <i class="ph ph-book-open"></i><span>Mis cursos</span>
+                    <img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open"><span>Mis cursos</span>
                 </a>
                 <a href="tareas.html" class="nav-item">
-                    <i class="ph ph-clipboard-text"></i><span>Tareas</span>
+                    <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text"><span>Tareas</span>
                 </a>
                 <a href="calificaciones.html" class="nav-item">
-                    <i class="ph ph-star"></i><span>Calificaciones</span>
+                    <img src="../icons/regular/star.svg" class="icon-img" alt="star"><span>Calificaciones</span>
                 </a>
                 <a href="calendario.html" class="nav-item">
-                    <i class="ph ph-calendar-blank"></i><span>Calendario</span>
+                    <img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"><span>Calendario</span>
                 </a>
                 <a href="mensajes.html" class="nav-item">
-                    <i class="ph ph-chat-circle-dots"></i><span>Mensajes</span>
+                    <img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots"><span>Mensajes</span>
                 </a>
                 <a href="miprogreso.html" class="nav-item">
-                    <i class="ph ph-shield-check"></i><span>Mi progreso</span>
+                    <img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check"><span>Mi progreso</span>
                 </a>
                 <a href="configuracion.html" class="nav-item">
-                    <i class="ph ph-gear"></i><span>Configuración</span>
+                    <img src="../icons/regular/gear.svg" class="icon-img" alt="gear"><span>Configuración</span>
                 </a>
             </nav>
         </aside>
 
+        <!-- Main Wrapper -->
         <main class="main-wrapper courses-shell">
             <header class="topbar">
                 <div class="greeting">
-                    <h1>Mis cursos</h1>
-                    <p>Consulta tus cursos activos, avance y próximas clases.</p>
+                    <h1>Mis Cursos 📚</h1>
+                    <p>Revisa tus materias, horarios de clase y avance académico.</p>
                 </div>
-
                 <div class="topbar-actions">
-                    <button class="notification-btn" type="button" aria-label="Notificaciones">
-                        <i class="ph ph-bell"></i>
+                    <button class="notification-btn" type="button">
+                        <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
                         <span class="badge"></span>
                     </button>
-
-                    <div class="top-user-info">
+                    <div class="user-profile-menu top-user-info">
                         <div class="user-details">
                             <span class="user-name">Estudiante</span>
-                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <i class="ph ph-caret-right"></i></span></a>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span></a>
                         </div>
                         <div class="avatar">
-                            <i class="ph-fill ph-user" style="font-size:22px;color:var(--primary);"></i>
+                            <img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width: 24px; height: 24px;">
                         </div>
                     </div>
                 </div>
             </header>
 
             <div class="content-area courses-page">
-                <section class="courses-overview" aria-label="Resumen de cursos">
-                    <article class="course-stat">
-                        <i class="ph ph-book-open"></i>
-                        <div>
-                            <strong id="stat-cursos-activos">0</strong>
-                            <span>Cursos activos</span>
-                        </div>
-                    </article>
-                    <article class="course-stat">
-                        <i class="ph ph-trend-up"></i>
-                        <div>
-                            <strong id="stat-progreso-promedio">0%</strong>
-                            <span>Avance promedio</span>
-                        </div>
-                    </article>
-                    <article class="course-stat">
-                        <i class="ph ph-calendar-check"></i>
-                        <div>
-                            <strong id="stat-clases-pendientes">0</strong>
-                            <span>Clases pendientes</span>
-                        </div>
-                    </article>
-                    <article class="course-stat">
-                        <i class="ph ph-seal-question"></i>
-                        <div>
-                            <strong id="stat-proximos-examenes">0</strong>
-                            <span>Evaluaciones</span>
-                        </div>
-                    </article>
-                </section>
-
-                <section class="school-year-note" id="school-year-display" aria-label="Calendario escolar">
-                    <i class="ph ph-calendar-dots"></i>
-                    <div>
-                        <strong>Año escolar Perú 2026: 36 semanas lectivas</strong>
-                        <span>Organizado en 4 bloques de 9 semanas. Cada semana queda fija y el docente puede publicar tema, foro, actividades y archivos.</span>
-                    </div>
-                </section>
-
-                <section class="courses-toolbar" aria-label="Herramientas de cursos">
-                    <label class="course-search" for="search-cursos">
-                        <i class="ph ph-magnifying-glass"></i>
-                        <input type="search" id="search-cursos" placeholder="Buscar curso">
-                    </label>
-
-                    <div class="course-filter" role="group" aria-label="Filtrar cursos">
-                        <button type="button" class="filter-chip active" data-filter="todos">Todos</button>
-                        <button type="button" class="filter-chip" data-filter="pendientes">Pendientes</button>
-                        <button type="button" class="filter-chip" data-filter="avanzados">Avanzados</button>
-                    </div>
-                </section>
-
                 <section class="courses-layout">
-                    <div>
-                        <div class="section-heading">
-                            <h2>Cursos matriculados</h2>
-                            <span id="courses-count">0 cursos</span>
-                        </div>
-                        <div class="courses-grid" id="courses-grid">
-                            <div class="course-loading"><i class="ph ph-spinner"></i><p>Cargando cursos...</p></div>
+                    <div class="section-heading">
+                        <h2>Cursos matriculados</h2>
+                        <span id="courses-count">0 cursos</span>
+                    </div>
+                    <div class="courses-grid" id="courses-grid">
+                        <div class="course-loading">
+                            <img src="../icons/regular/spinner.svg" class="icon-img icon-spin" alt="spinner">
+                            <p>Cargando cursos desde la API...</p>
                         </div>
                     </div>
-
-                    <aside class="course-detail" id="course-detail" aria-label="Detalle del curso">
-                        <div class="course-loading"><i class="ph ph-spinner"></i><p>Cargando detalle...</p></div>
-                    </aside>
                 </section>
             </div>
         </main>
     </div>
 
+    <!-- Script Logic -->
     <script>
         let userCursos = {};
         const TOTAL_SEMANAS_LECTIVAS = 36;
         let cursosDetalle = [];
-        let cursoSeleccionadoId = null;
-        let semanaSeleccionada = 1;
-        let filtroActivo = 'todos';
 
         document.addEventListener('DOMContentLoaded', async () => {
-            userCursos = await window.shidellSession?.obtenerUsuario() || {};
+            userCursos = await window.shidellSession?.obtenerUsuario() 
+                || JSON.parse(localStorage.getItem('shidell_user') || 'null') 
+                || {};
+
             document.querySelectorAll('.user-name').forEach(el => {
                 el.textContent = `${userCursos.nombres || ''} ${userCursos.apellidos || ''}`.trim() || 'Estudiante';
             });
 
-            configurarFiltros();
             await loadCursos();
         });
 
         async function loadCursos() {
-            pintarCarga();
+            const grid = document.getElementById('courses-grid');
+            grid.innerHTML = `<div class="course-loading"><img src="../icons/regular/spinner.svg" class="icon-img icon-spin" alt="spinner"><p>Cargando cursos desde la API...</p></div>`;
 
-            if (!userCursos.id) {
-                document.getElementById('courses-grid').innerHTML = estadoVacio('ph-user-circle', 'Inicia sesión para ver tus cursos.');
-                document.getElementById('course-detail').innerHTML = estadoVacio('ph-user-circle', 'No se encontró una sesión activa.');
-                return;
+            let user = userCursos;
+            if (!user?.id) {
+                user = await window.shidellSession?.obtenerUsuario()
+                    || JSON.parse(localStorage.getItem('shidell_user') || 'null')
+                    || {};
+            }
+
+            if (!user?.id) {
+                try {
+                    const meRes = await fetch('/api/auth/me');
+                    if (meRes.ok) user = await meRes.json();
+                } catch(e) {}
             }
 
             try {
-                const response = await fetch(`/api/cursos/estudiante/${userCursos.id}/detalle`);
-                if (!response.ok) throw new Error('Error al cargar cursos');
+                let url = user?.id ? `/api/cursos/estudiante/${user.id}/detalle` : `/api/cursos`;
+                const [response, tareasRes] = await Promise.all([
+                    fetch(url),
+                    user?.id ? fetch(`/api/tareas/estudiante/${user.id}`).catch(() => null) : Promise.resolve(null)
+                ]);
 
-                const data = await response.json();
-                cursosDetalle = normalizarCursos(data.cursos || []);
-                cursoSeleccionadoId = cursosDetalle[0]?.id || null;
-                semanaSeleccionada = obtenerSemanaActual(cursosDetalle[0]);
+                let finalRes = response;
+                if (!finalRes.ok && user?.id) {
+                    finalRes = await fetch(`/api/cursos`);
+                }
+                if (!finalRes.ok) throw new Error('Error al cargar cursos');
 
-                renderStatsCursos(data);
+                const data = await finalRes.json();
+                const tareasData = (tareasRes && tareasRes.ok) ? await tareasRes.json() : {};
+                const tareasLista = Array.isArray(tareasData.tareas) ? tareasData.tareas : [];
+
+                const lista = data.cursos || (Array.isArray(data) ? data : []);
+                cursosDetalle = normalizarCursos(lista, tareasLista);
+
                 renderCursos();
-                renderCursoSeleccionado();
             } catch (error) {
                 console.error('Error fetching courses:', error);
-                document.getElementById('courses-grid').innerHTML = estadoVacio('ph-warning', 'No se pudieron cargar tus cursos.');
-                document.getElementById('course-detail').innerHTML = estadoVacio('ph-warning', 'No se pudo cargar el detalle.');
+                grid.innerHTML = estadoVacio('ph-warning', 'No se pudieron cargar tus cursos.');
             }
-        }
-
-        function pintarCarga() {
-            document.getElementById('courses-grid').innerHTML = `<div class="course-loading"><i class="ph ph-spinner"></i><p>Cargando cursos...</p></div>`;
-            document.getElementById('course-detail').innerHTML = `<div class="course-loading"><i class="ph ph-spinner"></i><p>Cargando detalle...</p></div>`;
-        }
-
-        function configurarFiltros() {
-            document.getElementById('search-cursos')?.addEventListener('input', renderCursos);
-
-            document.querySelectorAll('.filter-chip').forEach(chip => {
-                chip.addEventListener('click', () => {
-                    filtroActivo = chip.dataset.filter;
-                    document.querySelectorAll('.filter-chip').forEach(item => item.classList.toggle('active', item === chip));
-                    renderCursos();
-                });
-            });
-        }
-
-        function renderStatsCursos(data) {
-            const pendientes = cursosDetalle.reduce((total, curso) => {
-                return total + curso.clases.filter(clase => clase.estado === 'PROGRAMADA').length;
-            }, 0);
-
-            document.getElementById('stat-cursos-activos').textContent = data.totalCursos || cursosDetalle.length || 0;
-            document.getElementById('stat-progreso-promedio').textContent = `${data.progresoPromedio || 0}%`;
-            document.getElementById('stat-clases-pendientes').textContent = pendientes;
-            document.getElementById('stat-proximos-examenes').textContent = data.proximosExamenes || 0;
         }
 
         function renderCursos() {
             const grid = document.getElementById('courses-grid');
             const count = document.getElementById('courses-count');
-            const cursos = filtrarCursos();
 
-            count.textContent = `${cursos.length} ${cursos.length === 1 ? 'curso' : 'cursos'}`;
+            count.textContent = `${cursosDetalle.length} ${cursosDetalle.length === 1 ? 'curso' : 'cursos'}`;
 
-            if (!cursos.length) {
-                grid.innerHTML = estadoVacio('ph-books', 'No hay cursos con ese filtro.');
-                document.getElementById('course-detail').innerHTML = estadoVacio('ph-book-open', 'Selecciona otro filtro para ver cursos.');
+            if (!cursosDetalle.length) {
+                grid.innerHTML = estadoVacio('ph-books', 'No tienes cursos matriculados.');
                 return;
             }
 
-            if (!cursos.some(curso => String(curso.id) === String(cursoSeleccionadoId))) {
-                cursoSeleccionadoId = cursos[0].id;
-                renderCursoSeleccionado();
-            }
-
-            grid.innerHTML = cursos.map(buildCursoCard).join('');
-            grid.querySelectorAll('.course-card').forEach(card => {
-                card.addEventListener('click', () => seleccionarCurso(card.dataset.courseId));
-                card.addEventListener('keydown', event => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        seleccionarCurso(card.dataset.courseId);
-                    }
-                });
-            });
-        }
-
-        function seleccionarCurso(id) {
-            cursoSeleccionadoId = id;
-            const curso = cursosDetalle.find(item => String(item.id) === String(id));
-            semanaSeleccionada = obtenerSemanaActual(curso);
-            renderCursos();
-            renderCursoSeleccionado();
-        }
-
-        function filtrarCursos() {
-            const busqueda = quitarAcentos(limpiarTexto(document.getElementById('search-cursos')?.value || '')).toLowerCase();
-
-            return cursosDetalle.filter(curso => {
-                const nombre = quitarAcentos(curso.nombre).toLowerCase();
-                const progreso = Number(curso.progresoClases || 0);
-                const coincideBusqueda = nombre.includes(busqueda);
-                const coincideFiltro = filtroActivo === 'todos'
-                    || (filtroActivo === 'pendientes' && progreso < 100)
-                    || (filtroActivo === 'avanzados' && progreso >= 50);
-
-                return coincideBusqueda && coincideFiltro;
-            });
+            grid.innerHTML = cursosDetalle.map(buildCursoCard).join('');
         }
 
         function buildCursoCard(curso) {
             const color = colorCursoValido(curso.color);
-            const progreso = clamp(Number(curso.progresoClases || 0), 0, 100);
-            const activo = String(curso.id) === String(cursoSeleccionadoId);
-            const siguiente = curso.clases.find(clase => clase.estado === 'PROGRAMADA');
+            const totalTareas = Number(curso.tareasTotalesCurso || 0);
+            const tareasCompletadas = Number(curso.tareasCompletadasCurso || 0);
+            const progreso = clamp(Number(curso.progresoReal ?? 0), 0, 100);
+            
+            const hoy = new Date();
+            const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+            const clases = Array.isArray(curso.clases) ? curso.clases : [];
+            
+            // Próxima sesión: primera sesión desde hoy en adelante
+            let siguiente = curso.proximaClase || clases.find(clase => String(clase.fecha).slice(0, 10) >= hoyStr) || clases[0] || null;
+
+            let textoHorario = 'Horario pendiente';
+            if (siguiente && siguiente.fecha) {
+                const rel = etiquetaRelativaFecha(siguiente.fecha);
+                const fechaFmt = formatearFecha(siguiente.fecha);
+                const horaStr = siguiente.hora || curso.horaInicio || '08:00';
+                textoHorario = rel ? `${rel} · ${horaStr}` : `${fechaFmt} · ${horaStr}`;
+            } else if (curso.diaSemana) {
+                textoHorario = `${nombreDia(curso.diaSemana)} · ${curso.horaInicio || '08:00'}${curso.horaFin ? ' - ' + curso.horaFin : ''}`;
+            }
+
+            const etiquetaAvance = totalTareas > 0
+                ? `Avance (${tareasCompletadas}/${totalTareas} ${totalTareas === 1 ? 'tarea' : 'tareas'})`
+                : 'Avance (0 tareas)';
+            const estadoCurso = (totalTareas > 0 && progreso >= 100)
+                ? 'Completado'
+                : (tareasCompletadas > 0 ? 'En progreso' : 'En curso');
 
             return `
-                <article class="course-card ${activo ? 'active' : ''}" data-course-id="${escapeHtml(curso.id)}" tabindex="0">
+                <article class="course-card" data-course-id="${escapeHtml(curso.id)}" tabindex="0" onclick="window.location.href='cursodetalleestudiante.html?id=${escapeHtml(curso.id)}'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='cursodetalleestudiante.html?id=${escapeHtml(curso.id)}'}">
                     <div class="course-card-top">
                         <span class="course-icon bg-${color}-light" style="color:var(--${color});">
-                            <i class="ph-fill ${escapeHtml(curso.icono || 'ph-book-open')}"></i>
+                            ${iconImg(escapeHtml(curso.icono || 'ph-book-open'), 'fill')}
                         </span>
-                        <span class="course-status">${progreso >= 100 ? 'Completado' : 'En curso'}</span>
+                        <span class="course-status">${estadoCurso}</span>
                     </div>
                     <h3>${escapeHtml(curso.nombre)}</h3>
-                    <p>${escapeHtml(curso.profesor || 'Profesor sin asignar')}</p>
+                    <p>${escapeHtml(curso.profesor || 'Docente Asignado')}</p>
                     <div class="progress-row">
-                        <span>Avance</span>
+                        <span>${escapeHtml(etiquetaAvance)}</span>
                         <strong>${progreso}%</strong>
                     </div>
                     <div class="progress-track">
-                        <span class="progress-fill bg-${color}" style="width:${progreso}%;"></span>
+                        <span class="progress-fill bg-${color}" style="width:${progreso}%; background-color: var(--${color}, #2563eb);"></span>
                     </div>
                     <div class="course-meta-row">
-                        <span><i class="ph ph-calendar-dots"></i>${curso.totalClases || TOTAL_SEMANAS_LECTIVAS} semanas</span>
-                        <span><i class="ph ph-clock"></i>${siguiente ? formatearFecha(siguiente.fecha) : 'Sin fecha'}</span>
+                        <span><img src="../icons/regular/calendar-dots.svg" class="icon-img" alt="calendar-dots">${curso.totalClases || TOTAL_SEMANAS_LECTIVAS} semanas</span>
+                        <span><img src="../icons/regular/clock.svg" class="icon-img" alt="clock">${escapeHtml(textoHorario)}</span>
                     </div>
+                    <a href="cursodetalleestudiante.html?id=${escapeHtml(curso.id)}" class="course-card-link" onclick="event.stopPropagation();">Ver curso <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                 </article>`;
         }
 
-        function renderCursoSeleccionado() {
-            const detail = document.getElementById('course-detail');
-            const curso = cursosDetalle.find(item => String(item.id) === String(cursoSeleccionadoId));
+        function etiquetaRelativaFecha(fechaStr) {
+            if (!fechaStr) return '';
+            const hoy = new Date();
+            const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+            const man = new Date();
+            man.setDate(man.getDate() + 1);
+            const manStr = `${man.getFullYear()}-${String(man.getMonth()+1).padStart(2,'0')}-${String(man.getDate()).padStart(2,'0')}`;
+            const ayer = new Date();
+            ayer.setDate(ayer.getDate() - 1);
+            const ayerStr = `${ayer.getFullYear()}-${String(ayer.getMonth()+1).padStart(2,'0')}-${String(ayer.getDate()).padStart(2,'0')}`;
 
-            if (!curso) {
-                detail.innerHTML = estadoVacio('ph-book-open', 'Selecciona un curso para ver su detalle.');
-                return;
-            }
-
-            const color = colorCursoValido(curso.color);
-            const progreso = clamp(Number(curso.progresoClases || 0), 0, 100);
-            const pendientes = curso.clases.filter(clase => clase.estado === 'PROGRAMADA');
-            const realizadas = curso.clases.filter(clase => clase.estado === 'REALIZADA').length;
-            const siguiente = pendientes[0];
-            if (!curso.clases.some(clase => Number(clase.semana) === Number(semanaSeleccionada))) {
-                semanaSeleccionada = obtenerSemanaActual(curso);
-            }
-            const semana = curso.clases.find(clase => Number(clase.semana) === Number(semanaSeleccionada)) || curso.clases[0];
-            const contenidoSemana = obtenerContenidoSemana(curso, semana);
-
-            detail.innerHTML = `
-                <div class="detail-header">
-                    <span class="course-icon bg-${color}-light" style="color:var(--${color});">
-                        <i class="ph-fill ${escapeHtml(curso.icono || 'ph-book-open')}"></i>
-                    </span>
-                    <div>
-                        <span class="detail-label">Curso seleccionado</span>
-                        <h2>${escapeHtml(curso.nombre)}</h2>
-                        <p>${escapeHtml(curso.profesor || 'Profesor sin asignar')}</p>
-                    </div>
-                </div>
-
-                <div class="detail-progress">
-                    <div>
-                        <span>Progreso del curso</span>
-                        <strong>${progreso}%</strong>
-                    </div>
-                    <div class="progress-track">
-                        <span class="progress-fill bg-${color}" style="width:${progreso}%;"></span>
-                    </div>
-                </div>
-
-                <div class="detail-metrics">
-                    <div><strong>${curso.totalClases || TOTAL_SEMANAS_LECTIVAS}</strong><span>Semanas</span></div>
-                    <div><strong>${realizadas}</strong><span>Realizadas</span></div>
-                    <div><strong>${pendientes.length}</strong><span>Pendientes</span></div>
-                </div>
-
-                <div class="week-map">
-                    <div class="section-heading compact">
-                        <h3>Semanas lectivas</h3>
-                        <span>4 bloques</span>
-                    </div>
-                    <div class="week-grid">
-                        ${buildSemanaButtons(curso.clases)}
-                    </div>
-                </div>
-
-                <div class="week-workspace">
-                    <div class="section-heading compact">
-                        <h3>Semana ${escapeHtml(semana?.semana || '')}</h3>
-                        <span>${semana ? escapeHtml(formatearRangoSemana(semana)) : ''}</span>
-                    </div>
-                    ${semana ? buildSemanaInteractiva(curso, semana, contenidoSemana) : estadoVacio('ph-calendar-x', 'No hay semana seleccionada.')}
-                </div>
-
-                <div class="next-class-box">
-                    <div class="section-heading compact">
-                        <h3>Próxima clase</h3>
-                    </div>
-                    ${siguiente ? `
-                        <article class="next-class">
-                            <i class="ph ph-calendar-check"></i>
-                            <div>
-                                <strong>Semana ${escapeHtml(siguiente.semana)}: ${escapeHtml(limpiarTexto(siguiente.titulo || 'Clase programada'))}</strong>
-                                <span>${escapeHtml(formatearFecha(siguiente.fecha))} ${escapeHtml(siguiente.hora || '')}</span>
-                            </div>
-                        </article>
-                    ` : estadoVacio('ph-calendar-x', 'No hay clases pendientes.')}
-                </div>`;
-
-            configurarSemanasCurso(curso);
-            configurarForoSemana(curso, semana);
+            const f = String(fechaStr).slice(0, 10);
+            if (f === hoyStr) return 'Hoy';
+            if (f === manStr) return 'Mañana';
+            if (f === ayerStr) return 'Ayer';
+            return '';
         }
 
-        function buildSemanaButtons(clases) {
-            if (!clases.length) return estadoVacio('ph-calendar-x', 'Este curso aún no tiene semanas publicadas.');
-
-            return clases.map(clase => {
-                const realizada = clase.estado === 'REALIZADA';
-                const activa = Number(clase.semana) === Number(semanaSeleccionada);
-                const publicada = clase.publicadoPorDocente || clase.tieneContenido;
-                return `
-                    <button type="button" class="week-button ${realizada ? 'done' : 'pending'} ${activa ? 'active' : ''} ${publicada ? 'published' : ''}" data-week="${escapeHtml(clase.semana)}">
-                        <strong>${escapeHtml(clase.semana)}</strong>
-                        <span>B${escapeHtml(clase.bloque || Math.ceil(Number(clase.semana || 1) / 9))}</span>
-                    </button>`;
-            }).join('');
+        function nombreDia(dia) {
+            const dias = { 1: 'Lunes', 2: 'Martes', 3: 'Miércoles', 4: 'Jueves', 5: 'Viernes', 6: 'Sábado', 7: 'Domingo' };
+            return dias[Number(dia)] || 'Lunes';
         }
 
-        function buildSemanaInteractiva(curso, semana, contenido) {
-            return `
-                <article class="week-topic ${semana.publicadoPorDocente ? 'published' : ''}">
-                    <div class="topic-icon"><i class="ph ph-chalkboard-teacher"></i></div>
-                    <div>
-                        <span>${semana.publicadoPorDocente ? 'Publicado por docente' : 'Semana preparada'}</span>
-                        <h4>${escapeHtml(limpiarTexto(semana.titulo || `Semana ${semana.semana}`))}</h4>
-                        <p>${escapeHtml(limpiarTexto(semana.descripcion || 'El docente publicará el contenido de esta semana.'))}</p>
-                    </div>
-                </article>
-
-                <div class="week-actions">
-                    <button type="button" class="week-action active" data-week-panel="materiales"><i class="ph ph-folder-open"></i> Materiales</button>
-                    <button type="button" class="week-action" data-week-panel="actividades"><i class="ph ph-clipboard-text"></i> Actividades</button>
-                    <button type="button" class="week-action" data-week-panel="foro"><i class="ph ph-chats-circle"></i> Foro</button>
-                </div>
-
-                <div class="week-panel active" data-week-panel="materiales">
-                    ${buildMaterialesSemana(contenido.materiales)}
-                </div>
-                <div class="week-panel" data-week-panel="actividades">
-                    ${buildActividadesSemana(contenido.actividades)}
-                </div>
-                <div class="week-panel" data-week-panel="foro">
-                    ${buildForoSemana(curso, semana)}
-                </div>`;
+        function claveCurso(nombre) {
+            return quitarAcentos(limpiarTexto(nombre || '')).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
         }
 
-        function buildMaterialesSemana(materiales) {
-            if (!materiales.length) return estadoVacio('ph-folder-open', 'Aún no hay archivos para esta semana.');
-            return `<div class="week-resource-list">${materiales.map(material => `
-                <a class="week-resource" href="${escapeHtml(material.archivoUrl || '#')}" target="_blank">
-                    <i class="ph ph-file-arrow-down"></i>
-                    <span>
-                        <strong>${escapeHtml(limpiarTexto(material.titulo || material.archivoNombre || 'Material'))}</strong>
-                        <small>${escapeHtml(limpiarTexto(material.descripcion || material.archivoNombre || 'Archivo del curso'))}</small>
-                    </span>
-                </a>
-            `).join('')}</div>`;
-        }
-
-        function buildActividadesSemana(actividades) {
-            if (!actividades.length) return estadoVacio('ph-clipboard-text', 'Aún no hay actividades para esta semana.');
-            return `<div class="week-resource-list">${actividades.map(actividad => `
-                <article class="week-resource">
-                    <i class="ph ph-clipboard-text"></i>
-                    <span>
-                        <strong>${escapeHtml(limpiarTexto(actividad.titulo || 'Actividad'))}</strong>
-                        <small>Entrega: ${escapeHtml(formatearFecha(actividad.fechaVencimiento))} - ${escapeHtml(actividad.prioridad || 'Media')}</small>
-                    </span>
-                </article>
-            `).join('')}</div>`;
-        }
-
-        function buildForoSemana(curso, semana) {
-            return `
-                <div class="forum-box">
-                    <div class="forum-list" id="forum-list">
-                        <p class="forum-empty">Cargando foro...</p>
-                    </div>
-                    <label class="forum-input">
-                        <input id="forum-text" type="text" placeholder="Escribe una duda o aporte para el foro">
-                        <button type="button" id="forum-send"><i class="ph ph-paper-plane-tilt"></i></button>
-                    </label>
-                </div>`;
-        }
-
-        function configurarSemanasCurso(curso) {
-            document.querySelectorAll('.week-button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    semanaSeleccionada = Number(btn.dataset.week);
-                    renderCursoSeleccionado();
-                });
+        function normalizarCursos(cursos, tareasLista = []) {
+            const tareasNormalizadas = (Array.isArray(tareasLista) ? tareasLista : []).map(item => {
+                if (item?.tarea) {
+                    return {
+                        ...item.tarea,
+                        entrega: item.entrega || null,
+                        status: item.status || item.tarea.estado
+                    };
+                }
+                return item;
             });
 
-            document.querySelectorAll('.week-action').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const panel = btn.dataset.weekPanel;
-                    document.querySelectorAll('.week-action').forEach(item => item.classList.toggle('active', item === btn));
-                    document.querySelectorAll('.week-panel').forEach(item => item.classList.toggle('active', item.dataset.weekPanel === panel));
-                });
-            });
-        }
+            return cursos.map(curso => {
+                let prof = curso.profesor;
+                if (!prof && curso.docente) {
+                    prof = `${curso.docente.nombres || ''} ${curso.docente.apellidos || ''}`.trim();
+                }
+                if (!prof && curso.profesorNombres) {
+                    prof = `${curso.profesorNombres} ${curso.profesorApellidos || ''}`.trim();
+                }
+                if (!prof) prof = 'Docente Asignado';
 
-        function configurarForoSemana(curso, semana) {
-            const input = document.getElementById('forum-text');
-            const button = document.getElementById('forum-send');
-            if (!input || !button || !semana) return;
+                const nombreLimpio = limpiarTexto(curso.nombre || 'Curso');
+                const keyCurso = claveCurso(nombreLimpio);
 
-            cargarForoSemana(curso, semana);
-
-            const enviar = async () => {
-                const texto = input.value.trim();
-                if (!texto) return;
-
-                await fetch(`/api/cursos/${curso.id}/semanas/${semana.semana}/foro`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        autorId: userCursos.id,
-                        autorNombre: `${userCursos.nombres || ''} ${userCursos.apellidos || ''}`.trim() || 'Estudiante',
-                        contenido: texto
-                    })
+                const tareasDelCurso = tareasNormalizadas.filter(t => {
+                    if (!t) return false;
+                    if (t.curso?.id && curso.id && String(t.curso.id) === String(curso.id)) return true;
+                    const keyTareaCurso = claveCurso(t.curso?.nombre || t.cursoNombre || '');
+                    return keyCurso && keyTareaCurso === keyCurso;
                 });
 
-                input.value = '';
-                cargarForoSemana(curso, semana);
-            };
+                const totalTareas = tareasDelCurso.length;
+                const tareasCompletadas = tareasDelCurso.filter(t => t.entrega != null || t.status === 'Completada').length;
+                const progresoReal = totalTareas > 0 ? Math.round((tareasCompletadas / totalTareas) * 100) : 0;
 
-            button.addEventListener('click', enviar);
-            input.addEventListener('keydown', event => {
-                if (event.key === 'Enter') enviar();
+                return {
+                    ...curso,
+                    nombre: nombreLimpio,
+                    profesor: limpiarTexto(prof),
+                    clases: Array.isArray(curso.clases) ? curso.clases : [],
+                    totalClases: Number(curso.totalClases || curso.clases?.length || TOTAL_SEMANAS_LECTIVAS),
+                    tareasTotalesCurso: totalTareas,
+                    tareasCompletadasCurso: tareasCompletadas,
+                    progresoReal
+                };
             });
-        }
-
-        async function cargarForoSemana(curso, semana) {
-            const list = document.getElementById('forum-list');
-            if (!list) return;
-
-            try {
-                const response = await fetch(`/api/cursos/${curso.id}/semanas/${semana.semana}/foro`);
-                const mensajes = response.ok ? await response.json() : [];
-                list.innerHTML = mensajes.length ? mensajes.map(mensaje => `
-                    <article class="forum-message">
-                        <strong>${escapeHtml(mensaje.autorNombre || 'Participante')}</strong>
-                        <p>${escapeHtml(mensaje.contenido || '')}</p>
-                        <small>${escapeHtml(formatearFechaHora(mensaje.fecha))}</small>
-                    </article>
-                `).join('') : '<p class="forum-empty">Sé el primero en dejar una pregunta para esta semana.</p>';
-            } catch (error) {
-                list.innerHTML = '<p class="forum-empty">No se pudo cargar el foro.</p>';
-            }
-        }
-
-        function obtenerContenidoSemana(curso, semana) {
-            if (!semana) return { materiales: [], actividades: [] };
-            return {
-                materiales: (curso.materiales || []).filter(item => perteneceASemana(item.fechaPublicacion, semana)),
-                actividades: (curso.actividades || []).filter(item => perteneceASemana(item.fechaVencimiento || item.fechaInicio, semana))
-            };
-        }
-
-        function perteneceASemana(fecha, semana) {
-            if (!fecha || !semana?.fecha) return false;
-            const inicio = new Date(`${semana.fecha}T00:00:00`);
-            const fin = new Date(`${semana.fechaFin || semana.fecha}T23:59:59`);
-            const valor = new Date(`${String(fecha).slice(0, 10)}T12:00:00`);
-            return valor >= inicio && valor <= fin;
-        }
-
-        function obtenerSemanaActual(curso) {
-            const proxima = curso?.clases?.find(clase => clase.estado === 'PROGRAMADA');
-            return Number(proxima?.semana || curso?.clases?.[0]?.semana || 1);
-        }
-
-        function normalizarCursos(cursos) {
-            return cursos.map(curso => ({
-                ...curso,
-                nombre: limpiarTexto(curso.nombre || 'Curso'),
-                profesor: limpiarTexto(curso.profesor || ''),
-                clases: Array.isArray(curso.clases) ? curso.clases : [],
-                totalClases: Number(curso.totalClases || curso.clases?.length || TOTAL_SEMANAS_LECTIVAS)
-            }));
         }
 
         function estadoVacio(icono, texto) {
-            return `<div class="course-empty"><i class="ph ${icono}"></i><p>${escapeHtml(texto)}</p></div>`;
+            return `<div class="course-empty">${iconImg(icono)}<p>${escapeHtml(texto)}</p></div>`;
         }
 
         function formatearFecha(fecha) {
             if (!fecha) return 'Sin fecha';
-            const [year, month, day] = String(fecha).split('-').map(Number);
-            const date = year && month && day ? new Date(year, month - 1, day) : new Date(fecha);
-            return date.toLocaleDateString('es-PE', { weekday: 'short', day: '2-digit', month: 'short' });
-        }
-
-        function formatearRangoSemana(semana) {
-            if (!semana?.fecha) return 'Sin fecha';
-            return `${formatearFecha(semana.fecha)} - ${formatearFecha(semana.fechaFin || semana.fecha)}`;
-        }
-
-        function formatearFechaHora(fecha) {
-            if (!fecha) return 'Ahora';
-            return new Date(fecha).toLocaleString('es-PE', {
-                day: '2-digit',
-                month: 'short',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            try {
+                if (Array.isArray(fecha)) {
+                    const [y, m, d] = fecha;
+                    const date = new Date(y, m - 1, d);
+                    const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic'];
+                    const dias = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+                    return `${dias[date.getDay()]}, ${d.toString().padStart(2, '0')} ${meses[date.getMonth()]}`;
+                }
+                const str = String(fecha).trim();
+                const match = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+                if (match) {
+                    const year = parseInt(match[1], 10);
+                    const month = parseInt(match[2], 10);
+                    const day = parseInt(match[3], 10);
+                    const date = new Date(year, month - 1, day);
+                    const meses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'set', 'oct', 'nov', 'dic'];
+                    const dias = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+                    return `${dias[date.getDay()]}, ${day.toString().padStart(2, '0')} ${meses[date.getMonth()]}`;
+                }
+                const d = new Date(str);
+                return isNaN(d.getTime()) ? str : d.toLocaleDateString('es-PE', { weekday: 'short', day: '2-digit', month: 'short' });
+            } catch (e) {
+                return String(fecha);
+            }
         }
 
         function colorCursoValido(color) {
-            return ['purple', 'green', 'blue', 'yellow', 'orange', 'red', 'teal', 'indigo'].includes(color) ? color : 'blue';
+            if (!color) return 'blue';
+            const c = String(color).toLowerCase();
+            if (['purple', 'green', 'blue', 'yellow', 'orange', 'red', 'teal', 'indigo'].includes(c)) return c;
+            if (c.includes('3b82f6')) return 'blue';
+            if (c.includes('8b5cf6')) return 'purple';
+            if (c.includes('10b981')) return 'green';
+            if (c.includes('f59e0b')) return 'yellow';
+            if (c.includes('ef4444') || c.includes('f43f5e')) return 'red';
+            if (c.includes('14b8a6')) return 'teal';
+            if (c.includes('6366f1')) return 'indigo';
+            if (c.includes('ec4899')) return 'purple';
+            return 'blue';
         }
 
         function clamp(value, min, max) {
@@ -635,16 +380,18 @@
                 '>': '&gt;',
                 '"': '&quot;',
                 "'": '&#39;'
-            }[char]));
+            })[char] || char);
         }
     </script>
-<script src="../js/app.js?v=apiestudiante20260512i"></script>
-<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
 
-    <!-- SweetAlert2 para Alertas Elegantes -->
+    <!-- Global App Scripts -->
+    <script src="../js/app.js?v=apiestudiante20260512i"></script>
+    <script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
-
+    <script src="/vendor/alertas.js?v=20261019d"></script>
 </body>
 
 </html>
+
+
+

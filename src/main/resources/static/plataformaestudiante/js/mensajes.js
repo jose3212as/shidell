@@ -94,24 +94,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         const contacto = item.contacto || {};
         const nombre = nombreContacto(contacto);
         const activo = activeContacto && activeContacto.id === contacto.id ? ' active' : '';
-        const preview = limpiarTexto(item.preview || etiquetaRol(contacto));
+        const rolLabel = etiquetaRol(contacto);
+        const rolClass = contacto.rol === 'DOCENTE' ? 'docente' : 'estudiante';
+        const preview = limpiarTexto(item.preview || 'Haz clic para iniciar conversación');
         const hora = item.fechaUltimoMensaje ? formatearHora(item.fechaUltimoMensaje) : '';
         const badge = Number(item.noLeidos || 0) > 0
-            ? `<span style="min-width:20px;height:20px;border-radius:999px;background:var(--primary);color:white;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;">${item.noLeidos}</span>`
+            ? `<span class="convo-unread-badge">${item.noLeidos}</span>`
             : '';
 
         return `
-            <div class="convo-item${activo}" data-id="${escapeHtml(contacto.id)}" data-name="${escapeHtml(nombre.toLowerCase())}" data-role="${escapeHtml(etiquetaRol(contacto).toLowerCase())}">
+            <div class="convo-item${activo}" data-id="${escapeHtml(contacto.id)}" data-name="${escapeHtml(nombre.toLowerCase())}" data-role="${escapeHtml(rolLabel.toLowerCase())}">
                 <div class="convo-avatar" style="${estiloAvatar(contacto)}">${avatarPersona(contacto)}</div>
-                <div class="convo-info" style="flex:1;overflow:hidden;">
-                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;">
-                        <span class="convo-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(nombre)}</span>
-                        <span style="display:inline-flex;align-items:center;gap:6px;">
+                <div class="convo-info">
+                    <div class="convo-top-line">
+                        <span class="convo-name">${escapeHtml(nombre)}</span>
+                        <span class="convo-meta-right">
                             ${badge}
-                            ${hora ? `<small style="font-size:10px;color:#94a3b8;flex-shrink:0;">${escapeHtml(hora)}</small>` : ''}
+                            ${hora ? `<small class="convo-time">${escapeHtml(hora)}</small>` : ''}
                         </span>
                     </div>
-                    <span class="convo-preview">${escapeHtml(preview)}</span>
+                    <div class="convo-bottom-line">
+                        <span class="convo-role-tag ${rolClass}">${escapeHtml(rolLabel)}</span>
+                        <span class="convo-preview">${escapeHtml(preview)}</span>
+                    </div>
                 </div>
             </div>`;
     }
@@ -156,7 +161,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!mensajes.length) {
             chatMessages.innerHTML = `
                 <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#94a3b8;gap:10px;padding:40px;text-align:center;">
-                    <i class="ph ph-chat-circle" style="font-size:52px;opacity:.25;"></i>
+                    <img src="../icons/regular/chat-circle.svg" class="icon-img" alt="chat-circle" style="width:52px;height:52px;opacity:.25;">
                     <p style="font-size:14px;">No hay mensajes en esta conversación.</p>
                 </div>`;
             return;
@@ -189,9 +194,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     function archivoHtml(url) {
         const fileName = decodeURIComponent(String(url).split('_').pop() || 'archivo');
         return `
-            <a href="${escapeHtml(url)}" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,0,0,.08);border-radius:10px;margin-bottom:8px;color:inherit;text-decoration:none;">
-                <i class="ph ph-file" style="font-size:22px;flex-shrink:0;"></i>
-                <span style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(fileName)}</span>
+            <a href="${escapeHtml(url)}" target="_blank" class="msg-file-link">
+                <img src="../icons/svg/file-doc.svg" class="icon-img" alt="file" style="width:20px;height:20px;flex-shrink:0;">
+                <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(fileName)}</span>
             </a>`;
     }
 
@@ -237,6 +242,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         renderConversaciones(bandeja.conversaciones || []);
     }
 
+    function abrirModalContactos() {
+        modal.classList.add('show');
+        const conversaciones = bandeja.conversaciones || [];
+        if (!conversaciones.length) {
+            contactsMod.innerHTML = '<p style="padding:20px;text-align:center;color:var(--text-secondary);">Sin contactos disponibles.</p>';
+            return;
+        }
+        contactsMod.innerHTML = conversaciones.map(item => tarjetaModalContacto(item.contacto)).join('');
+        contactsMod.querySelectorAll('.convo-item').forEach(element => {
+            element.addEventListener('click', () => {
+                const contacto = conversaciones.find(item => String(item.contacto.id) === element.dataset.id)?.contacto;
+                if (!contacto) return;
+                modal.classList.remove('show');
+                abrirConversacion(contacto);
+            });
+        });
+    }
+
     function configurarEventos() {
         btnSend?.addEventListener('click', event => {
             event.preventDefault();
@@ -271,23 +294,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderConversaciones(bandeja.conversaciones || []);
         });
 
-        btnNewChat?.addEventListener('click', () => {
-            modal.classList.add('show');
-            const conversaciones = bandeja.conversaciones || [];
-            if (!conversaciones.length) {
-                contactsMod.innerHTML = '<p style="padding:20px;text-align:center;color:#94a3b8;">Sin contactos disponibles.</p>';
-                return;
-            }
-            contactsMod.innerHTML = conversaciones.map(item => tarjetaModalContacto(item.contacto)).join('');
-            contactsMod.querySelectorAll('.convo-item').forEach(element => {
-                element.addEventListener('click', () => {
-                    const contacto = conversaciones.find(item => String(item.contacto.id) === element.dataset.id)?.contacto;
-                    if (!contacto) return;
-                    modal.classList.remove('show');
-                    abrirConversacion(contacto);
-                });
-            });
-        });
+        btnNewChat?.addEventListener('click', abrirModalContactos);
+        document.getElementById('btn-sidebar-new-chat')?.addEventListener('click', abrirModalContactos);
 
         closeModal?.addEventListener('click', () => modal.classList.remove('show'));
         modal?.addEventListener('click', event => {
@@ -296,12 +304,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     function tarjetaModalContacto(contacto) {
+        const rolLabel = etiquetaRol(contacto);
+        const rolClass = contacto?.rol === 'DOCENTE' ? 'docente' : 'estudiante';
         return `
             <div class="convo-item" data-id="${escapeHtml(contacto.id)}">
                 <div class="convo-avatar" style="${estiloAvatar(contacto)}">${avatarPersona(contacto)}</div>
                 <div class="convo-info">
-                    <span class="convo-name">${escapeHtml(nombreContacto(contacto))}</span>
-                    <span class="convo-preview">${escapeHtml(etiquetaRol(contacto))}</span>
+                    <div class="convo-top-line">
+                        <span class="convo-name">${escapeHtml(nombreContacto(contacto))}</span>
+                    </div>
+                    <div class="convo-bottom-line">
+                        <span class="convo-role-tag ${rolClass}">${escapeHtml(rolLabel)}</span>
+                    </div>
                 </div>
             </div>`;
     }
@@ -331,10 +345,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         const diffSeconds = ultimaConexion ? (new Date() - ultimaConexion) / 1000 : Infinity;
         const online = diffSeconds < 60;
         const away = diffSeconds >= 60 && diffSeconds < 300;
-        const color = online ? 'var(--green)' : away ? 'var(--yellow)' : '#94a3b8';
-        const label = online ? 'En linea' : away ? 'Ausente' : 'Desconectado';
+        const svgIcon = online
+            ? '../icons/svg/status-online.svg'
+            : away
+                ? '../icons/svg/status-away.svg'
+                : '../icons/svg/status-offline.svg';
+        const color = online ? 'var(--green)' : away ? 'var(--yellow)' : 'var(--text-tertiary)';
+        const label = online ? 'En línea' : away ? 'Ausente' : `${etiquetaRol(contacto)} · Desconectado`;
 
-        statusEl.innerHTML = `<span style="width:6px;height:6px;background:${color};border-radius:50%;display:inline-block;"></span> ${label}`;
+        statusEl.innerHTML = `<img src="${svgIcon}" class="status-svg-icon" alt="${label}"> <span>${escapeHtml(label)}</span>`;
         statusEl.style.color = color;
     }
 

@@ -23,13 +23,19 @@ public class AppConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         AuthInterceptor authInterceptor = authInterceptorProvider.getIfAvailable();
         if (authInterceptor != null) {
-            registry.addInterceptor(authInterceptor).addPathPatterns("/api/**");
+            registry.addInterceptor(authInterceptor)
+                    .addPathPatterns("/api/**",
+                                     "/plataformaestudiante/**",
+                                     "/plataformadocente/**",
+                                     "/plataformapadres/**",
+                                     "/plataformaadmin/**");
         }
     }
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/plataformadocente", "/plataformadocente/portaldocente.html");
-        registry.addRedirectViewController("/plataformadocente/", "/plataformadocente/portaldocente.html");
+        registry.addRedirectViewController("/", "/auth/login.html");
+        registry.addRedirectViewController("/plataformadocente", "/plataformadocente/index.html");
+        registry.addRedirectViewController("/plataformadocente/", "/plataformadocente/index.html");
     }
 }

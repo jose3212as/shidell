@@ -66,3 +66,34 @@ window.AppAlerts = {
         });
     }
 };
+
+// Cargar automáticamente el Shell Adaptable Android + PC y el Panel Analítico API de Estudiante
+(function () {
+    // Limpiar cualquier elemento residual de versiones anteriores en caché
+    const purgeLegacyStudyHub = () => {
+        document.getElementById('open-study-hub-btn')?.remove();
+        document.getElementById('student-theme-toggle')?.remove();
+        document.getElementById('study-hub-overlay')?.remove();
+        document.getElementById('student-gamification-bar')?.remove();
+        document.querySelector('.student-QuickTools')?.remove();
+        document.body?.classList.remove('shidell-dark');
+    };
+    purgeLegacyStudyHub();
+    document.addEventListener('DOMContentLoaded', purgeLegacyStudyHub);
+
+    if (!window.__shidellMobileShellLoaded && !document.querySelector('script[src*="mobile-shell.js"]')) {
+        const s = document.createElement('script');
+        s.src = '/vendor/mobile-shell.js?v=20261019d';
+        document.head.appendChild(s);
+    }
+    if (window.location.pathname.toLowerCase().includes('plataformaestudiante') &&
+        !window.__shidellStudentSuiteLoaded &&
+        !document.querySelector('script[src*="student-suite.js"]')) {
+        const st = document.createElement('script');
+        st.src = '/plataformaestudiante/js/student-suite.js?v=20261019d';
+        document.head.appendChild(st);
+    }
+})();
+
+
+

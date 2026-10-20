@@ -156,8 +156,8 @@
                 <div class="settings-header">
                     <div><span class="settings-kicker">Mi perfil</span><h2>Datos del estudiante</h2></div>
                     <div class="settings-header-actions">
-                        <button class="btn-secondary-settings" id="btn-descargar-datos"><i class="ph ph-download-simple"></i> Reporte PDF</button>
-                        <button class="btn-primary-settings" id="btn-editar-perfil"><i class="ph ph-pencil-simple"></i> Editar perfil</button>
+                        <button class="btn-secondary-settings" id="btn-descargar-datos"><img src="../icons/regular/download-simple.svg" class="icon-img" alt="download-simple"> Reporte PDF</button>
+                        <button class="btn-primary-settings" id="btn-editar-perfil"><img src="../icons/regular/pencil-simple.svg" class="icon-img" alt="pencil-simple"> Editar perfil</button>
                     </div>
                 </div>
                 <div class="profile-summary">
@@ -197,12 +197,12 @@
             <div class="settings-section">
                 <div class="settings-header">
                     <div><span class="settings-kicker">Notificaciones</span><h2>Alertas del portal</h2></div>
-                    <button class="btn-secondary-settings" id="btn-ver-notificaciones"><i class="ph ph-bell-ringing"></i> Abrir panel</button>
+                    <button class="btn-secondary-settings" id="btn-ver-notificaciones"><img src="../icons/regular/bell-ringing.svg" class="icon-img" alt="bell-ringing"> Abrir panel</button>
                 </div>
                 <div class="toggle-list">
                     ${rows.map(([key, icon, title, desc]) => `
                         <div class="toggle-row" data-notif="${key}">
-                            <div><i class="ph ${icon}"></i><strong>${title}</strong><span>${desc}</span></div>
+                            <div>${iconImg(icon)}<strong>${title}</strong><span>${desc}</span></div>
                             <button type="button" class="toggle-switch${estado[key] ? '' : ' off'}"></button>
                         </div>
                     `).join('')}
@@ -219,9 +219,9 @@
                     <div><span class="settings-kicker">Seguridad</span><h2>Protege tu cuenta</h2></div>
                 </div>
                 <div class="action-list">
-                    <button class="action-row" id="btn-cambiar-password"><i class="ph ph-lock-key"></i><span><strong>Cambiar contrasena</strong><small>Actualiza tu clave cuando lo necesites.</small></span><i class="ph ph-caret-right"></i></button>
-                    <button class="action-row" id="btn-sesiones"><i class="ph ph-monitor"></i><span><strong>Ver sesiones activas</strong><small>Consulta la ultima conexion registrada.</small></span><i class="ph ph-caret-right"></i></button>
-                    <button class="action-row" id="btn-2fa"><i class="ph ph-shield-check"></i><span><strong>Autenticacion en dos pasos</strong><small>Control local de seguridad adicional.</small></span><span class="status-pill">${estado}</span></button>
+                    <button class="action-row" id="btn-cambiar-password"><img src="../icons/regular/lock-key.svg" class="icon-img" alt="lock-key"><span><strong>Cambiar contrasena</strong><small>Actualiza tu clave cuando lo necesites.</small></span><img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></button>
+                    <button class="action-row" id="btn-sesiones"><img src="../icons/regular/monitor.svg" class="icon-img" alt="monitor"><span><strong>Ver sesiones activas</strong><small>Consulta la ultima conexion registrada.</small></span><img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></button>
+                    <button class="action-row" id="btn-2fa"><img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check"><span><strong>Autenticacion en dos pasos</strong><small>Control local de seguridad adicional.</small></span><span class="status-pill">${estado}</span></button>
                 </div>
             </div>`;
     }
@@ -233,10 +233,10 @@
                     <div><span class="settings-kicker">Cuenta</span><h2>Opciones de cuenta</h2></div>
                 </div>
                 <div class="account-grid">
-                    <button class="account-card" id="btn-info-cuenta"><i class="ph ph-identification-card"></i><strong>Informacion de la cuenta</strong><span>Ver ID, rol y datos basicos.</span></button>
-                    <button class="account-card" id="btn-descargar-datos"><i class="ph ph-download-simple"></i><strong>Reporte PDF del estudiante</strong><span>Genera un PDF con tu resumen academico.</span></button>
-                    <a class="account-card" href="mensajes.html"><i class="ph ph-lifebuoy"></i><strong>Centro de ayuda</strong><span>Contacta a tus docentes desde mensajes.</span></a>
-                    <button class="account-card danger" id="btn-cerrar-sesion"><i class="ph ph-sign-out"></i><strong>Cerrar sesion</strong><span>Salir de tu cuenta.</span></button>
+                    <button class="account-card" id="btn-info-cuenta"><img src="../icons/regular/identification-card.svg" class="icon-img" alt="identification-card"><strong>Informacion de la cuenta</strong><span>Ver ID, rol y datos basicos.</span></button>
+                    <button class="account-card" id="btn-descargar-datos"><img src="../icons/regular/download-simple.svg" class="icon-img" alt="download-simple"><strong>Reporte PDF del estudiante</strong><span>Genera un PDF con tu resumen academico.</span></button>
+                    <a class="account-card" href="mensajes.html"><img src="../icons/regular/lifebuoy.svg" class="icon-img" alt="lifebuoy"><strong>Centro de ayuda</strong><span>Contacta a tus docentes desde mensajes.</span></a>
+                    <button class="account-card danger" id="btn-cerrar-sesion"><img src="../icons/regular/sign-out.svg" class="icon-img" alt="sign-out"><strong>Cerrar sesion</strong><span>Salir de tu cuenta.</span></button>
                 </div>
             </div>`;
     }
@@ -244,7 +244,7 @@
     function renderSinSesion() {
         document.getElementById('settings-view').innerHTML = `
             <div class="settings-empty">
-                <i class="ph ph-warning-circle"></i>
+                <img src="../icons/regular/warning-circle.svg" class="icon-img" alt="warning-circle">
                 <strong>No hay sesion activa</strong>
                 <span>Inicia sesion para ver tu configuracion.</span>
                 <a class="btn-primary-settings" href="../login.html">Ir al login</a>
@@ -408,8 +408,8 @@
         botones.forEach(boton => {
             boton.disabled = true;
             boton.innerHTML = boton.classList.contains('account-card')
-                ? '<i class="ph ph-circle-notch"></i><strong>Preparando PDF</strong><span>Generando reporte profesional...</span>'
-                : '<i class="ph ph-circle-notch"></i> Generando PDF';
+                ? '<img src="../icons/regular/circle-notch.svg" class="icon-img icon-spin" alt="circle-notch"><strong>Preparando PDF</strong><span>Generando reporte profesional...</span>'
+                : '<img src="../icons/regular/circle-notch.svg" class="icon-img icon-spin" alt="circle-notch"> Generando PDF';
         });
 
         try {
@@ -854,7 +854,7 @@
         if (!preview) return;
         preview.innerHTML = src
             ? `<img src="${escapeHtml(src)}" alt="Vista previa de foto">`
-            : '<i class="ph-fill ph-user"></i>';
+            : '<img src="../icons/fill/user.svg" class="icon-img" alt="user">';
     }
 
     function guardarFotoPerfilLocal(src) {
@@ -889,7 +889,7 @@
         document.querySelectorAll('.top-user-info .avatar, .user-profile-card .avatar').forEach(avatar => {
             avatar.innerHTML = fotoPerfil
                 ? `<img src="${escapeHtml(fotoPerfil)}" alt="Foto de perfil">`
-                : '<i class="ph-fill ph-user" style="font-size:24px;color:var(--primary);"></i>';
+                : '<img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width: 24px; height: 24px;">';
         });
     }
 

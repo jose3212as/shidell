@@ -23,11 +23,33 @@ public class AsistenciaService {
     @Autowired
     private CursoRepository cursoRepository;
 
+    @Autowired
+    private org.example.shidell.repository.MatriculaRepository matriculaRepository;
+
     public List<Asistencia> getAsistenciasCompletas(UserEntity estudiante) {
+        String nivel = estudiante.getNivel();
+        String grado = estudiante.getGrado();
+        String seccion = estudiante.getSeccion();
+        String turno = estudiante.getTurno();
+
+        if (nivel == null || grado == null || seccion == null) {
+            org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(estudiante, 2026).orElse(null);
+            if (m == null) {
+                List<org.example.shidell.model.entity.Matricula> list = matriculaRepository.findByEstudiante(estudiante);
+                if (!list.isEmpty()) m = list.get(0);
+            }
+            if (m != null && m.getAula() != null) {
+                nivel = m.getAula().getNivel();
+                grado = m.getAula().getGrado();
+                seccion = m.getAula().getSeccion();
+                turno = m.getAula().getTurno();
+            }
+        }
+
         // 1. Obtener cursos del estudiante
-        List<Curso> cursos = cursoRepository.findByGrupoAcademico(
-                estudiante.getNivel(), estudiante.getGrado(), estudiante.getSeccion(), estudiante.getTurno()
-        );
+        List<Curso> cursos = (nivel != null && grado != null && seccion != null)
+                ? cursoRepository.findByGrupoAcademico(nivel, grado, seccion, turno)
+                : List.of();
 
         // 2. Obtener asistencias reales guardadas en DB
         List<Asistencia> registradas = asistenciaRepository.findByEstudiante(estudiante);
