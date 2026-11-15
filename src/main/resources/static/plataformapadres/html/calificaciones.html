@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261115c"></script>
     <title>Shidell - Calificaciones</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <link rel="stylesheet" href="../css/styles.css?v=20261114s">
 </head>
 <body>
 <div class="dashboard">
@@ -117,13 +119,68 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Exámenes y evaluaciones programadas -->
+            <div class="main-panel" style="margin-top:24px;">
+                <div class="panel-top" style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                    <h3 class="panel-title"><i class="ph ph-exam"></i> Exámenes y evaluaciones programadas</h3>
+                    <select id="padres-bimestre-filter" aria-label="Filtrar exámenes por bimestre" style="padding:7px 12px; border:1px solid var(--border-color, #e2e8f0); border-radius:8px; font-size:13px; font-weight:600; background:var(--surface, #fff); color:var(--text-primary, #0f172a);">
+                        <option value="ALL">Todos los bimestres (I - IV)</option>
+                        <option value="1">I Bimestre</option>
+                        <option value="2">II Bimestre</option>
+                        <option value="3">III Bimestre</option>
+                        <option value="4">IV Bimestre</option>
+                    </select>
+                </div>
+                <table class="grades-table">
+                    <thead>
+                        <tr>
+                            <th>Curso / Docente</th>
+                            <th>Evaluación</th>
+                            <th>Tipo</th>
+                            <th>Fecha</th>
+                            <th>Resultado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="evaluaciones-programadas-body">
+                        <tr><td colspan="5" style="padding:20px; color:#94a3b8; text-align:center;">Cargando evaluaciones...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Promedio por curso -->
+            <div class="main-panel" style="margin-top:24px;">
+                <div class="panel-top">
+                    <h3 class="panel-title"><i class="ph ph-books"></i> Resumen por curso</h3>
+                </div>
+                <div id="cursos-resumen-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:12px;">
+                    <p style="color:#94a3b8; padding:12px;">Cargando cursos...</p>
+                </div>
+            </div>
         </div>
     </main>
 </div>
-<script src="../js/app.js"></script>
+<script src="../js/app.js?v=20261114p"></script>
 <script>
 // Página de calificaciones completa
+function escCal(val) {
+    return String(val ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+let evaluacionesProgramadasGlobal = [];
+
 document.addEventListener('DOMContentLoaded', async () => {
+    const bimSelect = document.getElementById('padres-bimestre-filter');
+    if (bimSelect) {
+        bimSelect.addEventListener('change', () => {
+            renderEvaluacionesProgramadas(document.getElementById('evaluaciones-programadas-body'), evaluacionesProgramadasGlobal);
+        });
+    }
     // app.js ya inicializa el hijo; escuchamos cuando el hijo esté listo
     window.addEventListener('hijo-cargado', async (e) => {
         const hijo = e.detail;
@@ -134,11 +191,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function cargarCalifCompletas(hijo) {
     const tbody = document.getElementById('calificaciones-full');
+    const tbodyProg = document.getElementById('evaluaciones-programadas-body');
+    const gridCursos = document.getElementById('cursos-resumen-grid');
     try {
         const res  = await fetch(`/api/calificaciones/estudiante/${hijo.id}`);
         if (!res.ok) throw new Error('No se pudo cargar calificaciones');
         const payload = await res.json();
         const cals = Array.isArray(payload) ? payload : (payload.evaluaciones || []);
+        evaluacionesProgramadasGlobal = Array.isArray(payload.evaluacionesProgramadas) ? payload.evaluacionesProgramadas : [];
+        const cursos = Array.isArray(payload.cursos) ? payload.cursos : [];
+
+        renderEvaluacionesProgramadas(tbodyProg, evaluacionesProgramadasGlobal);
+        renderResumenCursos(gridCursos, cursos);
 
         if (cals.length === 0) {
             document.getElementById('promedio-general').textContent = Number(payload.promedioGeneral || 0).toFixed(1);
@@ -149,7 +213,6 @@ async function cargarCalifCompletas(hijo) {
         }
 
         const promedio = Number(payload.promedioGeneral ?? (cals.reduce((s,c) => s + nota20(c), 0) / cals.length)).toFixed(1);
-        const cursos = Array.isArray(payload.cursos) ? payload.cursos : [];
         const aprobados = Number(payload.cursosAprobados ?? cursos.filter(c => Number(c.promedio || 0) >= 11).length);
         const riesgo = cursos.length
             ? cursos.filter(c => Number(c.promedio || 0) > 0 && Number(c.promedio || 0) < 11).length
@@ -164,10 +227,11 @@ async function cargarCalifCompletas(hijo) {
             const grade = nota >= 17 ? 'a' : nota >= 14 ? 'b' : nota >= 11 ? 'c' : 'd';
             const estado = nota >= 11 ? '<span style="color:var(--green);font-weight:600;">Aprobado</span>' : '<span style="color:var(--red);font-weight:600;">En riesgo</span>';
             const fecha  = c.fecha ? new Date(`${c.fecha}T00:00:00`).toLocaleDateString('es-PE') : '—';
+            const tipoTag = c.tipo ? ` <span style="font-size:11px; color:#0f766e; background:#f0fdfa; padding:2px 7px; border-radius:999px; font-weight:700; margin-left:6px;">${escCal(c.tipo)}</span>` : '';
             tbody.innerHTML += `
                 <tr>
-                    <td>${c.tarea?.curso?.nombre || c.curso?.nombre || '—'}</td>
-                    <td>${c.tarea?.titulo || c.actividad || 'Evaluación'}</td>
+                    <td>${escCal(c.tarea?.curso?.nombre || c.curso?.nombre || '—')}</td>
+                    <td>${escCal(c.tarea?.titulo || c.actividad || 'Evaluación')}${tipoTag}</td>
                     <td><span class="grade-badge grade-${grade}">${nota.toFixed(1)}</span></td>
                     <td>${estado}</td>
                     <td style="color:var(--text-secondary); font-size:13px;">${fecha}</td>
@@ -175,7 +239,60 @@ async function cargarCalifCompletas(hijo) {
         });
     } catch (e) {
         tbody.innerHTML = '<tr><td colspan="5" style="color:#ef4444; padding:16px;">Error al cargar.</td></tr>';
+        if (tbodyProg) tbodyProg.innerHTML = '<tr><td colspan="5" style="color:#ef4444; padding:16px;">Error al cargar.</td></tr>';
     }
+}
+
+function renderEvaluacionesProgramadas(tbody, programadas) {
+    if (!tbody) return;
+    const bimFiltro = document.getElementById('padres-bimestre-filter')?.value || 'ALL';
+    const filtradas = (Array.isArray(programadas) ? programadas : []).filter(ev =>
+        bimFiltro === 'ALL' || Number(ev.bimestre || 1) === Number(bimFiltro)
+    );
+    if (!filtradas.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; color:#94a3b8; text-align:center;">Sin exámenes ni evaluaciones programadas hasta la fecha.</td></tr>';
+        return;
+    }
+    tbody.innerHTML = filtradas.map(ev => {
+        const fecha = ev.fecha ? new Date(`${ev.fecha}T00:00:00`).toLocaleDateString('es-PE') : '—';
+        let resHtml = '<span style="background:#fef3c7; color:#92400e; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700;">Programado · Pendiente</span>';
+        if (ev.calificada && ev.nota20 != null) {
+            const n = Number(ev.nota20);
+            const g = n >= 17 ? 'a' : n >= 14 ? 'b' : n >= 11 ? 'c' : 'd';
+            resHtml = `<span class="grade-badge grade-${g}">${n.toFixed(1)} / 20</span>`;
+        }
+        return `
+            <tr>
+                <td><strong>${escCal(ev.cursoNombre || 'Curso')}</strong><div style="font-size:12px; color:var(--text-secondary);">${escCal(ev.docenteNombre || '')}</div></td>
+                <td>${escCal(ev.titulo || 'Evaluación')}<div style="font-size:11.5px; color:var(--text-secondary);">Bimestre ${escCal(ev.bimestre || 1)} · Peso ${escCal(ev.peso || 1)}</div></td>
+                <td><span style="font-size:12px; font-weight:700; color:#0f766e;">${escCal(ev.tipo || 'EXAMEN')}</span></td>
+                <td style="color:var(--text-secondary); font-size:13px;">${fecha}</td>
+                <td>${resHtml}</td>
+            </tr>`;
+    }).join('');
+}
+
+function renderResumenCursos(grid, cursos) {
+    if (!grid) return;
+    if (!cursos.length) {
+        grid.innerHTML = '<p style="color:#94a3b8; padding:12px;">Sin cursos registrados.</p>';
+        return;
+    }
+    const ordenados = [...cursos].sort((a, b) => Number(b.evaluaciones || 0) - Number(a.evaluaciones || 0));
+    grid.innerHTML = ordenados.map(c => {
+        const evals = Number(c.evaluaciones || 0);
+        const prom = Number(c.promedio || 0);
+        const estadoColor = !evals ? '#64748b' : (prom >= 11 ? 'var(--green)' : 'var(--red)');
+        const estadoTxt = !evals ? 'Sin notas' : `${prom.toFixed(1)} · ${c.estado || 'Evaluado'}`;
+        return `
+            <div style="border:1px solid #e2e8f0; border-radius:14px; padding:14px 16px; background:#f8fafc;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                    <strong style="font-size:14px; color:var(--text-primary);">${escCal(c.nombre)}</strong>
+                    <span style="font-size:12px; font-weight:700; color:${estadoColor}; white-space:nowrap;">${escCal(estadoTxt)}</span>
+                </div>
+                <p style="font-size:12px; color:var(--text-secondary); margin-top:4px;">${escCal(c.profesor || 'Docente asignado')} · ${evals} eval.</p>
+            </div>`;
+    }).join('');
 }
 
 function nota20(calificacion) {

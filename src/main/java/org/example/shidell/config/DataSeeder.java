@@ -8,9 +8,10 @@ import org.example.shidell.repository.CursoRepository;
 import org.example.shidell.repository.UserRepository;
 import org.example.shidell.repository.AulaRepository;
 import org.example.shidell.repository.MatriculaRepository;
+import org.example.shidell.service.AcademicCurriculumInitializer;
 import org.example.shidell.service.AuthSessionService;
-import org.example.shidell.model.entity.Tarea;
-import org.example.shidell.repository.TareaRepository;
+import org.example.shidell.util.AcademicCalendarUtil;
+import org.example.shidell.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
 
-import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +29,8 @@ import java.util.Set;
 public class DataSeeder {
 
     private static final String DEFAULT_PASSWORD = "123456";
-    private static final String[] SECCIONES = {"A", "B", "C"};
+    private static final String[] SECCIONES_PRIMARIA = {"A", "B", "C", "D"};
+    private static final String[] SECCIONES_SECUNDARIA = {"A", "B", "C"};
     private static final String TURNO_PRIMARIA  = "MAÑANA";
     private static final String TURNO_SECUNDARIA = "TARDE";
     private static final Integer ANIO_ESCOLAR = 2026;
@@ -52,9 +53,9 @@ public class DataSeeder {
             AulaRepository aulaRepository,
             MatriculaRepository matriculaRepository,
             AuthSessionService authSessionService,
-            TareaRepository tareaRepository,
             org.example.shidell.repository.EventoRepository eventoRepository,
-            org.example.shidell.service.CalendarioMineduService mineduService) {
+            org.example.shidell.service.CalendarioMineduService mineduService,
+            AcademicCurriculumInitializer curriculumInitializer) {
         return args -> {
             try {
                 jdbcTemplate.execute("DELETE FROM cursos a USING cursos b " +
@@ -70,22 +71,31 @@ public class DataSeeder {
 
             UserEntity admin = asegurarAdministrador(userRepository, authSessionService);
             UserEntity padre = asegurarPadre(userRepository, "José", "Carlos", "padre@gmail.com", authSessionService);
-            UserEntity tutorDemo = asegurarDocente(userRepository, authSessionService,
-                    codigoPrimaria("1", "A", TURNO_PRIMARIA), "Prof. Maritza", "Poma Huamán");
+            UserEntity tutorDemo = asegurarTutorAulaPrimaria(userRepository, authSessionService, "1", "A", TURNO_PRIMARIA);
 
             asegurarMallaAcademica(cursoRepository, userRepository, aulaRepository, authSessionService, eventoRepository, mineduService);
-            
-            Aula aulaDemo = asegurarAula(aulaRepository, "SECUNDARIA", "1", "A", TURNO_SECUNDARIA, ANIO_ESCOLAR);
-            asegurarEstudianteDemo(userRepository, matriculaRepository, "Carlos", "Mendoza", "estudiante@shidell.edu", padre, tutorDemo, authSessionService, aulaDemo);
 
-            asegurarTareasDemo(cursoRepository, tareaRepository);
-            
+            Aula aulaDemo = asegurarAula(aulaRepository, "SECUNDARIA", "1", "A", TURNO_SECUNDARIA, ANIO_ESCOLAR);
+            asegurarEstudianteDemo(userRepository, matriculaRepository, "Carlos", "Mendoza", "estudiante@shidell.edu", padre, tutorDemo, authSessionService, aulaDemo, false);
+
+            Aula aulaPrim6D = asegurarAula(aulaRepository, "PRIMARIA", "6", "D", TURNO_PRIMARIA, ANIO_ESCOLAR);
+            UserEntity tutorPrim6D = aulaPrim6D.getTutor() != null
+                    ? aulaPrim6D.getTutor()
+                    : asegurarTutorAulaPrimaria(userRepository, authSessionService, "6", "D", TURNO_PRIMARIA);
+            asegurarEstudianteDemo(userRepository, matriculaRepository, "Juan", "Torres Flores", "estudiante.p240@shidell.com", padre, tutorPrim6D, authSessionService, aulaPrim6D, true);
+
             try {
                 jdbcTemplate.execute("UPDATE cursos c SET docente_id = (SELECT u.id FROM usuarios u WHERE u.rol = 'DOCENTE' AND u.email LIKE '%@shidell.edu' LIMIT 1) WHERE c.docente_id IS NULL");
                 jdbcTemplate.execute("UPDATE usuarios SET rol = 'ARCHIVADO' WHERE rol = 'DOCENTE' AND email LIKE '%@shidell.edu' AND id NOT IN (SELECT DISTINCT docente_id FROM cursos WHERE docente_id IS NOT NULL)");
             } catch (Exception e) {
                 System.out.println(">>> [INFO] Limpieza/asignación de docentes omitida: " + e.getMessage());
             }
+
+            LocalDate fechaRef = LocalDate.now();
+            curriculumInitializer.normalizarMallaTareasYExamenes(fechaRef);
+            curriculumInitializer.asegurarNotasYEntregasEstudiantesDemo(
+                    List.of("estudiante@shidell.edu", "estudiante.p240@shidell.com"),
+                    fechaRef);
 
             System.out.println("=================================================");
             System.out.println(">>> SHIDELL: malla semanal completa con Aulas y Matriculas <<<");
@@ -142,8 +152,18 @@ public class DataSeeder {
             org.example.shidell.service.CalendarioMineduService minedu, String nivel, String grado, List<AreaPlan> plan) {
         String turno = "PRIMARIA".equals(nivel) ? TURNO_PRIMARIA : TURNO_SECUNDARIA;
         String[][] horas = TURNO_SECUNDARIA.equals(turno) ? HORAS_TARDE : HORAS_MANANA;
-        for (String seccion : SECCIONES) {
+        String[] secciones = "PRIMARIA".equals(nivel) ? SECCIONES_PRIMARIA : SECCIONES_SECUNDARIA;
+        for (String seccion : secciones) {
             Aula aula = asegurarAula(aulaRepo, nivel, grado, seccion, turno, ANIO_ESCOLAR);
+            if ("PRIMARIA".equals(nivel)) {
+                UserEntity tutorAula = asegurarTutorAulaPrimaria(userRepo, auth, grado, seccion, turno);
+                boolean tutorLegado = aula.getTutor() != null && aula.getTutor().getEmail() != null
+                        && aula.getTutor().getEmail().endsWith("@shidell.com");
+                if (aula.getTutor() == null || tutorLegado) {
+                    aula.setTutor(tutorAula);
+                    aula = aulaRepo.save(aula);
+                }
+            }
             String semilla = nivel + grado + seccion;
             List<AreaPlan> semana = expandirSemana(plan, semilla);
             for (int i = 0; i < semana.size(); i++) {
@@ -236,8 +256,7 @@ public class DataSeeder {
         String t = abreviar(turno);
         if ("PRIMARIA".equals(nivel)) {
             if (esAreaDeAulaPrimaria(area)) {
-                String[] nom = nombreDocentePrimaria(g, seccion);
-                return asegurarDocente(repo, auth, "PLZ-PRI-AULA-" + grado + seccion + "-" + t, nom[0], nom[1]);
+                return asegurarTutorAulaPrimaria(repo, auth, grado, seccion, turno);
             }
             if ("Religión".equals(area)) {
                 return asegurarDocente(repo, auth, "PLZ-PRI-REL-ESCUELA", "Prof. Rosa", "Paredes Medina");
@@ -277,7 +296,7 @@ public class DataSeeder {
     }
 
     private String[] nombreDocenteArea(String area) {
-        String a = normalizar(area).toLowerCase();
+        String a = TextUtils.sinAcentos(area).toLowerCase();
         if (a.contains("matematica")) return new String[]{"Prof. Roberto", "Alvarado Quispe"};
         if (a.contains("comunicacion")) return new String[]{"Prof. Ana", "García Mendoza"};
         if (a.contains("ciencia")) return new String[]{"Prof. Carlos", "Vargas Flores"};
@@ -319,11 +338,18 @@ public class DataSeeder {
     }
 
     private String claveCurso(String nombre, String nivel, String grado, String seccion, String turno, Integer dia, String horaInicio) {
-        return String.join("|", normalizar(nombre).toUpperCase(), String.valueOf(nivel), String.valueOf(grado), String.valueOf(seccion), String.valueOf(turno), String.valueOf(dia), String.valueOf(horaInicio));
+        return String.join("|", TextUtils.sinAcentos(nombre).toUpperCase(), String.valueOf(nivel), String.valueOf(grado), String.valueOf(seccion), String.valueOf(turno), String.valueOf(dia), String.valueOf(horaInicio));
     }
 
     private String codigoPrimaria(String grado, String seccion, String turno) {
         return "PLZ-PRI-AULA-" + grado + seccion + "-" + abreviar(turno);
+    }
+
+    private UserEntity asegurarTutorAulaPrimaria(UserRepository repo, AuthSessionService auth, String grado, String seccion, String turno) {
+        int g = 0;
+        try { g = Integer.parseInt(grado); } catch (Exception ignored) {}
+        String[] nom = nombreDocentePrimaria(g, seccion);
+        return asegurarDocente(repo, auth, codigoPrimaria(grado, seccion, turno), nom[0], nom[1]);
     }
 
     private UserEntity asegurarDocente(UserRepository repo, AuthSessionService auth, String codigo, String nombres, String apellidos) {
@@ -337,10 +363,10 @@ public class DataSeeder {
         return repo.save(u);
     }
 
-    private String emailPara(String codigo) { return normalizar(codigo).toLowerCase().replaceAll("[^a-z0-9]+", ".") + "@shidell.edu"; }
+    private String emailPara(String codigo) { return TextUtils.sinAcentos(codigo).toLowerCase().replaceAll("[^a-z0-9]+", ".") + "@shidell.edu"; }
 
     private String abreviar(String valor) {
-        String n = normalizar(valor).toUpperCase();
+        String n = TextUtils.sinAcentos(valor).toUpperCase();
         Map<String, String> map = new HashMap<>();
         map.put("MANANA", "M"); map.put("TARDE", "T"); map.put("PRIMARIA", "PRI"); map.put("SECUNDARIA", "SEC");
         map.put("COMUNICACION", "COM"); map.put("MATEMATICA", "MAT"); map.put("CIENCIA Y TECNOLOGIA", "CYT");
@@ -351,8 +377,6 @@ public class DataSeeder {
     }
 
     private String etiquetaTurno(String turno) { return "TARDE".equals(turno) ? "Tarde" : "Mañana"; }
-
-    private String normalizar(String valor) { return Normalizer.normalize(valor == null ? "" : valor, Normalizer.Form.NFD).replaceAll("\\p{M}", ""); }
 
     private UserEntity asegurarAdministrador(UserRepository repo, AuthSessionService auth) {
         UserEntity u = repo.findByEmail("admin@shidell.edu").orElseGet(UserEntity::new);
@@ -369,36 +393,26 @@ public class DataSeeder {
         return repo.save(u);
     }
 
-    private void asegurarEstudianteDemo(UserRepository userRepo, MatriculaRepository matRepo, String nombres, String apellidos, String email, UserEntity padre, UserEntity tutor, AuthSessionService auth, Aula aula) {
+    private void asegurarEstudianteDemo(UserRepository userRepo, MatriculaRepository matRepo, String nombres, String apellidos, String email, UserEntity padre, UserEntity tutor, AuthSessionService auth, Aula aula, boolean preservarDatosExistentes) {
         UserEntity u = userRepo.findByEmail(email).orElseGet(UserEntity::new);
-        u.setNombres(nombres); u.setApellidos(apellidos); u.setEmail(email);
+        if (!preservarDatosExistentes || u.getNombres() == null || u.getNombres().isBlank()) u.setNombres(nombres);
+        if (!preservarDatosExistentes || u.getApellidos() == null || u.getApellidos().isBlank()) u.setApellidos(apellidos);
+        u.setEmail(email);
         if (u.getPassword() == null) u.setPassword(auth.hashPassword(DEFAULT_PASSWORD));
-        u.setRol("ESTUDIANTE"); u.setPadre(padre); u.setTutor(tutor);
+        u.setRol("ESTUDIANTE");
+        if (!preservarDatosExistentes || u.getPadre() == null) u.setPadre(padre);
+        boolean tutorLegado = u.getTutor() != null && u.getTutor().getEmail() != null && u.getTutor().getEmail().endsWith("@shidell.com");
+        if (!preservarDatosExistentes || u.getTutor() == null || tutorLegado) u.setTutor(tutor);
         u = userRepo.save(u);
 
         Matricula m = matRepo.findByEstudianteAndAnioEscolar(u, aula.getAnioEscolar()).orElseGet(Matricula::new);
         m.setEstudiante(u); m.setAula(aula); m.setAnioEscolar(aula.getAnioEscolar());
-        m.setFechaMatricula(LocalDate.now()); m.setEstado("ACTIVO");
+        if (m.getId() == null || m.getFechaMatricula() == null || m.getFechaMatricula().equals(LocalDate.now())) {
+            m.setFechaMatricula(AcademicCalendarUtil.iniciosBloquesLectivos(aula.getAnioEscolar()).get(0));
+        }
+        m.setEstado("ACTIVO");
         matRepo.save(m);
     }
 
     private record AreaPlan(String nombre, int horasSemanales, String icono, String color) {}
-
-    private void asegurarTareasDemo(CursoRepository cursoRepo, TareaRepository tareaRepo) {
-        List<Curso> cursosSecundaria = cursoRepo.findByGrupoAcademico("SECUNDARIA", "1", "A", "TARDE");
-        if (cursosSecundaria.isEmpty()) return;
-        List<Tarea> existingTasks = tareaRepo.findAll();
-        if (!existingTasks.isEmpty()) return;
-        
-        java.util.List<Tarea> tareas = new java.util.ArrayList<>();
-        Curso matematica = cursosSecundaria.stream().filter(c -> c.getNombre().equalsIgnoreCase("Matemática")).findFirst().orElse(cursosSecundaria.get(0));
-        tareas.add(crearTareaPrueba("Resolver Ejercicios de Álgebra", "Resolver página 45", "Alta", LocalDate.now().minusDays(2), LocalDate.now().plusDays(3), matematica));
-        tareaRepo.saveAll(tareas);
-    }
-    
-    private Tarea crearTareaPrueba(String titulo, String desc, String prioridad, LocalDate inicio, LocalDate fin, Curso curso) {
-        Tarea t = new Tarea(); t.setTitulo(titulo); t.setDescripcion(desc); t.setPrioridad(prioridad); t.setEstado("Pendiente");
-        t.setFechaInicio(inicio); t.setFechaVencimiento(fin); t.setCurso(curso);
-        return t;
-    }
 }

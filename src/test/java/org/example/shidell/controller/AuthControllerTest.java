@@ -175,6 +175,22 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.ok").value(true));
     }
 
+    @Test
+    @DisplayName("POST /api/auth/logout con token válido marca ultimaConexion fuera de línea y guarda")
+    void logout_conTokenValido_marcaDesconectado() throws Exception {
+        adminUser.setUltimaConexion(java.time.LocalDateTime.now());
+        when(authSessionService.authenticate("token.valido")).thenReturn(Optional.of(adminUser));
+
+        mockMvc.perform(post("/api/auth/logout")
+                        .header("Authorization", "Bearer token.valido"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.ok").value(true));
+
+        org.mockito.Mockito.verify(userRepository).save(adminUser);
+        org.assertj.core.api.Assertions.assertThat(adminUser.getUltimaConexion())
+                .isBeforeOrEqualTo(java.time.LocalDateTime.now().minusMinutes(25));
+    }
+
     // ── GET /api/auth/me ───────────────────────────────────────────
 
     @Test

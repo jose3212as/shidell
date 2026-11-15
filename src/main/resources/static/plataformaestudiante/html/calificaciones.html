@@ -1,17 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261115c"></script>
     <title>Shidell - Calificaciones</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
     <script src="../js/icon-helper.js"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
-    <link rel="stylesheet" href="../css/calificaciones.css">
+    <link rel="stylesheet" href="../css/styles.css?v=20261114s">
+    <link rel="stylesheet" href="../css/calificaciones.css?v=20261115c">
 </head>
 
 <body>
@@ -100,9 +101,13 @@
                             <button class="cal-tab" data-view="evaluacion">Por evaluación</button>
                             <button class="cal-tab" data-view="historial">Historial académico</button>
                         </div>
-                        <button class="semester-dropdown" type="button" id="cal-api-source">
-                            <img src="../icons/regular/database.svg" class="icon-img" alt="database"> Datos del estudiante
-                        </button>
+                        <select class="semester-dropdown" id="cal-bimestre-filter" aria-label="Filtrar por bimestre">
+                            <option value="ALL">Todos los bimestres (I - IV)</option>
+                            <option value="1">I Bimestre</option>
+                            <option value="2">II Bimestre</option>
+                            <option value="3">III Bimestre</option>
+                            <option value="4">IV Bimestre</option>
+                        </select>
                     </div>
                 </div>
 
@@ -364,8 +369,8 @@
         </main>
     </div>
 <script src="../js/app.js?v=apiestudiante20260512i"></script>
-<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
-    <script src="../js/calificaciones.js?v=apiestudiante20260512i"></script>
+<script src="../js/notificaciones.js?v=20261114s"></script>
+    <script src="../js/calificaciones.js?v=20261115c"></script>
 
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

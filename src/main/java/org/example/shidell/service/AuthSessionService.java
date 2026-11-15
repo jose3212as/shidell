@@ -3,6 +3,7 @@ package org.example.shidell.service;
 import org.example.shidell.model.entity.UserEntity;
 import org.example.shidell.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -16,9 +17,12 @@ import java.util.Optional;
 @Service
 public class AuthSessionService {
 
-    private static final String SECRET = "shidell-local-session-secret-v1";
+    private static final String DEFAULT_SECRET = "shidell-local-session-secret-v1";
     private static final long SESSION_SECONDS = 60L * 60L * 8L;
     private static final String HASH_PREFIX = "{SHA256}";
+
+    @Value("${shidell.session.secret:" + DEFAULT_SECRET + "}")
+    private String sessionSecret = DEFAULT_SECRET;
 
     @Autowired
     private UserRepository userRepository;
@@ -72,8 +76,9 @@ public class AuthSessionService {
     }
     private String sign(String payload) {
         try {
+            String keySecret = (sessionSecret == null || sessionSecret.isBlank()) ? DEFAULT_SECRET : sessionSecret;
             Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(SECRET.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            mac.init(new SecretKeySpec(keySecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
             return Base64.getUrlEncoder().withoutPadding().encodeToString(mac.doFinal(payload.getBytes(StandardCharsets.UTF_8)));
         } catch (Exception e) {
             throw new IllegalStateException("No se pudo firmar la sesión", e);

@@ -3,12 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261114d"></script>
     <title>Shidell - Tareas</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css?v=20261114s">
+    <style>
+        .docentes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(235px, 1fr));
+            gap: 12px;
+        }
+        .docente-chip-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px 14px;
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            cursor: pointer;
+            transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+        }
+        .docente-chip-card:hover {
+            border-color: #5eead4;
+            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.08);
+        }
+        .docente-chip-card.active {
+            border-color: #0d9488;
+            background: #f0fdfa;
+            box-shadow: 0 0 0 2px rgba(13, 148, 136, 0.18);
+        }
+        .docente-chip-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .docente-chip-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .docente-chip-info {
+            min-width: 0;
+            flex: 1;
+        }
+        .docente-chip-curso {
+            font-size: 12px;
+            font-weight: 700;
+            color: #64748b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .docente-chip-nombre {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .docente-chip-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-top: 1px dashed #e2e8f0;
+            padding-top: 8px;
+        }
+        .docente-task-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+        }
+        .docente-msg-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 700;
+            text-decoration: none;
+            background: #f0fdfa;
+            color: #0f766e;
+            border: 1px solid #99f6e4;
+            flex-shrink: 0;
+        }
+        .docente-msg-btn:hover {
+            background: #ccfbf1;
+        }
+        .tareas-controls-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .prof-select {
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            background: #ffffff;
+            max-width: 270px;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .hijo-selector {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+            .docentes-grid {
+                grid-template-columns: 1fr;
+            }
+            .prof-select {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="dashboard">
@@ -70,17 +196,42 @@
                         <p id="hijo-info"></p>
                     </div>
                 </div>
+                <div class="hijo-switch" id="hijo-switch-wrap" style="display:none;">
+                    <div id="hijo-selector-list" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+                </div>
+            </div>
+
+            <!-- Profesores que corresponden al alumno -->
+            <div class="main-panel" id="panel-docentes-tareas">
+                <div class="panel-top" style="flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+                    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <h3 class="panel-title" id="docentes-panel-titulo"><i class="ph ph-chalkboard-teacher"></i> Profesores que corresponden</h3>
+                        <span class="item-badge bg-teal-light" id="docentes-count">0 cursos</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        <span style="font-size:12.5px; color:#64748b;">Haz clic en un docente para filtrar sus tareas</span>
+                        <button type="button" id="btn-limpiar-prof" onclick="seleccionarProfesor('')" class="item-badge bg-teal-light" style="display:none; cursor:pointer; border:1px solid rgba(13,148,136,0.28);">Ver todos</button>
+                    </div>
+                </div>
+                <div class="docentes-grid" id="docentes-grid">
+                    <p style="color:#94a3b8; font-size:13.5px; margin:0;">Cargando profesores asignados...</p>
+                </div>
             </div>
 
             <!-- Panel de tareas completo -->
             <div class="main-panel">
-                <div class="panel-top">
+                <div class="panel-top" style="flex-wrap:wrap; gap:12px;">
                     <h3 class="panel-title"><i class="ph ph-clipboard-text"></i> Todas las tareas</h3>
-                    <div style="display:flex; gap:8px;" id="filtros-tareas">
-                        <button onclick="filtrarTareas('todas')" class="item-badge bg-teal-light" style="cursor:pointer; border:none;" id="f-todas">Todas</button>
-                        <button onclick="filtrarTareas('pendiente')" class="item-badge bg-yellow-light" style="cursor:pointer; border:none;" id="f-pendiente">Pendientes</button>
-                        <button onclick="filtrarTareas('entregada')" class="item-badge bg-green-light" style="cursor:pointer; border:none;" id="f-entregada">Entregadas</button>
-                        <button onclick="filtrarTareas('vencida')" class="item-badge bg-red-light" style="cursor:pointer; border:none;" id="f-vencida">Vencidas</button>
+                    <div class="tareas-controls-bar">
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;" id="filtros-tareas">
+                            <button onclick="filtrarTareas('todas')" class="item-badge bg-teal-light" style="cursor:pointer; border:1px solid rgba(13,148,136,0.28);" id="f-todas">Todas</button>
+                            <button onclick="filtrarTareas('pendiente')" class="item-badge bg-yellow-light" style="cursor:pointer; border:1px solid transparent;" id="f-pendiente">Pendientes</button>
+                            <button onclick="filtrarTareas('entregada')" class="item-badge bg-green-light" style="cursor:pointer; border:1px solid transparent;" id="f-entregada">Entregadas</button>
+                            <button onclick="filtrarTareas('vencida')" class="item-badge bg-red-light" style="cursor:pointer; border:1px solid transparent;" id="f-vencida">Vencidas</button>
+                        </div>
+                        <select id="filtro-profesor" class="prof-select" aria-label="Filtrar tareas por profesor" onchange="seleccionarProfesor(this.value)">
+                            <option value="">Todos los profesores</option>
+                        </select>
                     </div>
                 </div>
                 <div class="panel-list" id="tareas-full">
@@ -90,65 +241,414 @@
         </div>
     </main>
 </div>
-<script src="../js/app.js"></script>
+<script src="../js/app.js?v=20261114r"></script>
 <script>
 let tareasData = [];
 let entregasData = [];
+let cursosDetalleData = [];
+let cursoActivoPorNombre = new Map();
+let filtroEstadoActivo = 'todas';
+let filtroProfesorKey = '';
+
+const COLORES_PERMITIDOS = new Set(['blue', 'purple', 'green', 'red', 'orange', 'teal', 'yellow']);
+
+function esc(val) {
+    return String(val ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function safeUploadUrl(url) {
+    const raw = String(url || '').trim();
+    if (!raw) return '';
+    if (raw.startsWith('/uploads/') || raw.startsWith('http://') || raw.startsWith('https://')) return raw;
+    return '';
+}
+
+function safeColorToken(c) {
+    const token = String(c || '').trim().toLowerCase();
+    return COLORES_PERMITIDOS.has(token) ? token : 'teal';
+}
+
+function normalizarTexto(val) {
+    return String(val || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+function formatearNombreDocente(rawOrUser) {
+    let raw = '';
+    if (rawOrUser && typeof rawOrUser === 'object') {
+        raw = [rawOrUser.nombres, rawOrUser.apellidos]
+            .map(s => String(s || '').trim())
+            .filter(Boolean)
+            .join(' ');
+    } else {
+        raw = String(rawOrUser || '').trim();
+    }
+    raw = raw.replace(/\s+/g, ' ').trim();
+    if (!raw || normalizarTexto(raw) === 'por asignar' || normalizarTexto(raw) === 'sin profesor') {
+        return 'Docente por asignar';
+    }
+    raw = raw.replace(/^(prof\.?\s*)+/i, 'Prof. ');
+    if (!/^(prof|doc|lic|ing|mg|dr)\.?\s/i.test(raw)) {
+        raw = `Prof. ${raw}`;
+    }
+    return raw;
+}
+
+function construirProfKey(profId, profNombre) {
+    if (profId) return `id:${profId}`;
+    const norm = normalizarTexto(profNombre);
+    return norm && norm !== 'docente por asignar' ? `name:${norm}` : '';
+}
+
+function resolverDocenteDeTarea(t) {
+    const subjKey = normalizarTexto(t?.curso?.nombre);
+    const cursoActivo = subjKey ? cursoActivoPorNombre.get(subjKey) : null;
+    const rawProf = t?.curso?.profesor;
+    const rawNombre = rawProf ? formatearNombreDocente(rawProf) : '';
+    const rawId = rawProf?.id || null;
+    const esArchivado = String(t?.curso?.turno || '').toUpperCase() === 'ARCHIVADO';
+
+    if ((esArchivado || !rawNombre || rawNombre === 'Docente por asignar') && cursoActivo && cursoActivo.profNombre !== 'Docente por asignar') {
+        return {
+            profNombre: cursoActivo.profNombre,
+            profId: cursoActivo.docenteId,
+            profKey: cursoActivo.profKey,
+            icono: t?.curso?.icono || cursoActivo.icono || 'ph-clipboard-text',
+            color: safeColorToken(t?.curso?.color || cursoActivo.color)
+        };
+    }
+
+    const finalNombre = rawNombre || cursoActivo?.profNombre || 'Docente por asignar';
+    const finalId = rawId || cursoActivo?.docenteId || null;
+    return {
+        profNombre: finalNombre,
+        profId: finalId,
+        profKey: construirProfKey(finalId, finalNombre),
+        icono: t?.curso?.icono || cursoActivo?.icono || 'ph-clipboard-text',
+        color: safeColorToken(t?.curso?.color || cursoActivo?.color)
+    };
+}
+
+function parseFechaLocal(iso) {
+    if (!iso) return null;
+    const raw = String(iso).trim();
+    const base = raw.length === 10 ? `${raw}T00:00:00` : raw;
+    const d = new Date(base);
+    return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function fmtFechaHora(iso) {
+    const d = parseFechaLocal(iso);
+    if (!d) return '';
+    return d.toLocaleString('es-PE', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('hijo-cargado', async (e) => {
         const hijo = e.detail;
         if (!hijo.nivel || !hijo.grado || !hijo.seccion) return;
+        filtroEstadoActivo = 'todas';
+        filtroProfesorKey = '';
+
+        const tituloPanel = document.getElementById('docentes-panel-titulo');
+        if (tituloPanel) {
+            const nombreHijo = String(hijo.nombres || '').trim().split(/\s+/)[0] || '';
+            tituloPanel.innerHTML = `<i class="ph ph-chalkboard-teacher"></i> Profesores que corresponden${nombreHijo ? ` a ${esc(nombreHijo)}` : ''}`;
+        }
+
         try {
-            const [rT, rE] = await Promise.all([
-                fetch(`/api/tareas/seccion?nivel=${hijo.nivel}&grado=${hijo.grado}&seccion=${hijo.seccion}`),
-                fetch(`/api/entregas/usuario/${hijo.id}`)
+            const params = new URLSearchParams({
+                nivel: hijo.nivel,
+                grado: hijo.grado,
+                seccion: hijo.seccion
+            });
+            if (hijo.turno) params.set('turno', hijo.turno);
+            const [rT, rE, rC] = await Promise.all([
+                fetch(`/api/tareas/seccion?${params.toString()}`),
+                fetch(`/api/entregas/usuario/${hijo.id}`),
+                fetch(`/api/cursos/estudiante/${hijo.id}/detalle`)
             ]);
             tareasData   = rT.ok ? await rT.json() : [];
             entregasData = rE.ok ? await rE.json() : [];
+            const detallePayload = rC.ok ? await rC.json() : null;
+            cursosDetalleData = Array.isArray(detallePayload?.cursos) ? detallePayload.cursos : [];
+
+            construirIndiceDocentes();
+            renderDocentesGrid();
+            poblarSelectorProfesores();
             filtrarTareas('todas');
-        } catch(e) { console.error(e); }
+        } catch(err) { console.error(err); }
     });
 });
 
+function construirIndiceDocentes() {
+    cursoActivoPorNombre = new Map();
+
+    cursosDetalleData.forEach(c => {
+        const nombreCurso = String(c?.nombre || '').trim();
+        const key = normalizarTexto(nombreCurso);
+        if (!key) return;
+        const profNombre = formatearNombreDocente(c?.profesor);
+        const docenteId = c?.docenteId || c?.docente?.id || null;
+        cursoActivoPorNombre.set(key, {
+            nombre: nombreCurso,
+            key,
+            icono: c?.icono || 'ph-book-open',
+            color: safeColorToken(c?.color),
+            profNombre,
+            docenteId,
+            profKey: construirProfKey(docenteId, profNombre)
+        });
+    });
+
+    tareasData.forEach(t => {
+        const nombreCurso = String(t?.curso?.nombre || '').trim();
+        const key = normalizarTexto(nombreCurso);
+        if (!key || cursoActivoPorNombre.has(key)) return;
+        const profNombre = formatearNombreDocente(t?.curso?.profesor);
+        const docenteId = t?.curso?.profesor?.id || null;
+        cursoActivoPorNombre.set(key, {
+            nombre: nombreCurso,
+            key,
+            icono: t?.curso?.icono || 'ph-book-open',
+            color: safeColorToken(t?.curso?.color),
+            profNombre,
+            docenteId,
+            profKey: construirProfKey(docenteId, profNombre)
+        });
+    });
+}
+
+function obtenerTarjetasDocentes() {
+    const cards = Array.from(cursoActivoPorNombre.values());
+    const conteos = new Map();
+    tareasData.forEach(t => {
+        const subjKey = normalizarTexto(t?.curso?.nombre);
+        if (subjKey) {
+            conteos.set(subjKey, (conteos.get(subjKey) || 0) + 1);
+        }
+    });
+    return cards.map(card => ({
+        ...card,
+        totalTareas: conteos.get(card.key) || 0
+    }));
+}
+
+function renderDocentesGrid() {
+    const grid = document.getElementById('docentes-grid');
+    const countBadge = document.getElementById('docentes-count');
+    const limpiarBtn = document.getElementById('btn-limpiar-prof');
+    if (!grid) return;
+
+    const cards = obtenerTarjetasDocentes();
+    if (countBadge) {
+        countBadge.textContent = `${cards.length} ${cards.length === 1 ? 'curso' : 'cursos'}`;
+    }
+    if (limpiarBtn) {
+        limpiarBtn.style.display = filtroProfesorKey ? 'inline-flex' : 'none';
+    }
+
+    if (cards.length === 0) {
+        grid.innerHTML = '<p style="color:#94a3b8; font-size:13.5px; margin:0;">No hay profesores asignados registrados para esta sección.</p>';
+        return;
+    }
+
+    grid.innerHTML = cards.map(card => {
+        const isSelected = Boolean(filtroProfesorKey && card.profKey === filtroProfesorKey);
+        const tareasLbl = card.totalTareas === 1 ? '1 tarea' : `${card.totalTareas} tareas`;
+        const canSelect = Boolean(card.profKey);
+        const onClickAttr = canSelect
+            ? `onclick="seleccionarProfesor('${esc(card.profKey)}', true)"`
+            : '';
+        const msgBtn = card.docenteId
+            ? `<a href="mensajes.html?chatId=${encodeURIComponent(card.docenteId)}" class="docente-msg-btn" onclick="event.stopPropagation()"><i class="ph ph-chat-circle-dots"></i> Mensaje</a>`
+            : '';
+
+        return `
+            <div class="docente-chip-card${isSelected ? ' active' : ''}" ${onClickAttr} title="${canSelect ? `Filtrar tareas de ${esc(card.profNombre)}` : ''}">
+                <div class="docente-chip-top">
+                    <div class="docente-chip-icon bg-${card.color}-light">
+                        <i class="ph-fill ${esc(card.icono)}"></i>
+                    </div>
+                    <div class="docente-chip-info">
+                        <div class="docente-chip-curso">${esc(card.nombre)}</div>
+                        <div class="docente-chip-nombre">${esc(card.profNombre)}</div>
+                    </div>
+                </div>
+                <div class="docente-chip-foot">
+                    <span class="docente-task-count">${esc(tareasLbl)}</span>
+                    ${msgBtn}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function poblarSelectorProfesores() {
+    const select = document.getElementById('filtro-profesor');
+    if (!select) return;
+
+    const cards = obtenerTarjetasDocentes();
+    const porKey = new Map();
+    const nombresConteo = new Map();
+
+    cards.forEach(card => {
+        if (!card.profKey) return;
+        const normName = normalizarTexto(card.profNombre);
+        if (!porKey.has(card.profKey)) {
+            porKey.set(card.profKey, {
+                profKey: card.profKey,
+                profNombre: card.profNombre,
+                normName,
+                cursos: [card.nombre]
+            });
+            nombresConteo.set(normName, (nombresConteo.get(normName) || 0) + 1);
+        } else {
+            porKey.get(card.profKey).cursos.push(card.nombre);
+        }
+    });
+
+    select.innerHTML = '<option value="">Todos los profesores</option>';
+    Array.from(porKey.values())
+        .sort((a, b) => a.profNombre.localeCompare(b.profNombre, 'es'))
+        .forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.profKey;
+            const hayHomónimos = (nombresConteo.get(item.normName) || 0) > 1;
+            const sufijo = hayHomónimos && item.cursos.length === 1
+                ? ` · ${item.cursos[0]}`
+                : (item.cursos.length > 1 ? ` (${item.cursos.length} cursos)` : ` · ${item.cursos[0]}`);
+            opt.textContent = `${item.profNombre}${sufijo}`;
+            select.appendChild(opt);
+        });
+    select.value = filtroProfesorKey;
+}
+
+function seleccionarProfesor(profKey, toggleOnRepeat = false) {
+    const nuevo = (toggleOnRepeat && profKey && filtroProfesorKey === profKey) ? '' : String(profKey || '');
+    filtroProfesorKey = nuevo;
+    const select = document.getElementById('filtro-profesor');
+    if (select) select.value = filtroProfesorKey;
+    renderDocentesGrid();
+    filtrarTareas(filtroEstadoActivo);
+}
+
 function filtrarTareas(filtro) {
+    filtroEstadoActivo = filtro || 'todas';
     const hoy = new Date(); hoy.setHours(0,0,0,0);
     const lista = tareasData.map(t => {
         const entregada = entregasData.find(e => e.tarea?.id === t.id);
-        const vence = new Date(t.fechaVencimiento); vence.setHours(0,0,0,0);
-        const estado = entregada ? 'entregada' : (hoy > vence ? 'vencida' : 'pendiente');
-        return { ...t, estado };
+        const vence = parseFechaLocal(t.fechaVencimiento);
+        if (vence) vence.setHours(0,0,0,0);
+        const estadoFiltro = entregada ? 'entregada' : (vence && hoy > vence ? 'vencida' : 'pendiente');
+        const docenteInfo = resolverDocenteDeTarea(t);
+        return { ...t, estado: estadoFiltro, entregaObj: entregada || null, docenteInfo };
     });
 
-    const filtradas = filtro === 'todas' ? lista : lista.filter(t => t.estado === filtro);
+    const listaPorDocente = filtroProfesorKey
+        ? lista.filter(t => t.docenteInfo.profKey === filtroProfesorKey)
+        : lista;
+
+    const counts = {
+        todas: listaPorDocente.length,
+        pendiente: listaPorDocente.filter(x => x.estado === 'pendiente').length,
+        entregada: listaPorDocente.filter(x => x.estado === 'entregada').length,
+        vencida: listaPorDocente.filter(x => x.estado === 'vencida').length
+    };
+    const labels = {
+        todas: `Todas (${counts.todas})`,
+        pendiente: `Pendientes (${counts.pendiente})`,
+        entregada: `Entregadas (${counts.entregada})`,
+        vencida: `Vencidas (${counts.vencida})`
+    };
+    Object.keys(labels).forEach(k => {
+        const btn = document.getElementById(`f-${k}`);
+        if (!btn) return;
+        btn.textContent = labels[k];
+        btn.style.borderColor = k === filtroEstadoActivo ? '#0d9488' : 'transparent';
+        btn.style.boxShadow = k === filtroEstadoActivo ? '0 0 0 2px rgba(13,148,136,0.18)' : 'none';
+    });
+
+    const filtradas = filtroEstadoActivo === 'todas'
+        ? listaPorDocente
+        : listaPorDocente.filter(t => t.estado === filtroEstadoActivo);
     const container = document.getElementById('tareas-full');
     container.innerHTML = '';
 
     if (filtradas.length === 0) {
-        container.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:20px;">No hay tareas en esta categoría.</p>';
+        container.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:20px;">No hay tareas registradas con este filtro.</p>';
         return;
     }
 
     filtradas.forEach(t => {
         const priCol = t.prioridad === 'Alta' ? 'red' : t.prioridad === 'Media' ? 'yellow' : 'green';
-        const stCol  = t.estado === 'entregada' ? 'green' : t.estado === 'vencida' ? 'red' : 'yellow';
-        const stLbl  = t.estado === 'entregada' ? 'Entregada' : t.estado === 'vencida' ? 'Vencida' : 'Pendiente';
-        const icon   = t.curso?.icono || 'ph-clipboard-text';
-        const color  = t.curso?.color || 'blue';
+        const esTarde = t.entregaObj?.estado === 'ENTREGADO_TARDE';
+        const stCol  = t.estado === 'entregada' ? (esTarde ? 'yellow' : 'green') : t.estado === 'vencida' ? 'red' : 'yellow';
+        const stLbl  = t.estado === 'entregada'
+            ? (t.entregaObj?.nota != null
+                ? `Calificada (${Number(t.entregaObj.nota).toFixed(1)}/20)`
+                : (esTarde ? 'Entregado con retraso' : 'Entregada'))
+            : t.estado === 'vencida' ? 'Vencida' : 'Pendiente';
+        const icon   = esc(t.docenteInfo.icono || 'ph-clipboard-text');
+        const color  = t.docenteInfo.color || 'teal';
+        const profNombre = t.docenteInfo.profNombre;
+        const profId = t.docenteInfo.profId;
+        const guiaUrl = safeUploadUrl(t.pdfUrl);
+        const entregaUrl = safeUploadUrl(t.entregaObj?.archivoUrl);
+        const fechaEntregaTxt = t.entregaObj?.fechaEntrega ? fmtFechaHora(t.entregaObj.fechaEntrega) : '';
+
+        const detallesExtra = [];
+        if (t.descripcion) {
+            detallesExtra.push(`<p style="font-size:13px; color:#475569; margin:6px 0 0;">${esc(t.descripcion)}</p>`);
+        }
+        if (t.entregaObj?.comentarioEstudiante) {
+            detallesExtra.push(`<p style="font-size:12.5px; color:#0f766e; margin:5px 0 0;"><i class="ph ph-chat-text"></i> Nota del alumno: "${esc(t.entregaObj.comentarioEstudiante)}"</p>`);
+        }
+        if (t.entregaObj?.comentarioProfesor) {
+            detallesExtra.push(`<p style="font-size:12.5px; color:#1e40af; margin:4px 0 0; font-weight:600;"><i class="ph ph-chalkboard-teacher"></i> Retroalimentación docente: ${esc(t.entregaObj.comentarioProfesor)}</p>`);
+        }
+
+        const enlaces = [];
+        if (guiaUrl) {
+            enlaces.push(`<a href="${esc(guiaUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; background:#f1f5f9; color:#334155; border:1px solid #cbd5e1;"><i class="ph ph-file-pdf"></i> Guía PDF</a>`);
+        }
+        if (entregaUrl) {
+            enlaces.push(`<a href="${esc(entregaUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0;"><i class="ph ph-file-pdf"></i> Ver PDF enviado${fechaEntregaTxt ? ` · ${esc(fechaEntregaTxt)}` : ''}</a>`);
+        }
+        if (profId) {
+            enlaces.push(`<a href="mensajes.html?chatId=${encodeURIComponent(profId)}" style="display:inline-flex; align-items:center; gap:5px; padding:5px 10px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; background:#f0fdfa; color:#0f766e; border:1px solid #99f6e4;"><i class="ph ph-chat-circle-dots"></i> Consultar a ${esc(profNombre)}</a>`);
+        }
+
         const div = document.createElement('div');
         div.className = 'panel-item';
+        div.style.alignItems = 'flex-start';
         div.innerHTML = `
             <div class="item-icon-box bg-${color}-light"><i class="ph-fill ${icon}"></i></div>
-            <div class="item-main">
-                <h4 class="item-title">${t.titulo}</h4>
-                <div class="item-subtitle">
-                    <i class="ph ph-book-open"></i> ${t.curso?.nombre || ''}
+            <div class="item-main" style="min-width:0;">
+                <h4 class="item-title">${esc(t.titulo)}</h4>
+                <div class="item-subtitle" style="flex-wrap:wrap; gap:6px 10px;">
+                    <span><i class="ph ph-book-open"></i> ${esc(t.curso?.nombre || '')}</span>
                     <span>·</span>
-                    <i class="ph ph-calendar-blank"></i> Vence: ${t.fechaVencimiento}
+                    <span style="display:inline-flex; align-items:center; gap:4px; color:#0f766e; font-weight:700;"><i class="ph ph-chalkboard-teacher"></i> ${esc(profNombre)}</span>
+                    <span>·</span>
+                    <span><i class="ph ph-calendar-blank"></i> Vence: ${esc(t.fechaVencimiento || '—')}</span>
                 </div>
+                ${detallesExtra.join('')}
+                ${enlaces.length ? `<div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">${enlaces.join('')}</div>` : ''}
             </div>
-            <span class="item-badge bg-${priCol}-light">${t.prioridad}</span>
-            <span class="item-badge bg-${stCol}-light" style="margin-left:8px;">${stLbl}</span>
+            <div style="display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; flex-shrink:0;">
+                <span class="item-badge bg-${priCol}-light">${esc(t.prioridad || 'Media')}</span>
+                <span class="item-badge bg-${stCol}-light">${esc(stLbl)}</span>
+            </div>
         `;
         container.appendChild(div);
     });

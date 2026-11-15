@@ -3,12 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261114d"></script>
     <title>Shidell - Registro</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="../plataformaestudiante/css/styles.css">
+    <link rel="stylesheet" href="/vendor/shidell-modern-system.css?v=20261114m3">
+    <link rel="stylesheet" href="../plataformaestudiante/css/styles.css?v=20261114m3">
+    <link rel="stylesheet" href="auth-modern.css?v=20261114m3">
 </head>
 <body>
     <div class="auth-page">
@@ -23,19 +26,41 @@
                 <form class="auth-form" id="registerForm">
                     <div class="form-group">
                         <label for="nombres">Nombres</label>
-                        <div class="input-wrapper"><i class="ph ph-user"></i><input id="nombres" required></div>
+                        <div class="input-wrapper">
+                            <i class="ph ph-user"></i>
+                            <input id="nombres" required>
+                            <span class="input-focus-beam"></span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="apellidos">Apellidos</label>
-                        <div class="input-wrapper"><i class="ph ph-identification-card"></i><input id="apellidos" required></div>
+                        <div class="input-wrapper">
+                            <i class="ph ph-identification-card"></i>
+                            <input id="apellidos" required>
+                            <span class="input-focus-beam"></span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="email">Correo electrónico</label>
-                        <div class="input-wrapper"><i class="ph ph-envelope"></i><input type="email" id="email" required></div>
+                        <div class="input-wrapper">
+                            <i class="ph ph-envelope"></i>
+                            <input type="email" id="email" class="has-trailing-control" required>
+                            <span id="email-valid-badge" class="input-valid-badge" aria-hidden="true">
+                                <i class="ph-fill ph-check-circle"></i>
+                            </span>
+                            <span class="input-focus-beam"></span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="password">Contraseña</label>
-                        <div class="input-wrapper"><i class="ph ph-lock"></i><input type="password" id="password" minlength="6" required></div>
+                        <div class="input-wrapper">
+                            <i class="ph ph-lock"></i>
+                            <input type="password" id="password" class="has-trailing-control" minlength="6" required>
+                            <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Mostrar u ocultar contraseña" aria-pressed="false">
+                                <i class="ph ph-eye"></i>
+                            </button>
+                            <span class="input-focus-beam"></span>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="rol">Rol</label>
@@ -47,6 +72,7 @@
                                 <option value="DOCENTE">Docente</option>
                                 <option value="PADRE">Padre de familia</option>
                             </select>
+                            <span class="input-focus-beam"></span>
                         </div>
                     </div>
 
@@ -62,6 +88,7 @@
         <div class="auth-right">
             <div class="decor-circle circle-1"></div>
             <div class="decor-circle circle-2"></div>
+            <canvas id="auth-right-canvas" aria-hidden="true"></canvas>
             <div class="auth-right-content">
                 <h2>Tu portal académico empieza aquí</h2>
                 <p>Accede a cursos, tareas, calificaciones y comunicación interna desde un solo espacio.</p>
@@ -72,37 +99,12 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('registerForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const payload = {
-                nombres: document.getElementById('nombres').value.trim(),
-                apellidos: document.getElementById('apellidos').value.trim(),
-                email: document.getElementById('email').value.trim(),
-                password: document.getElementById('password').value,
-                rol: document.getElementById('rol').value
-            };
-
-            try {
-                const res = await fetch('/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.error || 'No se pudo registrar la cuenta');
-                if (data.rol === 'DOCENTE') location.href = '../plataformadocente/index.html';
-                else if (data.rol === 'PADRE') location.href = '../plataformapadres/html/portalpadres.html';
-                else location.href = '../plataformaestudiante/html/portalestudiante.html';
-            } catch (error) {
-                AppAlerts.mostrarError('Error en el registro', error.message);
-            }
-        });
-    </script>
-
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/vendor/alertas.js"></script>
+    <script src="/vendor/mobile-shell.js?v=20261114m3"></script>
+    <script src="/vendor/shidell-motion.js?v=20261114m3"></script>
+    <script src="auth-motion.js?v=20261114m4"></script>
 
 </body>
 </html>

@@ -7,8 +7,9 @@ const API_BASE = (window.location.host === '' || !window.location.host.includes(
 export const API = {
     async fetch(endpoint, options = {}) {
         const token = Auth.getToken();
+        const isFormData = options.body instanceof FormData;
         const headers = {
-            'Content-Type': 'application/json',
+            ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
             ...options.headers
         };
 

@@ -4,6 +4,7 @@ import org.example.shidell.model.entity.Entrega;
 import org.example.shidell.model.entity.Tarea;
 import org.example.shidell.model.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,7 @@ public interface EntregaRepository extends JpaRepository<Entrega, Long> {
     List<Entrega> findByEstudiante(UserEntity estudiante);
     List<Entrega> findByTarea(Tarea tarea);
     Optional<Entrega> findByTareaAndEstudiante(Tarea tarea, UserEntity estudiante);
+
+    @Query("SELECT DISTINCT e.tarea.id FROM Entrega e WHERE e.tarea IS NOT NULL")
+    List<Long> findDistinctTareaIdsWithEntregas();
 }

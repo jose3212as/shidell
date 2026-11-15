@@ -105,12 +105,23 @@ function renderUsers() {
   tbody.innerHTML = list.map(u => {
     const fullName = `${escapeHtml(u.nombres||'')} ${escapeHtml(u.apellidos||'')}`.trim();
 
-    // Docentes: no tienen sección/turno fija — enseñan en múltiples salones
+    // Docentes: aula fija (Primaria) o múltiples salones/cursos (Secundaria y especialidades)
     let seccionCell, turnoCell, infoCell;
     if (u.rol === 'DOCENTE') {
-      seccionCell = '<span class="text-muted text-xs">Múltiple</span>';
-      turnoCell   = '<span class="text-muted text-xs">Múltiple</span>';
-      infoCell    = buildCursosDocente(u.id);
+      const sinAsignar = !u.nivel || u.nivel === 'POR ASIGNAR';
+      const esAulaUnica = !sinAsignar && u.grado && u.seccion
+        && u.grado !== 'Múltiple' && u.seccion !== 'Múltiple';
+      if (sinAsignar) {
+        seccionCell = '<span class="text-muted text-xs">Por asignar</span>';
+        turnoCell   = '<span class="text-muted text-xs">—</span>';
+      } else if (esAulaUnica) {
+        seccionCell = `<span class="text-sm">${escapeHtml(u.nivel)} ${escapeHtml(u.grado)}°${escapeHtml(u.seccion)}</span>`;
+        turnoCell   = `<span class="text-sm">${escapeHtml(u.turno && u.turno !== 'POR ASIGNAR' ? u.turno : '—')}</span>`;
+      } else {
+        seccionCell = `<span class="text-muted text-xs">${escapeHtml(u.nivel)} · Múltiple</span>`;
+        turnoCell   = `<span class="text-sm">${escapeHtml(u.turno && u.turno !== 'POR ASIGNAR' ? u.turno : 'Múltiple')}</span>`;
+      }
+      infoCell = buildCursosDocente(u.id);
     } else {
       seccionCell = (u.nivel && u.grado && u.seccion)
         ? `<span class="text-sm">${u.nivel} ${u.grado}°${u.seccion}</span>`

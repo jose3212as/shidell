@@ -1,0 +1,1010 @@
+/* ==========================================================================
+   SHIDELL — SISTEMA GLOBAL DE TIPOGRAFÍA MODERNA, TRANSICIONES Y NOTIFICACIONES
+   Compartido en Landing, Auth, Portal Docente, Estudiante, Padres y Admin.
+   - Fuentes: Bricolage Grotesque (Display) + Plus Jakarta Sans (UI) + JetBrains Mono
+   - Transiciones: Expo-out / Spring + View Transitions API (respetando reduced-motion)
+   - Notificaciones: Popover anclado al viewport con pestañas, jerarquía editorial y modo día/noche
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --font-display: 'Bricolage Grotesque', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    /* Curvas de movimiento modernas */
+    --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-subtle: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* Tokens del Popover de Notificaciones (Claro por defecto) */
+    --np-bg: rgba(255, 255, 255, 0.96);
+    --np-header-bg: rgba(248, 250, 252, 0.72);
+    --np-border: rgba(15, 23, 42, 0.11);
+    --np-divider: rgba(15, 23, 42, 0.075);
+    --np-ink: #0F172A;
+    --np-ink-soft: #475569;
+    --np-muted: #64748B;
+    --np-hover: rgba(15, 23, 42, 0.038);
+    --np-unread-bg: rgba(20, 66, 114, 0.055);
+    --np-unread-hover: rgba(20, 66, 114, 0.09);
+    --np-icon-bg: rgba(15, 23, 42, 0.055);
+    --np-icon-ink: #475569;
+    --np-accent: var(--primary, #144272);
+    --np-accent-ink: #FFFFFF;
+    --np-accent-soft: rgba(20, 66, 114, 0.10);
+    --np-scroll: rgba(15, 23, 42, 0.16);
+    --np-shadow: 0 24px 64px -12px rgba(15, 23, 42, 0.22), 0 8px 20px -6px rgba(15, 23, 42, 0.08);
+}
+
+:root[data-theme="dark"] {
+    --np-bg: rgba(18, 22, 30, 0.96);
+    --np-header-bg: rgba(24, 29, 39, 0.85);
+    --np-border: rgba(255, 255, 255, 0.11);
+    --np-divider: rgba(255, 255, 255, 0.075);
+    --np-ink: #EDF1F7;
+    --np-ink-soft: #A8B3C5;
+    --np-muted: #768295;
+    --np-hover: rgba(255, 255, 255, 0.04);
+    --np-unread-bg: rgba(216, 162, 74, 0.075);
+    --np-unread-hover: rgba(216, 162, 74, 0.115);
+    --np-icon-bg: rgba(255, 255, 255, 0.06);
+    --np-icon-ink: #A8B3C5;
+    --np-accent: #D8A24A;
+    --np-accent-ink: #0B0D11;
+    --np-accent-soft: rgba(216, 162, 74, 0.15);
+    --np-scroll: rgba(255, 255, 255, 0.16);
+    --np-shadow: 0 28px 72px -12px rgba(0, 0, 0, 0.72), 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+:root[data-theme="light"] {
+    --np-bg: rgba(255, 255, 255, 0.97);
+    --np-header-bg: rgba(248, 249, 251, 0.88);
+    --np-border: rgba(11, 13, 17, 0.11);
+    --np-divider: rgba(11, 13, 17, 0.075);
+    --np-ink: #0B0D11;
+    --np-ink-soft: #475467;
+    --np-muted: #667085;
+    --np-hover: rgba(11, 13, 17, 0.035);
+    --np-unread-bg: rgba(17, 19, 24, 0.045);
+    --np-unread-hover: rgba(17, 19, 24, 0.075);
+    --np-icon-bg: rgba(11, 13, 17, 0.05);
+    --np-icon-ink: #344054;
+    --np-accent: #111318;
+    --np-accent-ink: #FFFFFF;
+    --np-accent-soft: rgba(17, 19, 24, 0.08);
+    --np-scroll: rgba(11, 13, 17, 0.16);
+    --np-shadow: 0 24px 56px -12px rgba(11, 13, 17, 0.18), 0 6px 18px -4px rgba(11, 13, 17, 0.06);
+}
+
+/* ==========================================================================
+   1. SISTEMA TIPOGRÁFICO MODERNO GLOBAL (sin romper iconos @phosphor-icons)
+   ========================================================================== */
+html, body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Mantener fuente moderna en UI sin sobreescribir familias de iconos .ph */
+body :where(
+    p, span, a, li, dt, dd, label, small, strong, em, th, td, div, section, article, aside, main, header, nav, button, input, select, textarea
+):not([class*="ph"]):not(.fa):not([class*="icon"]) {
+    font-family: inherit;
+}
+
+button, input, select, textarea {
+    font-family: var(--font-sans);
+}
+
+h1, h2, h3, h4,
+.greeting h1,
+.logo-text h2,
+.sidebar-logo-text h2,
+.portal-editorial-header h1,
+.hero-title,
+.auth-header h1,
+.auth-right-content h2,
+.page-header h1,
+.panel-title,
+.panel-header h2,
+.main-panel-header h2,
+.section-header h2,
+.content-header h2 {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+}
+
+code, kbd, pre, .font-mono,
+.notif-time, .notif-badge-pill {
+    font-family: var(--font-mono);
+}
+
+.stat-val,
+.kpi-value,
+.grade-badge,
+.notif-badge-pill,
+.notif-time,
+.badge {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================================
+   2. TRANSICIONES MODERNAS DE PÁGINAS, VISTAS Y TEMA
+   ========================================================================== */
+@view-transition {
+    navigation: auto;
+}
+
+@keyframes shidellVtOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-4px); }
+}
+
+@keyframes shidellVtIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+::view-transition-old(root) {
+    animation: shidellVtOut 190ms var(--ease-expo) both;
+}
+
+::view-transition-new(root) {
+    animation: shidellVtIn 300ms var(--ease-expo) both;
+}
+
+/* Transición radial elegante al cambiar Modo Día / Noche */
+html.shidell-theme-transition::view-transition-old(root),
+html.shidell-theme-transition::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+html.shidell-theme-transition::view-transition-new(root) {
+    animation: shidellThemeCircle 460ms var(--ease-expo) both;
+    z-index: 9999;
+}
+
+@keyframes shidellThemeCircle {
+    from {
+        clip-path: circle(0px at var(--vt-x, 82%) var(--vt-y, 44px));
+    }
+    to {
+        clip-path: circle(150vmax at var(--vt-x, 82%) var(--vt-y, 44px));
+    }
+}
+
+/* Animación de entrada de vistas SPA (#app-content) — sin transform residual en estado final */
+@keyframes shidellViewEnter {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.996);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@keyframes shidellStaggerIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+#app-content.spa-view-entering {
+    animation: shidellViewEnter 340ms var(--ease-expo) backwards;
+}
+
+#app-content.spa-view-entering .stat-item:nth-child(1),
+#app-content.spa-view-entering .fr-masthead,
+#app-content.spa-view-entering .tr-masthead,
+#app-content.spa-view-entering .mc-masthead,
+#app-content.spa-view-entering .ep-masthead {
+    animation: shidellStaggerIn 340ms var(--ease-expo) backwards;
+}
+
+#app-content.spa-view-entering .stat-item:nth-child(2),
+#app-content.spa-view-entering .panels-row > :first-child {
+    animation: shidellStaggerIn 360ms var(--ease-expo) 45ms backwards;
+}
+
+#app-content.spa-view-entering .stat-item:nth-child(3),
+#app-content.spa-view-entering .panels-row > :nth-child(2) {
+    animation: shidellStaggerIn 360ms var(--ease-expo) 85ms backwards;
+}
+
+#app-content.spa-view-entering .stat-item:nth-child(4) {
+    animation: shidellStaggerIn 360ms var(--ease-expo) 120ms backwards;
+}
+
+/* Entrada limpia para portales multipágina (Estudiante, Padres, Admin) */
+.dashboard > .main-wrapper > .content-area > *,
+.app-shell > .main-content > .page-content > * {
+    animation: shidellStaggerIn 340ms var(--ease-expo) backwards;
+}
+
+.dashboard > .main-wrapper > .content-area > *:nth-child(2),
+.app-shell > .main-content > .page-content > *:nth-child(2) {
+    animation-delay: 45ms;
+}
+
+.dashboard > .main-wrapper > .content-area > *:nth-child(3),
+.app-shell > .main-content > .page-content > *:nth-child(3) {
+    animation-delay: 85ms;
+}
+
+/* Micro-transiciones táctiles unificadas en navegación, botones, cards y modales */
+.nav-item,
+.nav-link {
+    transition:
+        background-color 220ms var(--ease-expo),
+        color 200ms var(--ease-expo),
+        border-color 220ms var(--ease-expo),
+        box-shadow 220ms var(--ease-expo),
+        transform 180ms var(--ease-expo);
+}
+
+.nav-item:hover,
+.nav-link:hover {
+    transform: translateX(3px);
+}
+
+.nav-item:active,
+.nav-link:active {
+    transform: scale(0.985);
+}
+
+.btn-primary,
+.btn-secondary,
+.btn-theme-toggle,
+.notification-btn,
+.auth-btn,
+.btn-primary-action,
+.btn-secondary-action,
+.nav-cta,
+.portal-row {
+    transition:
+        background-color 220ms var(--ease-expo),
+        border-color 220ms var(--ease-expo),
+        color 200ms var(--ease-expo),
+        box-shadow 240ms var(--ease-expo),
+        transform 180ms var(--ease-expo);
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.btn-theme-toggle:active,
+.notification-btn:active,
+.auth-btn:active {
+    transform: scale(0.975);
+}
+
+.stat-item,
+.course-card,
+.premium-card,
+.quick-btn,
+.course-mini-card,
+.message-card {
+    transition:
+        transform 240ms var(--ease-expo),
+        box-shadow 240ms var(--ease-expo),
+        border-color 220ms var(--ease-expo),
+        background-color 220ms var(--ease-expo);
+}
+
+.modal-overlay {
+    transition: opacity 240ms var(--ease-expo), visibility 240ms var(--ease-expo), backdrop-filter 240ms var(--ease-expo);
+}
+
+.modal-overlay.active {
+    backdrop-filter: blur(6px);
+}
+
+.modal-content {
+    transition: transform 300ms var(--ease-spring), opacity 240ms var(--ease-expo);
+    transform: translateY(14px) scale(0.98);
+}
+
+.modal-overlay.active .modal-content {
+    transform: translateY(0) scale(1);
+}
+
+.dropdown-menu,
+.account-dropdown {
+    transition:
+        opacity 220ms var(--ease-spring),
+        transform 240ms var(--ease-spring),
+        visibility 220ms var(--ease-spring);
+}
+
+/* ==========================================================================
+   3. VENTANA DE NOTIFICACIONES MODERNA (POPOVER UNIFICADO)
+   ========================================================================== */
+.notification-backdrop {
+    position: fixed;
+    inset: 0;
+    background: transparent;
+    z-index: 2550;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 220ms var(--ease-expo);
+}
+
+@media (max-width: 640px) {
+    .notification-backdrop {
+        background: rgba(5, 8, 14, 0.36);
+        backdrop-filter: blur(3px);
+    }
+}
+
+.notification-backdrop.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.notification-panel,
+.notif-panel {
+    position: fixed !important;
+    z-index: 2600 !important;
+    width: min(416px, calc(100vw - 24px)) !important;
+    max-width: calc(100vw - 24px) !important;
+    max-height: min(540px, calc(100dvh - 88px)) !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    background: var(--np-bg) !important;
+    color: var(--np-ink) !important;
+    border: 1px solid var(--np-border) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--np-shadow) !important;
+    backdrop-filter: blur(22px) saturate(145%);
+    -webkit-backdrop-filter: blur(22px) saturate(145%);
+    transform-origin: top right;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px) scale(0.975);
+    transition:
+        opacity 220ms var(--ease-spring),
+        transform 260ms var(--ease-spring),
+        visibility 220ms var(--ease-spring);
+}
+
+.notification-panel.visible,
+.notif-panel.visible {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: translateY(0) scale(1) !important;
+}
+
+.notif-panel.hidden {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    display: flex !important;
+    transform: translateY(-8px) scale(0.975) !important;
+}
+
+/* Cabecera editorial compacta */
+.np-head,
+.notification-panel-header,
+.notif-panel-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    padding: 15px 18px 13px !important;
+    margin: 0 !important;
+    background: var(--np-header-bg) !important;
+    border-bottom: 1px solid var(--np-divider) !important;
+    flex-shrink: 0;
+}
+
+.np-title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    min-width: 0;
+}
+
+.np-title-wrap h3,
+.notification-panel-header h3,
+.notif-panel-header h4 {
+    font-family: var(--font-display) !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em !important;
+    color: var(--np-ink) !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+}
+
+.notif-badge-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 0;
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    background: transparent;
+    color: var(--np-muted);
+    white-space: nowrap;
+}
+
+.notif-header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.np-action-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    width: auto !important;
+    height: 28px !important;
+    padding: 0 6px !important;
+    border-radius: 6px !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: var(--np-accent) !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: background-color 180ms var(--ease-expo), color 180ms var(--ease-expo), opacity 180ms var(--ease-expo) !important;
+}
+
+.np-action-pill:hover:not(:disabled) {
+    background: var(--np-hover) !important;
+    border-color: transparent !important;
+    color: var(--np-accent) !important;
+}
+
+.np-action-pill:disabled {
+    color: var(--np-muted) !important;
+    opacity: 0.45;
+    cursor: default;
+}
+
+.np-action-pill img.icon-img {
+    width: 14px !important;
+    height: 14px !important;
+    opacity: 0.85;
+}
+
+:root[data-theme="dark"] .np-action-pill img.icon-img {
+    filter: brightness(0) invert(0.92);
+}
+
+:root[data-theme="dark"] .notif-icon img.icon-img {
+    filter: brightness(0) invert(0.82);
+    opacity: 0.65;
+}
+
+.np-close-btn {
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    color: var(--np-muted) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 15px !important;
+    cursor: pointer !important;
+    transition: background-color 180ms var(--ease-expo), color 180ms var(--ease-expo) !important;
+}
+
+.np-close-btn:hover {
+    background: var(--np-hover) !important;
+    color: var(--np-ink) !important;
+}
+
+/* Barra de filtro (Todas / Sin leer) */
+.np-tabs {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--np-divider);
+    background: var(--np-header-bg);
+    flex-shrink: 0;
+}
+
+.np-tab {
+    position: relative;
+    padding: 9px 2px 10px;
+    border: 0;
+    background: transparent;
+    color: var(--np-muted);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 180ms var(--ease-expo);
+}
+
+.np-tab:hover {
+    color: var(--np-ink);
+}
+
+.np-tab.is-active {
+    color: var(--np-ink);
+}
+
+.np-tab.is-active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--np-accent);
+    border-radius: 2px 2px 0 0;
+}
+
+.np-tab-count {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    opacity: 0.78;
+}
+
+/* Lista limpia por líneas divisorias */
+.notification-panel-list,
+.notif-list {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-height: 390px !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+.notification-panel-list::-webkit-scrollbar,
+.notif-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.notification-panel-list::-webkit-scrollbar-thumb,
+.notif-list::-webkit-scrollbar-thumb {
+    background: var(--np-scroll) !important;
+    border-radius: 4px;
+}
+
+.notif-row,
+.notif-item {
+    position: relative !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 11px !important;
+    width: 100% !important;
+    padding: 13px 18px !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid var(--np-divider) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    transition: background-color 180ms var(--ease-expo) !important;
+}
+
+.notif-row:last-child,
+.notif-item:last-child {
+    border-bottom: 0 !important;
+}
+
+.notif-row:hover,
+.notif-item:hover {
+    background: var(--np-hover) !important;
+    transform: none !important;
+}
+
+.notif-row.unread,
+.notif-item.unread {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.notif-row.unread:hover,
+.notif-item.unread:hover {
+    background: var(--np-hover) !important;
+}
+
+/* Quitar punto flotante antiguo ::after que tapaba texto */
+.notif-row.unread::after {
+    display: none !important;
+    content: none !important;
+}
+
+.notif-icon {
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 0 !important;
+    border: 0 !important;
+    flex-shrink: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 17px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: var(--np-muted) !important;
+    margin-top: 2px;
+    transition: color 180ms var(--ease-expo), opacity 180ms var(--ease-expo);
+}
+
+.notif-icon img.icon-img {
+    width: 17px !important;
+    height: 17px !important;
+    opacity: 0.58;
+}
+
+.notif-row.unread .notif-icon,
+.notif-item.unread .notif-icon {
+    background: transparent !important;
+    color: var(--np-accent) !important;
+}
+
+.notif-row.unread .notif-icon img.icon-img {
+    filter: none;
+    opacity: 0.92;
+}
+
+:root[data-theme="dark"] .notif-row.unread .notif-icon img.icon-img {
+    filter: brightness(0) invert(1) !important;
+    opacity: 0.95 !important;
+}
+
+.notif-content,
+.notif-body {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+}
+
+.np-row-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.notif-content strong,
+.notif-title {
+    font-size: 13.5px !important;
+    font-weight: 500 !important;
+    color: var(--np-ink-soft) !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.notif-row.unread .notif-content strong,
+.notif-item.unread .notif-title {
+    font-weight: 650 !important;
+    color: var(--np-ink) !important;
+}
+
+.notif-content small,
+.notif-text {
+    font-size: 12.5px !important;
+    color: var(--np-ink-soft) !important;
+    line-height: 1.42 !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden !important;
+}
+
+.notif-row:not(.unread) .notif-content small,
+.notif-item:not(.unread) .notif-text {
+    color: var(--np-muted) !important;
+}
+
+.notif-content .time,
+.notif-content .notif-time,
+.notif-time {
+    font-family: var(--font-mono) !important;
+    font-size: 10.5px !important;
+    font-weight: 500 !important;
+    color: var(--np-muted) !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.np-unread-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 12px;
+    padding-top: 6px;
+    flex-shrink: 0;
+}
+
+.np-unread-dot {
+    width: 6.5px;
+    height: 6.5px;
+    border-radius: 50%;
+    background: var(--np-accent);
+    box-shadow: none;
+}
+
+/* Estado vacío editorial limpio */
+.notif-empty,
+.np-empty {
+    padding: 34px 22px !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 6px !important;
+    color: var(--np-muted) !important;
+}
+
+.np-empty-icon {
+    width: auto !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--np-muted) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px !important;
+    margin-bottom: 4px;
+    opacity: 0.72;
+}
+
+.np-empty-icon img.icon-img {
+    width: 24px !important;
+    height: 24px !important;
+    opacity: 0.65;
+}
+
+:root[data-theme="dark"] .np-empty-icon img.icon-img {
+    filter: brightness(0) invert(0.8);
+}
+
+.np-empty-title {
+    margin: 0;
+    font-family: var(--font-display) !important;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--np-ink);
+}
+
+.np-empty-copy,
+.notif-empty p {
+    margin: 0 !important;
+    font-size: 12.5px !important;
+    line-height: 1.45 !important;
+    color: var(--np-muted) !important;
+    max-width: 270px;
+}
+
+@media (max-width: 640px) {
+    .notification-panel,
+    .notif-panel {
+        left: 12px !important;
+        right: 12px !important;
+        width: auto !important;
+        max-width: calc(100vw - 24px) !important;
+        max-height: calc(100dvh - 140px) !important;
+        border-radius: 16px !important;
+        transform-origin: top center !important;
+    }
+    .notification-panel-list,
+    .notif-list {
+        max-height: calc(100dvh - 235px) !important;
+    }
+}
+
+/* ==========================================================================
+   4. TRANSICIÓN ENTRE PORTALES (HANDOFF CURTAIN), SPOTLIGHT Y RIPPLE TÁCTIL
+   ========================================================================== */
+.shidell-handoff-curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--hc-bg, #0B0D11);
+    color: var(--hc-ink, #F1F5F9);
+    pointer-events: all;
+    overflow: hidden;
+    will-change: clip-path, opacity;
+}
+
+.shidell-handoff-curtain .hc-mesh {
+    position: absolute;
+    inset: -20%;
+    background:
+        radial-gradient(600px circle at 25% 25%, color-mix(in srgb, var(--hc-accent, #D8A24A) 22%, transparent), transparent 65%),
+        radial-gradient(650px circle at 78% 72%, color-mix(in srgb, var(--hc-accent-2, #2563EB) 22%, transparent), transparent 65%);
+    filter: blur(40px);
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.shidell-handoff-curtain .hc-center {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px;
+    gap: 8px;
+}
+
+.shidell-handoff-curtain .hc-ring-wrap {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.shidell-handoff-curtain .hc-ring-svg {
+    transform: rotate(-90deg);
+}
+
+.shidell-handoff-curtain .hc-ring-track {
+    fill: none;
+    stroke: var(--hc-track, rgba(255, 255, 255, 0.18));
+    stroke-width: 3;
+}
+
+.shidell-handoff-curtain .hc-ring-progress {
+    fill: none;
+    stroke: var(--hc-accent, #D8A24A);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    stroke-dasharray: 214;
+    stroke-dashoffset: 170;
+    animation: shidellHandoffSpin 0.9s var(--ease-expo) infinite;
+}
+
+@keyframes shidellHandoffSpin {
+    0% { stroke-dashoffset: 185; transform: rotate(0deg); transform-origin: center; }
+    50% { stroke-dashoffset: 65; }
+    100% { stroke-dashoffset: 185; transform: rotate(360deg); transform-origin: center; }
+}
+
+.shidell-handoff-curtain .hc-core-dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--hc-accent, #D8A24A);
+    box-shadow: 0 0 24px var(--hc-accent, #D8A24A);
+    animation: shidellCorePulse 1s ease-in-out infinite;
+}
+
+@keyframes shidellCorePulse {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.25); opacity: 1; }
+}
+
+.shidell-handoff-curtain .hc-kicker {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--hc-accent, #D8A24A);
+}
+
+.shidell-handoff-curtain .hc-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--hc-ink, #F1F5F9);
+}
+
+.shidell-handoff-curtain .hc-sub {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--hc-sub, rgba(241, 245, 249, 0.82));
+}
+
+/* Ondas de clic táctil (Pointer Ripple) */
+.has-shidell-ripple {
+    overflow: hidden;
+}
+
+.shidell-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.52) 0%, rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
+    transform-origin: center;
+    will-change: transform, opacity;
+}
+
+/* Spotlight dinámico en tarjetas interactivas (usando ::after para preservar ::before de tarjetas) */
+:where(.stat-item, .course-card, .portal-pill-card, .premium-card, .course-mini-card, .ce-card) {
+    position: relative;
+}
+
+:where(.stat-item, .course-card, .portal-pill-card, .premium-card, .course-mini-card, .ce-card)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+        280px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(148, 163, 184, 0.11),
+        transparent 68%
+    );
+    transition: opacity 260ms var(--ease-expo);
+    z-index: 1;
+}
+
+:root[data-theme="dark"] :where(.stat-item, .course-card, .portal-pill-card, .premium-card, .course-mini-card, .ce-card)::after {
+    background: radial-gradient(
+        280px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(216, 162, 74, 0.095),
+        transparent 68%
+    );
+}
+
+:where(.stat-item, .course-card, .portal-pill-card, .premium-card, .course-mini-card, .ce-card):hover::after {
+    opacity: 1;
+}
+
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

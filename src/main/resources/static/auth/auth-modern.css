@@ -1,0 +1,433 @@
+/* ==========================================================================
+   SHIDELL AUTH MOTION LAYER (Additive Only)
+   Conserva al 100% los colores y estructura originales (#FFFFFF / #144272 /
+   #0a2647 -> #205295), añadiendo animaciones modernas de última generación.
+   ========================================================================== */
+
+@property --beam-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+/* 1. Cross-Document View Transitions (login.html <-> register.html) */
+@view-transition {
+    navigation: auto;
+}
+
+.auth-card {
+    view-transition-name: shidell-auth-card;
+    position: relative;
+    overflow: hidden;
+    background-image: radial-gradient(
+        380px circle at var(--mx, 50%) var(--my, 35%),
+        rgba(20, 66, 114, 0.045),
+        transparent 70%
+    );
+}
+
+.auth-logo {
+    view-transition-name: shidell-auth-logo;
+}
+
+.auth-right-content {
+    view-transition-name: shidell-auth-hero;
+    will-change: transform;
+}
+
+::view-transition-old(shidell-auth-card) {
+    animation: shidellAuthCardOut 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+::view-transition-new(shidell-auth-card) {
+    animation: shidellAuthCardIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes shidellAuthCardOut {
+    from { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+    to { opacity: 0; transform: scale(0.975) translateY(-8px); filter: blur(3px); }
+}
+
+@keyframes shidellAuthCardIn {
+    from { opacity: 0; transform: scale(0.975) translateY(12px); filter: blur(3px); }
+    to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0px); }
+}
+
+/* 2. Borde luminoso rotativo con @property (en tono cobalto de la marca) */
+.auth-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: linear-gradient(
+        var(--beam-angle),
+        rgba(20, 66, 114, 0.24),
+        transparent 32%,
+        rgba(32, 82, 149, 0.34) 55%,
+        transparent 80%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0.72;
+    pointer-events: none;
+    z-index: 1;
+    animation: shidellCobaltOrbit 9s linear infinite;
+}
+
+.auth-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes shidellCobaltOrbit {
+    to { --beam-angle: 360deg; }
+}
+
+/* 3. Splash Intro Geométrico SVG (mismo degradado cobalto #0a2647 -> #205295) */
+.intro-splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #0a2647 0%, #144272 60%, #205295 100%);
+    clip-path: circle(150vmax at 50% 50%);
+    overflow: hidden;
+    will-change: clip-path, opacity;
+}
+
+.intro-glow {
+    position: absolute;
+    width: min(72vw, 520px);
+    height: min(72vw, 520px);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 68%);
+    filter: blur(28px);
+    pointer-events: none;
+}
+
+.intro-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #ffffff;
+}
+
+.intro-svg {
+    width: 78px;
+    height: 78px;
+    margin: 0 auto 14px;
+    display: block;
+    overflow: visible;
+    filter: drop-shadow(0 10px 26px rgba(10, 38, 71, 0.45));
+}
+
+.intro-path {
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 220;
+    stroke-dashoffset: 220;
+    animation: shidellDrawCap 760ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes shidellDrawCap {
+    to { stroke-dashoffset: 0; }
+}
+
+.intro-title {
+    margin: 0 0 6px;
+    font-family: var(--font-display, 'Bricolage Grotesque', 'Inter', sans-serif);
+    font-size: clamp(32px, 5vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    opacity: 0;
+    animation: shidellFadeSlideUp 520ms cubic-bezier(0.16, 1, 0.3, 1) 180ms forwards;
+}
+
+.intro-subtitle {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.85);
+    opacity: 0;
+    animation: shidellFadeSlideUp 520ms cubic-bezier(0.16, 1, 0.3, 1) 300ms forwards;
+}
+
+@keyframes shidellFadeSlideUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 4. Panel Derecho: Canvas Constellation Interactivo + Profundidad 3D */
+.auth-right {
+    perspective: 960px;
+}
+
+#auth-right-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.auth-right .decor-circle {
+    z-index: 0;
+    will-change: transform;
+    transition: opacity 280ms ease;
+}
+
+/* 5. Micro-interacciones en Inputs (Focus Beam + Eye Toggle + Valid Badge) */
+.input-wrapper {
+    position: relative;
+}
+
+.input-wrapper input.has-trailing-control {
+    padding-right: 46px;
+}
+
+.input-focus-beam {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    bottom: 0;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #0a2647, #144272, #205295);
+    transform: scaleX(0);
+    transform-origin: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease;
+}
+
+.input-wrapper:focus-within .input-focus-beam {
+    transform: scaleX(1);
+    opacity: 1;
+}
+
+.input-wrapper.has-error input,
+.input-wrapper.has-error select {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.12);
+}
+
+.toggle-password-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 3;
+    transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.toggle-password-btn:hover {
+    color: #144272;
+    background: rgba(20, 66, 114, 0.08);
+}
+
+.toggle-password-btn:active {
+    transform: translateY(-50%) scale(0.92);
+}
+
+/* Contrarrestar regla global `.input-wrapper i` de styles.css para iconos derechos */
+.input-wrapper .toggle-password-btn i,
+.input-wrapper .input-valid-badge i {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    font-size: 18px;
+    color: inherit;
+    pointer-events: none;
+}
+
+.input-valid-badge {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.5);
+    color: #10b981;
+    opacity: 0;
+    pointer-events: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 220ms ease, transform 320ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.input-valid-badge.is-visible {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+}
+
+/* 6. Botón Principal Magnético, Shimmer, Ripple y Morph de Estado */
+.auth-btn {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transform: translate3d(var(--mag-x, 0px), var(--mag-y, 0px), 0);
+    transition:
+        background-color 240ms cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+
+.auth-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -130%;
+    width: 65%;
+    height: 100%;
+    background: linear-gradient(
+        105deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.24) 50%,
+        transparent 100%
+    );
+    transform: skewX(-18deg);
+    pointer-events: none;
+    transition: left 640ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.auth-btn:hover::before {
+    left: 145%;
+}
+
+.auth-btn:hover {
+    transform: translate3d(var(--mag-x, 0px), calc(var(--mag-y, 0px) - 1px), 0);
+}
+
+.auth-btn:active {
+    transform: translate3d(var(--mag-x, 0px), var(--mag-y, 0px), 0) scale(0.98);
+}
+
+.auth-btn-label {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.auth-btn-spinner {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 2.2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    animation: shidellSpin 720ms linear infinite;
+}
+
+@keyframes shidellSpin {
+    to { transform: rotate(360deg); }
+}
+
+.auth-btn.is-loading {
+    opacity: 0.92;
+    cursor: wait;
+}
+
+.auth-btn.is-success {
+    background: #10b981 !important;
+    box-shadow: 0 10px 24px rgba(16, 185, 129, 0.28) !important;
+}
+
+.auth-btn-check {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: #ffffff;
+    stroke-width: 2.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.auth-btn-check path {
+    stroke-dasharray: 36;
+    stroke-dashoffset: 36;
+    animation: shidellCheckDraw 360ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes shidellCheckDraw {
+    to { stroke-dashoffset: 0; }
+}
+
+.auth-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.34);
+    transform: translate(-50%, -50%) scale(0);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 7. Enlaces con subrayado elástico sutil */
+.auth-footer a,
+.forgot-pass {
+    position: relative;
+    display: inline-block;
+}
+
+.auth-footer a::after,
+.forgot-pass::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 1.5px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.auth-footer a:hover::after,
+.forgot-pass:hover::after {
+    transform: scaleX(1);
+}
+
+/* 8. Preferencias de Movimiento Reducido */
+@media (prefers-reduced-motion: reduce) {
+    .auth-card::before,
+    .intro-path,
+    .intro-title,
+    .intro-subtitle,
+    .auth-btn::before {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    .intro-title,
+    .intro-subtitle {
+        opacity: 1 !important;
+    }
+
+    .intro-path {
+        stroke-dashoffset: 0 !important;
+    }
+}

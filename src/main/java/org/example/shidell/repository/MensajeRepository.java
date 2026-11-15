@@ -15,6 +15,13 @@ public interface MensajeRepository extends JpaRepository<Mensaje, Long> {
     
     List<Mensaje> findByDestinatarioAndLeidoFalse(UserEntity destinatario);
     
+    long countByDestinatarioAndLeidoFalse(UserEntity destinatario);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.transaction.annotation.Transactional
+    @Query("UPDATE Mensaje m SET m.leido = true WHERE m.destinatario = :destinatario AND m.remitente = :remitente AND (:cursoId IS NULL OR m.curso.id = :cursoId) AND m.leido = false")
+    int marcarComoLeidosBatch(@org.springframework.data.repository.query.Param("destinatario") UserEntity destinatario, @org.springframework.data.repository.query.Param("remitente") UserEntity remitente, @org.springframework.data.repository.query.Param("cursoId") Long cursoId);
+    
     @Query("SELECT m FROM Mensaje m WHERE (m.remitente = :u OR m.destinatario = :u) AND (:cursoId IS NULL OR m.curso.id = :cursoId) ORDER BY m.fechaEnvio DESC")
     List<Mensaje> findAllByUser(UserEntity u, Long cursoId);
 

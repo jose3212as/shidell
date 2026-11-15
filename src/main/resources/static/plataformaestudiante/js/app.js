@@ -172,10 +172,17 @@ function configurarMenuCuenta() {
 
 function iniciarPing(userId) {
     if (!userId) return;
-
-    const ping = () => fetch(`/api/users/${userId}/ping`, { method: 'PUT' }).catch(() => {});
-    ping();
-    setInterval(ping, 30000);
+    const start = () => window.ShidellPresence?.startHeartbeat?.(() => ({ id: userId }));
+    if (window.ShidellPresence?.startHeartbeat) {
+        start();
+        return;
+    }
+    if (document.querySelector('script[data-shidell-presence]')) return;
+    const script = document.createElement('script');
+    script.src = '/vendor/shidell-presence.js?v=20261115a';
+    script.dataset.shidellPresence = 'true';
+    script.onload = start;
+    document.head.appendChild(script);
 }
 
 function configurarLogout() {

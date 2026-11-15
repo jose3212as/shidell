@@ -7,4 +7,7 @@ import java.util.List;
 
 public interface ForoSemanaMensajeRepository extends JpaRepository<ForoSemanaMensaje, Long> {
     List<ForoSemanaMensaje> findByCursoIdAndSemanaOrderByFechaAsc(Long cursoId, Integer semana);
+    List<ForoSemanaMensaje> findByCursoIdInAndSemanaOrderByFechaAsc(List<Long> cursoIds, Integer semana);
+    List<ForoSemanaMensaje> findByCursoIdOrderBySemanaAscFechaAsc(Long cursoId);
+    List<ForoSemanaMensaje> findByCursoIdInOrderBySemanaAscFechaAsc(List<Long> cursoIds);
 }

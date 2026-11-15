@@ -81,10 +81,19 @@
     }
 
     async function cerrarSesionApi() {
-        await fetch('/api/auth/logout', {
-            method: 'POST',
-            credentials: 'same-origin'
-        }).catch(() => {});
+        const user = usuarioCache || leerUsuarioLocal();
+        window.ShidellPresence?.stopHeartbeat?.();
+        if (window.ShidellPresence?.notifyLogout) {
+            await window.ShidellPresence.notifyLogout(user);
+        } else {
+            const headers = user?.sessionToken ? { Authorization: `Bearer ${user.sessionToken}` } : {};
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'same-origin',
+                keepalive: true,
+                headers
+            }).catch(() => {});
+        }
         localStorage.removeItem('shidell_user');
         window.location.href = '/auth/login.html';
     }

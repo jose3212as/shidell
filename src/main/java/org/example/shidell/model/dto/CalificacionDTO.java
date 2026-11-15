@@ -11,6 +11,10 @@ public class CalificacionDTO {
     private LocalDate fecha;
     private String estado;
     private CursoDTO curso;
+    private UserDTO estudiante;
+    private Long evaluacionId;
+    private String tipo;
+    private Double peso;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -29,4 +33,12 @@ public class CalificacionDTO {
     public void setEstado(String estado) { this.estado = estado; }
     public CursoDTO getCurso() { return curso; }
     public void setCurso(CursoDTO curso) { this.curso = curso; }
+    public UserDTO getEstudiante() { return estudiante; }
+    public void setEstudiante(UserDTO estudiante) { this.estudiante = estudiante; }
+    public Long getEvaluacionId() { return evaluacionId; }
+    public void setEvaluacionId(Long evaluacionId) { this.evaluacionId = evaluacionId; }
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
+    public Double getPeso() { return peso; }
+    public void setPeso(Double peso) { this.peso = peso; }
 }

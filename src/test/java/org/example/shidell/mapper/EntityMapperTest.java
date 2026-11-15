@@ -157,6 +157,65 @@ class EntityMapperTest {
         assertThat(dto.getNotaMaxima()).isEqualTo(20.0);
     }
 
+    @Test
+    @DisplayName("toDTO(Calificacion) incluye estudiante y metadatos de evaluacion")
+    void toDTO_calificacion_incluyeEstudianteYEvaluacion() {
+        UserEntity est = new UserEntity();
+        est.setId(44L);
+        est.setNombres("Lucía");
+        est.setApellidos("Castillo");
+        est.setRol("ESTUDIANTE");
+
+        Evaluacion ev = new Evaluacion();
+        ev.setId(9L);
+        ev.setTitulo("Examen Bimestral 1");
+        ev.setTipo("EXAMEN");
+        ev.setPeso(2.0);
+
+        Calificacion cal = new Calificacion();
+        cal.setId(3L);
+        cal.setActividad("Examen Bimestral 1");
+        cal.setNota(17.0);
+        cal.setNotaMaxima(20.0);
+        cal.setEstudiante(est);
+        cal.setEvaluacion(ev);
+
+        CalificacionDTO dto = mapper.toDTO(cal);
+
+        assertThat(dto.getEstudiante()).isNotNull();
+        assertThat(dto.getEstudiante().getId()).isEqualTo(44L);
+        assertThat(dto.getEstudiante().getNombres()).isEqualTo("Lucía");
+        assertThat(dto.getEvaluacionId()).isEqualTo(9L);
+        assertThat(dto.getTipo()).isEqualTo("EXAMEN");
+        assertThat(dto.getPeso()).isEqualTo(2.0);
+    }
+
+    @Test
+    @DisplayName("toDTO(Evaluacion) mapea titulo, tipo, bimestre, peso y cursoId")
+    void toDTO_evaluacion_mapeaCorrectamente() {
+        Curso curso = new Curso();
+        curso.setId(909L);
+
+        Evaluacion ev = new Evaluacion();
+        ev.setId(12L);
+        ev.setTitulo("  Práctica 1  ");
+        ev.setTipo("PRACTICA");
+        ev.setBimestre(2);
+        ev.setPeso(1.5);
+        ev.setNotaMaxima(20.0);
+        ev.setFecha(LocalDate.of(2026, 6, 10));
+        ev.setCurso(curso);
+
+        EvaluacionDTO dto = mapper.toDTO(ev);
+
+        assertThat(dto.getId()).isEqualTo(12L);
+        assertThat(dto.getTitulo()).isEqualTo("Práctica 1");
+        assertThat(dto.getTipo()).isEqualTo("PRACTICA");
+        assertThat(dto.getBimestre()).isEqualTo(2);
+        assertThat(dto.getPeso()).isEqualTo(1.5);
+        assertThat(dto.getCursoId()).isEqualTo(909L);
+    }
+
     // ── Tarea → TareaDTO ──────────────────────────────────────────
 
     @Test

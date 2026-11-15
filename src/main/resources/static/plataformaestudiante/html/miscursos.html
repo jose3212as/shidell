@@ -4,14 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261114d"></script>
     <title>Shidell - Mis Cursos</title>
     <meta name="description" content="Cursos matriculados del Portal Estudiante Shidell.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
     <script src="../js/icon-helper.js"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
+    <link rel="stylesheet" href="../css/styles.css?v=20261114s">
     <link rel="stylesheet" href="../css/cursos.css?v=20261019d">
 </head>
 
@@ -82,8 +83,42 @@
             <div class="content-area courses-page">
                 <section class="courses-layout">
                     <div class="section-heading">
-                        <h2>Cursos matriculados</h2>
-                        <span id="courses-count">0 cursos</span>
+                        <div class="section-heading-left">
+                            <h2>Cursos matriculados</h2>
+                            <span id="courses-count">0 cursos</span>
+                        </div>
+                        <div class="courses-toolbar-controls">
+                            <!-- Buscador rápido -->
+                            <div class="course-search-box">
+                                <img src="../icons/regular/magnifying-glass.svg" class="icon-img search-icon" alt="buscar">
+                                <input type="text" id="courseSearch" placeholder="Buscar curso o docente..." oninput="filtrarCursos()" aria-label="Buscar curso o docente">
+                                <button type="button" class="search-clear-btn" id="searchClearBtn" onclick="limpiarBusqueda()" title="Limpiar búsqueda" style="display:none;">✕</button>
+                            </div>
+
+                            <!-- Filtro de estado -->
+                            <div class="course-status-filter">
+                                <select id="courseStatusFilter" onchange="filtrarCursos()" aria-label="Filtrar por estado">
+                                    <option value="todos">Todos los cursos</option>
+                                    <option value="en-progreso">En curso</option>
+                                    <option value="completado">Completados</option>
+                                </select>
+                            </div>
+
+                            <!-- Selector de modo de vista: Cuadro o Lista -->
+                            <div class="view-filter-wrapper">
+                                <span class="view-filter-label">Vista:</span>
+                                <div class="view-switcher" role="group" aria-label="Filtro de vista: Cuadro o Lista">
+                                    <button type="button" class="view-toggle-btn active" id="btnViewCuadro" onclick="cambiarModoVista('cuadro')" title="Vista en cuadro (tarjetas)">
+                                        <img src="../icons/regular/squares-four.svg" class="icon-img" alt="cuadro">
+                                        <span>Cuadro</span>
+                                    </button>
+                                    <button type="button" class="view-toggle-btn" id="btnViewLista" onclick="cambiarModoVista('lista')" title="Vista en lista">
+                                        <img src="../icons/regular/list.svg" class="icon-img" alt="lista">
+                                        <span>Lista</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="courses-grid" id="courses-grid">
                         <div class="course-loading">
@@ -101,8 +136,11 @@
         let userCursos = {};
         const TOTAL_SEMANAS_LECTIVAS = 36;
         let cursosDetalle = [];
+        let modoVista = localStorage.getItem('shidell_cursos_view_mode') || 'cuadro'; // 'cuadro' | 'lista'
 
         document.addEventListener('DOMContentLoaded', async () => {
+            aplicarModoVistaUI(modoVista);
+
             userCursos = await window.shidellSession?.obtenerUsuario() 
                 || JSON.parse(localStorage.getItem('shidell_user') || 'null') 
                 || {};
@@ -113,6 +151,68 @@
 
             await loadCursos();
         });
+
+        function cambiarModoVista(modo) {
+            if (modo !== 'cuadro' && modo !== 'lista') modo = 'cuadro';
+            modoVista = modo;
+            localStorage.setItem('shidell_cursos_view_mode', modo);
+            aplicarModoVistaUI(modo);
+            renderCursos();
+        }
+
+        function aplicarModoVistaUI(modo) {
+            const btnCuadro = document.getElementById('btnViewCuadro');
+            const btnLista = document.getElementById('btnViewLista');
+            if (btnCuadro && btnLista) {
+                if (modo === 'lista') {
+                    btnCuadro.classList.remove('active');
+                    btnLista.classList.add('active');
+                } else {
+                    btnCuadro.classList.add('active');
+                    btnLista.classList.remove('active');
+                }
+            }
+        }
+
+        function limpiarBusqueda() {
+            const searchInput = document.getElementById('courseSearch');
+            if (searchInput) searchInput.value = '';
+            filtrarCursos();
+        }
+
+        function filtrarCursos() {
+            renderCursos();
+        }
+
+        function obtenerCursosFiltrados() {
+            const searchInput = document.getElementById('courseSearch');
+            const term = (searchInput ? searchInput.value : '').trim().toLowerCase();
+            const clearBtn = document.getElementById('searchClearBtn');
+            if (clearBtn) {
+                clearBtn.style.display = term ? 'flex' : 'none';
+            }
+
+            const statusSelect = document.getElementById('courseStatusFilter');
+            const statusVal = statusSelect ? statusSelect.value : 'todos';
+
+            return cursosDetalle.filter(curso => {
+                if (term) {
+                    const matchNombre = (curso.nombre || '').toLowerCase().includes(term);
+                    const matchDocente = (curso.profesor || '').toLowerCase().includes(term);
+                    const matchGrado = `${curso.grado || ''} ${curso.seccion || ''} ${curso.nivel || ''}`.toLowerCase().includes(term);
+                    if (!matchNombre && !matchDocente && !matchGrado) return false;
+                }
+
+                const totalSemanas = Number(curso.semanasTotales || curso.totalClases || TOTAL_SEMANAS_LECTIVAS);
+                const progreso = clamp(Number(curso.progresoReal ?? 0), 0, 100);
+                const esCompletado = totalSemanas > 0 && progreso >= 100;
+
+                if (statusVal === 'completado' && !esCompletado) return false;
+                if (statusVal === 'en-progreso' && esCompletado) return false;
+
+                return true;
+            });
+        }
 
         async function loadCursos() {
             const grid = document.getElementById('courses-grid');
@@ -162,67 +262,166 @@
         function renderCursos() {
             const grid = document.getElementById('courses-grid');
             const count = document.getElementById('courses-count');
+            const filtrados = obtenerCursosFiltrados();
 
-            count.textContent = `${cursosDetalle.length} ${cursosDetalle.length === 1 ? 'curso' : 'cursos'}`;
+            count.textContent = `${filtrados.length} ${filtrados.length === 1 ? 'curso' : 'cursos'}`;
+
+            if (modoVista === 'lista') {
+                grid.className = 'courses-list';
+            } else {
+                grid.className = 'courses-grid';
+            }
 
             if (!cursosDetalle.length) {
                 grid.innerHTML = estadoVacio('ph-books', 'No tienes cursos matriculados.');
                 return;
             }
 
-            grid.innerHTML = cursosDetalle.map(buildCursoCard).join('');
+            if (!filtrados.length) {
+                grid.innerHTML = estadoVacio('ph-magnifying-glass', 'No se encontraron cursos que coincidan con el filtro.');
+                return;
+            }
+
+            if (modoVista === 'lista') {
+                grid.innerHTML = filtrados.map(buildCursoRow).join('');
+            } else {
+                grid.innerHTML = filtrados.map(buildCursoCard).join('');
+            }
         }
 
-        function buildCursoCard(curso) {
-            const color = colorCursoValido(curso.color);
-            const totalTareas = Number(curso.tareasTotalesCurso || 0);
-            const tareasCompletadas = Number(curso.tareasCompletadasCurso || 0);
-            const progreso = clamp(Number(curso.progresoReal ?? 0), 0, 100);
-            
+        function resolverTextoHorario(curso) {
             const hoy = new Date();
             const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
             const clases = Array.isArray(curso.clases) ? curso.clases : [];
-            
-            // Próxima sesión: primera sesión desde hoy en adelante
-            let siguiente = curso.proximaClase || clases.find(clase => String(clase.fecha).slice(0, 10) >= hoyStr) || clases[0] || null;
+            const siguiente = curso.proximaClase || clases.find(clase => String(clase.fecha).slice(0, 10) >= hoyStr) || clases[0] || null;
 
-            let textoHorario = 'Horario pendiente';
             if (siguiente && siguiente.fecha) {
                 const rel = etiquetaRelativaFecha(siguiente.fecha);
                 const fechaFmt = formatearFecha(siguiente.fecha);
                 const horaStr = siguiente.hora || curso.horaInicio || '08:00';
-                textoHorario = rel ? `${rel} · ${horaStr}` : `${fechaFmt} · ${horaStr}`;
-            } else if (curso.diaSemana) {
-                textoHorario = `${nombreDia(curso.diaSemana)} · ${curso.horaInicio || '08:00'}${curso.horaFin ? ' - ' + curso.horaFin : ''}`;
+                return rel ? `${rel} · ${horaStr}` : `${fechaFmt} · ${horaStr}`;
             }
+            if (curso.diaSemana) {
+                return `${nombreDia(curso.diaSemana)} · ${curso.horaInicio || '08:00'}${curso.horaFin ? ' - ' + curso.horaFin : ''}`;
+            }
+            return 'Horario pendiente';
+        }
 
-            const etiquetaAvance = totalTareas > 0
-                ? `Avance (${tareasCompletadas}/${totalTareas} ${totalTareas === 1 ? 'tarea' : 'tareas'})`
-                : 'Avance (0 tareas)';
-            const estadoCurso = (totalTareas > 0 && progreso >= 100)
+        function prepararDatosVisualesCurso(curso) {
+            const color = colorCursoValido(curso.color);
+            const totalSemanas = Number(curso.semanasTotales || curso.totalClases || TOTAL_SEMANAS_LECTIVAS);
+            const semanasCompletadas = Number(curso.semanasCompletadas || 0);
+            const semanasConActividades = Number(curso.semanasConActividades || 0);
+            const totalTareas = Number(curso.tareasTotalesCurso || 0);
+            const tareasCompletadas = Number(curso.tareasCompletadasCurso || 0);
+            const forosAbiertos = Number(curso.forosAbiertosCurso || 0);
+            const forosParticipados = Number(curso.forosParticipadosCurso || 0);
+            const progreso = clamp(Number(curso.progresoReal ?? 0), 0, 100);
+
+            const esCompletado = totalSemanas > 0 && (semanasCompletadas >= totalSemanas || progreso >= 100);
+            const tieneAvanceParcial = semanasCompletadas > 0 || tareasCompletadas > 0 || forosParticipados > 0;
+            const estadoCurso = esCompletado
                 ? 'Completado'
-                : (tareasCompletadas > 0 ? 'En progreso' : 'En curso');
+                : (tieneAvanceParcial ? 'En progreso' : 'En curso');
+
+            const etiquetaAvance = `Avance (${semanasCompletadas}/${totalSemanas} sem.)`;
+            const detalleTooltip = `${semanasCompletadas} de ${totalSemanas} semanas completadas · ${semanasConActividades} con actividades (${tareasCompletadas}/${totalTareas} tareas, ${forosParticipados}/${forosAbiertos} foros)`;
+
+            return {
+                color,
+                totalSemanas,
+                semanasCompletadas,
+                progreso,
+                esCompletado,
+                estadoCurso,
+                etiquetaAvance,
+                detalleTooltip,
+                textoHorario: resolverTextoHorario(curso)
+            };
+        }
+
+        function buildCursoRow(curso) {
+            const v = prepararDatosVisualesCurso(curso);
+            const infoNivelGrado = [
+                curso.grado ? `${curso.grado}°` : '',
+                curso.seccion ? `Sec. ${curso.seccion}` : '',
+                curso.nivel ? curso.nivel : ''
+            ].filter(Boolean).join(' · ');
+
+            return `
+                <article class="course-list-item" data-course-id="${escapeHtml(curso.id)}" tabindex="0" onclick="window.location.href='cursodetalleestudiante.html?id=${escapeHtml(curso.id)}'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='cursodetalleestudiante.html?id=${escapeHtml(curso.id)}'}">
+                    <div class="course-list-col-main">
+                        <span class="course-icon bg-${v.color}-light" style="color:var(--${v.color});">
+                            ${iconImg(escapeHtml(curso.icono || 'ph-book-open'), 'fill')}
+                        </span>
+                        <div class="course-list-title-group">
+                            <div class="course-list-heading-line">
+                                <h3 class="course-list-name">${escapeHtml(curso.nombre)}</h3>
+                                <span class="course-status ${v.esCompletado ? 'status-completed' : ''}">${v.estadoCurso}</span>
+                            </div>
+                            <div class="course-list-subinfo">
+                                <span class="course-list-teacher">
+                                    <img src="../icons/regular/user.svg" class="icon-img" alt="docente">
+                                    ${escapeHtml(curso.profesor || 'Docente Asignado')}
+                                </span>
+                                ${infoNivelGrado ? `<span class="course-badge-academic">${escapeHtml(infoNivelGrado)}</span>` : ''}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="course-list-col-schedule">
+                        <div class="meta-item">
+                            <img src="../icons/regular/calendar-dots.svg" class="icon-img" alt="calendar-dots">
+                            <span>${v.totalSemanas} semanas</span>
+                        </div>
+                        <div class="meta-item schedule-text" title="${escapeHtml(v.textoHorario)}">
+                            <img src="../icons/regular/clock.svg" class="icon-img" alt="clock">
+                            <span>${escapeHtml(v.textoHorario)}</span>
+                        </div>
+                    </div>
+
+                    <div class="course-list-col-progress" title="${escapeHtml(v.detalleTooltip)}">
+                        <div class="progress-row">
+                            <span>${escapeHtml(v.etiquetaAvance)}</span>
+                            <strong>${v.progreso}%</strong>
+                        </div>
+                        <div class="progress-track">
+                            <span class="progress-fill bg-${v.color}" style="width:${v.progreso}%; background-color: var(--${v.color}, #2563eb);"></span>
+                        </div>
+                    </div>
+
+                    <div class="course-list-col-action">
+                        <a href="cursodetalleestudiante.html?id=${escapeHtml(curso.id)}" class="course-btn-link" onclick="event.stopPropagation();">
+                            <span>Ver curso</span>
+                            <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right">
+                        </a>
+                    </div>
+                </article>`;
+        }
+
+        function buildCursoCard(curso) {
+            const v = prepararDatosVisualesCurso(curso);
 
             return `
                 <article class="course-card" data-course-id="${escapeHtml(curso.id)}" tabindex="0" onclick="window.location.href='cursodetalleestudiante.html?id=${escapeHtml(curso.id)}'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='cursodetalleestudiante.html?id=${escapeHtml(curso.id)}'}">
                     <div class="course-card-top">
-                        <span class="course-icon bg-${color}-light" style="color:var(--${color});">
+                        <span class="course-icon bg-${v.color}-light" style="color:var(--${v.color});">
                             ${iconImg(escapeHtml(curso.icono || 'ph-book-open'), 'fill')}
                         </span>
-                        <span class="course-status">${estadoCurso}</span>
+                        <span class="course-status ${v.esCompletado ? 'status-completed' : ''}">${v.estadoCurso}</span>
                     </div>
                     <h3>${escapeHtml(curso.nombre)}</h3>
                     <p>${escapeHtml(curso.profesor || 'Docente Asignado')}</p>
-                    <div class="progress-row">
-                        <span>${escapeHtml(etiquetaAvance)}</span>
-                        <strong>${progreso}%</strong>
+                    <div class="progress-row" title="${escapeHtml(v.detalleTooltip)}">
+                        <span>${escapeHtml(v.etiquetaAvance)}</span>
+                        <strong>${v.progreso}%</strong>
                     </div>
-                    <div class="progress-track">
-                        <span class="progress-fill bg-${color}" style="width:${progreso}%; background-color: var(--${color}, #2563eb);"></span>
+                    <div class="progress-track" title="${escapeHtml(v.detalleTooltip)}">
+                        <span class="progress-fill bg-${v.color}" style="width:${v.progreso}%; background-color: var(--${v.color}, #2563eb);"></span>
                     </div>
                     <div class="course-meta-row">
-                        <span><img src="../icons/regular/calendar-dots.svg" class="icon-img" alt="calendar-dots">${curso.totalClases || TOTAL_SEMANAS_LECTIVAS} semanas</span>
-                        <span><img src="../icons/regular/clock.svg" class="icon-img" alt="clock">${escapeHtml(textoHorario)}</span>
+                        <span><img src="../icons/regular/calendar-dots.svg" class="icon-img" alt="calendar-dots">${v.totalSemanas} semanas</span>
+                        <span><img src="../icons/regular/clock.svg" class="icon-img" alt="clock">${escapeHtml(v.textoHorario)}</span>
                     </div>
                     <a href="cursodetalleestudiante.html?id=${escapeHtml(curso.id)}" class="course-card-link" onclick="event.stopPropagation();">Ver curso <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
                 </article>`;
@@ -253,6 +452,80 @@
 
         function claveCurso(nombre) {
             return quitarAcentos(limpiarTexto(nombre || '')).toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+        }
+
+        function resolverSemanaDesdeFecha(fechaStr, clases) {
+            if (!fechaStr) return 1;
+            const f = String(fechaStr).slice(0, 10);
+            const target = new Date(`${f}T12:00:00`);
+            if (isNaN(target.getTime())) return 1;
+
+            const ventanas = [];
+            if (Array.isArray(clases) && clases.length > 0) {
+                clases.forEach(cl => {
+                    const iniStr = String(cl.fechaInicio || cl.fecha || '').slice(0, 10);
+                    if (iniStr) {
+                        const ini = new Date(`${iniStr}T00:00:00`);
+                        const fin = new Date(ini);
+                        fin.setDate(fin.getDate() + 6);
+                        ventanas.push({ semana: Number(cl.semana || 1), ini, fin });
+                    }
+                });
+            } else {
+                const year = target.getFullYear();
+                [`${year}-03-16`, `${year}-05-25`, `${year}-08-10`, `${year}-10-19`].forEach((bIni, bIdx) => {
+                    const base = new Date(`${bIni}T00:00:00`);
+                    for (let s = 0; s < 9; s++) {
+                        const ini = new Date(base);
+                        ini.setDate(ini.getDate() + s * 7);
+                        const fin = new Date(ini);
+                        fin.setDate(fin.getDate() + 6);
+                        ventanas.push({ semana: bIdx * 9 + s + 1, ini, fin });
+                    }
+                });
+            }
+
+            let mejorSemana = 1;
+            let menorDist = Infinity;
+            for (const v of ventanas) {
+                let dist = 0;
+                if (target < v.ini) dist = v.ini - target;
+                else if (target > v.fin) dist = target - v.fin;
+                if (dist < menorDist) {
+                    menorDist = dist;
+                    mejorSemana = v.semana;
+                }
+            }
+            return mejorSemana;
+        }
+
+        function calcularProgresoSemanalFallback(curso, tareasDelCurso, totalSemanas) {
+            const clases = Array.isArray(curso.clases) ? curso.clases : [];
+            const tareasPorSemana = new Map();
+
+            tareasDelCurso.forEach(t => {
+                const sem = t.semana && Number(t.semana) > 0
+                    ? Number(t.semana)
+                    : resolverSemanaDesdeFecha(t.fechaVencimiento || t.fechaInicio || t.fecha, clases);
+                const semanaNorm = clamp(sem, 1, totalSemanas);
+                if (!tareasPorSemana.has(semanaNorm)) tareasPorSemana.set(semanaNorm, []);
+                tareasPorSemana.get(semanaNorm).push(t);
+            });
+
+            let semanasCompletadas = 0;
+            tareasPorSemana.forEach(listaSemana => {
+                if (listaSemana.length > 0 && listaSemana.every(t => t.entrega != null || t.status === 'Completada')) {
+                    semanasCompletadas++;
+                }
+            });
+
+            return {
+                semanasConActividades: tareasPorSemana.size,
+                semanasCompletadas,
+                tareasTotales: tareasDelCurso.length,
+                tareasCompletadas: tareasDelCurso.filter(t => t.entrega != null || t.status === 'Completada').length,
+                progresoReal: clamp(Math.round((semanasCompletadas / Math.max(totalSemanas, 1)) * 100), 0, 100)
+            };
         }
 
         function normalizarCursos(cursos, tareasLista = []) {
@@ -287,18 +560,33 @@
                     return keyCurso && keyTareaCurso === keyCurso;
                 });
 
-                const totalTareas = tareasDelCurso.length;
-                const tareasCompletadas = tareasDelCurso.filter(t => t.entrega != null || t.status === 'Completada').length;
-                const progresoReal = totalTareas > 0 ? Math.round((tareasCompletadas / totalTareas) * 100) : 0;
+                const totalSemanas = Number(curso.semanasTotales || curso.totalClases || curso.clases?.length || TOTAL_SEMANAS_LECTIVAS);
+                const vieneResumenBackend = curso.semanasCompletadas !== undefined && curso.semanasCompletadas !== null;
+                const fallback = vieneResumenBackend ? null : calcularProgresoSemanalFallback(curso, tareasDelCurso, totalSemanas);
+
+                const semanasCompletadas = vieneResumenBackend ? Number(curso.semanasCompletadas || 0) : fallback.semanasCompletadas;
+                const semanasConActividades = vieneResumenBackend ? Number(curso.semanasConActividades || 0) : fallback.semanasConActividades;
+                const totalTareas = vieneResumenBackend ? Number(curso.tareasTotalesCurso ?? tareasDelCurso.length) : fallback.tareasTotales;
+                const tareasCompletadas = vieneResumenBackend ? Number(curso.tareasCompletadasCurso ?? 0) : fallback.tareasCompletadas;
+                const forosAbiertos = Number(curso.forosAbiertosCurso || 0);
+                const forosParticipados = Number(curso.forosParticipadosCurso || 0);
+                const progresoReal = vieneResumenBackend
+                    ? clamp(Number(curso.progresoClases ?? Math.round((semanasCompletadas / Math.max(totalSemanas, 1)) * 100)), 0, 100)
+                    : fallback.progresoReal;
 
                 return {
                     ...curso,
                     nombre: nombreLimpio,
                     profesor: limpiarTexto(prof),
                     clases: Array.isArray(curso.clases) ? curso.clases : [],
-                    totalClases: Number(curso.totalClases || curso.clases?.length || TOTAL_SEMANAS_LECTIVAS),
+                    totalClases: totalSemanas,
+                    semanasTotales: totalSemanas,
+                    semanasConActividades,
+                    semanasCompletadas,
                     tareasTotalesCurso: totalTareas,
                     tareasCompletadasCurso: tareasCompletadas,
+                    forosAbiertosCurso: forosAbiertos,
+                    forosParticipadosCurso: forosParticipados,
                     progresoReal
                 };
             });
@@ -386,7 +674,7 @@
 
     <!-- Global App Scripts -->
     <script src="../js/app.js?v=apiestudiante20260512i"></script>
-    <script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
+    <script src="../js/notificaciones.js?v=20261114s"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/vendor/alertas.js?v=20261019d"></script>
 </body>

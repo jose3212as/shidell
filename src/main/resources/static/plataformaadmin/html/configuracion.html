@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261115c"></script>
   <title>Configuración — Shidell Admin</title>
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/variables.css?v=20261114s">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/animations.css">
   <link rel="stylesheet" href="../css/layout.css">
@@ -37,6 +38,45 @@
     .info-item { padding:14px 16px; background:var(--color-bg-elevated); border-radius:var(--border-radius-md); }
     .info-item label { font-size:11px; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:1px; }
     .info-item span  { display:block; font-size:14px; font-weight:600; color:var(--text-primary); margin-top:4px; }
+    .branding-tab-bar {
+      display:flex; align-items:center; gap:8px; padding:10px 14px 0;
+      background:var(--color-bg-elevated); border-bottom:1px solid var(--border-color);
+      border-radius:var(--border-radius-md) var(--border-radius-md) 0 0;
+    }
+    .branding-tab-pill {
+      display:inline-flex; align-items:center; gap:8px; max-width:290px;
+      padding:8px 14px; background:var(--color-bg-card);
+      border:1px solid var(--border-color); border-bottom:none;
+      border-radius:10px 10px 0 0; font-size:12.5px; font-weight:600;
+      color:var(--text-primary); position:relative; top:1px;
+    }
+    .branding-tab-pill img { width:16px; height:16px; object-fit:contain; border-radius:3px; flex-shrink:0; }
+    .branding-tab-pill span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .branding-tab-close { font-size:12px; color:var(--text-tertiary); margin-left:4px; flex-shrink:0; }
+    .branding-control-row {
+      display:flex; align-items:flex-end; gap:10px; flex-wrap:wrap; margin-top:10px;
+    }
+    .branding-icon-preview-wrap {
+      display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:10px;
+    }
+    .branding-icon-thumb {
+      width:48px; height:48px; border-radius:12px; object-fit:contain;
+      background:var(--color-bg-elevated); border:1px solid var(--border-color);
+      padding:6px; flex-shrink:0; cursor:pointer;
+    }
+    .branding-hint { font-size:12px; color:var(--text-secondary); margin-top:4px; line-height:1.45; }
+    .branding-feedback {
+      margin-top:14px; padding:10px 14px; border-radius:var(--border-radius-sm);
+      font-size:13px; font-weight:600; display:none; align-items:center; gap:8px;
+    }
+    .branding-feedback.is-ok {
+      display:flex; background:rgba(16,185,129,0.12); color:#10b981;
+      border:1px solid rgba(16,185,129,0.28);
+    }
+    .branding-feedback.is-err {
+      display:flex; background:rgba(239,68,68,0.12); color:#ef4444;
+      border:1px solid rgba(239,68,68,0.28);
+    }
   </style>
 </head>
 <body>
@@ -54,16 +94,89 @@
         <!-- Izquierda -->
         <div style="flex:2;min-width:320px">
 
+          <!-- Identidad global: Pestaña e Ícono -->
+          <div class="card config-section" id="card-branding-system">
+            <div class="card-header" style="margin-bottom:16px">
+              <div>
+                <div class="card-title"><i class="ph ph-browsers" style="margin-right:8px"></i>Pestaña e ícono del sistema</div>
+                <div class="card-subtitle">Personaliza el título de la pestaña del navegador y el favicon en todas las plataformas</div>
+              </div>
+            </div>
+
+            <div class="branding-tab-bar" aria-label="Vista previa en pestaña del navegador">
+              <div class="branding-tab-pill">
+                <img id="branding-preview-favicon" src="/favicon.ico" alt="Vista previa del ícono">
+                <span id="branding-preview-tab-text">Configuración — Shidell Admin</span>
+                <i class="ph ph-x branding-tab-close" aria-hidden="true"></i>
+              </div>
+            </div>
+
+            <div class="config-row" style="align-items:flex-start;flex-direction:column;gap:8px;padding-top:18px;">
+              <div class="config-row-info">
+                <h4>Nombre de la pestaña</h4>
+                <p>Reemplaza el nombre institucional mostrado en la pestaña de cada portal (Landing, Login, Admin, Docente, Estudiante y Padres).</p>
+              </div>
+              <form id="form-tab-title" class="branding-control-row" style="width:100%;">
+                <div style="flex:1;min-width:220px;">
+                  <input type="text" id="cfg-tab-title" class="form-control" maxlength="80" placeholder="Ej. Colegio San Marcos" required aria-label="Nombre de la pestaña del sistema">
+                </div>
+                <button type="submit" class="btn btn-primary" id="btn-save-tab-title">
+                  <i class="ph ph-floppy-disk"></i>Guardar nombre
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-reset-tab-title">
+                  <i class="ph ph-arrow-counter-clockwise"></i>Restablecer
+                </button>
+              </form>
+            </div>
+
+            <div class="config-row" style="align-items:flex-start;flex-direction:column;gap:8px;">
+              <div class="config-row-info">
+                <h4>Imagen del ícono (Favicon)</h4>
+                <p>Formatos aceptados: PNG, SVG, ICO, JPG, WEBP o GIF (máx. 2 MB). Se aplica al instante como ícono de pestaña global.</p>
+              </div>
+              <div class="branding-icon-preview-wrap" style="width:100%;">
+                <img id="branding-current-icon" class="branding-icon-thumb" src="/favicon.ico" alt="Ícono actual del sistema" title="Haz clic para seleccionar otra imagen">
+                <div style="flex:1;min-width:180px;">
+                  <div style="font-size:13.5px;font-weight:600;color:var(--text-primary);" id="branding-icon-status">Ícono predeterminado</div>
+                  <div class="branding-hint" id="branding-icon-url-hint">Servido globalmente desde /favicon.ico</div>
+                </div>
+                <input type="file" id="cfg-icon-file" accept=".png,.jpg,.jpeg,.webp,.svg,.ico,.gif,image/*" hidden>
+                <div class="d-flex gap-8 flex-wrap">
+                  <button type="button" class="btn btn-secondary" id="btn-upload-icon">
+                    <i class="ph ph-upload-simple"></i>Cambiar imagen
+                  </button>
+                  <button type="button" class="btn btn-danger" id="btn-reset-icon" style="display:none;">
+                    <i class="ph ph-trash"></i>Restablecer ícono
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="branding-feedback" id="branding-feedback" role="status" aria-live="polite"></div>
+          </div>
+
           <!-- Información del sistema -->
           <div class="card config-section">
             <div class="card-header"><div class="card-title"><i class="ph ph-info" style="margin-right:8px"></i>Información del sistema</div></div>
             <div class="info-grid" id="system-info">
-              <div class="info-item"><label>Sistema</label><span>Shidell Educativo</span></div>
+              <div class="info-item"><label>Sistema</label><span id="si-sistema-nombre">Shidell</span></div>
               <div class="info-item"><label>Versión</label><span>2.0.0</span></div>
               <div class="info-item"><label>Año académico</label><span>2026</span></div>
               <div class="info-item"><label>Backend</label><span>Spring Boot / Java</span></div>
               <div class="info-item"><label>Total usuarios</label><span id="si-usuarios">Cargando...</span></div>
               <div class="info-item"><label>Total cursos</label><span id="si-cursos">Cargando...</span></div>
+            </div>
+          </div>
+
+          <!-- Apariencia -->
+          <div class="card config-section">
+            <div class="card-header"><div class="card-title"><i class="ph ph-moon-stars" style="margin-right:8px"></i>Apariencia</div></div>
+            <div class="config-row">
+              <div class="config-row-info">
+                <h4>Modo oscuro</h4>
+                <p>Alterna el tema nocturno del Panel Administrativo (guardado en este dispositivo)</p>
+              </div>
+              <button type="button" class="toggle" id="toggle-dark-mode" role="switch" aria-checked="false" aria-label="Alternar modo oscuro"></button>
             </div>
           </div>
 
@@ -199,7 +312,7 @@
 <script src="../js/config.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/auth.js"></script>
-<script src="../js/shared.js"></script>
+<script src="../js/shared.js?v=20261114s"></script>
 <script>
 document.addEventListener('DOMContentLoaded', async () => {
   initShared('Configuración', 'Admin / Configuración del sistema');
@@ -214,6 +327,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('admin-avatar').textContent= init;
   }
 
+  // Cargar configuración de pestaña e ícono global
+  await initBrandingAdmin();
+
   // Cargar stats del sistema
   try {
     const stats = await API.admin.stats();
@@ -224,6 +340,151 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('si-cursos').textContent   = 'Error';
   }
 });
+
+let _brandingConfig = { tabTitle: 'Shidell', iconUrl: null, effectiveIconUrl: '/favicon.ico' };
+
+function renderBrandingAdminState(cfg) {
+  _brandingConfig = cfg || _brandingConfig;
+  const tabTitle = (_brandingConfig.tabTitle || 'Shidell').trim() || 'Shidell';
+  const iconSrc = _brandingConfig.effectiveIconUrl || '/favicon.ico';
+  const hasCustomIcon = Boolean(_brandingConfig.iconUrl);
+
+  const titleInput = document.getElementById('cfg-tab-title');
+  const previewText = document.getElementById('branding-preview-tab-text');
+  const previewImg = document.getElementById('branding-preview-favicon');
+  const currentImg = document.getElementById('branding-current-icon');
+  const iconStatus = document.getElementById('branding-icon-status');
+  const iconHint = document.getElementById('branding-icon-url-hint');
+  const resetIconBtn = document.getElementById('btn-reset-icon');
+  const sysNameEl = document.getElementById('si-sistema-nombre');
+
+  if (titleInput && document.activeElement !== titleInput) titleInput.value = tabTitle;
+  if (previewText) {
+    previewText.textContent = window.ShidellBranding
+      ? window.ShidellBranding.formatTitle('Configuración — Shidell Admin', tabTitle)
+      : `Configuración — ${tabTitle} Admin`;
+  }
+  if (previewImg) previewImg.src = iconSrc;
+  if (currentImg) currentImg.src = iconSrc;
+  if (iconStatus) iconStatus.textContent = hasCustomIcon ? 'Ícono personalizado activo' : 'Ícono predeterminado del sistema';
+  if (iconHint) iconHint.textContent = hasCustomIcon ? _brandingConfig.iconUrl : 'Servido globalmente desde /favicon.ico';
+  if (resetIconBtn) resetIconBtn.style.display = hasCustomIcon ? 'inline-flex' : 'none';
+  if (sysNameEl) sysNameEl.textContent = tabTitle;
+}
+
+function showBrandingFeedback(ok, message) {
+  const box = document.getElementById('branding-feedback');
+  if (!box) return;
+  box.className = `branding-feedback ${ok ? 'is-ok' : 'is-err'}`;
+  box.innerHTML = `<i class="ph-fill ${ok ? 'ph-check-circle' : 'ph-warning-circle'}"></i><span>${escapeHtml(message)}</span>`;
+}
+
+async function initBrandingAdmin() {
+  const form = document.getElementById('form-tab-title');
+  const titleInput = document.getElementById('cfg-tab-title');
+  const resetTitleBtn = document.getElementById('btn-reset-tab-title');
+  const uploadBtn = document.getElementById('btn-upload-icon');
+  const resetIconBtn = document.getElementById('btn-reset-icon');
+  const fileInput = document.getElementById('cfg-icon-file');
+  const iconThumb = document.getElementById('branding-current-icon');
+
+  try {
+    const cfg = await API.admin.config();
+    renderBrandingAdminState(cfg);
+    if (window.ShidellBranding) window.ShidellBranding.broadcast(cfg);
+  } catch (err) {
+    showBrandingFeedback(false, err.message || 'No se pudo cargar la configuración de marca.');
+  }
+
+  titleInput?.addEventListener('input', () => {
+    const draft = titleInput.value.trim() || 'Shidell';
+    const previewText = document.getElementById('branding-preview-tab-text');
+    if (previewText) {
+      previewText.textContent = window.ShidellBranding
+        ? window.ShidellBranding.formatTitle('Configuración — Shidell Admin', draft)
+        : `Configuración — ${draft} Admin`;
+    }
+  });
+
+  async function saveTabTitle(targetTitle, msgOk) {
+    const saveBtn = document.getElementById('btn-save-tab-title');
+    if (saveBtn) saveBtn.disabled = true;
+    try {
+      const updated = await API.admin.updateConfig({ tabTitle: targetTitle });
+      if (titleInput) titleInput.value = updated.tabTitle || targetTitle;
+      renderBrandingAdminState(updated);
+      if (window.ShidellBranding) window.ShidellBranding.broadcast(updated);
+      showBrandingFeedback(true, msgOk);
+      Toast.success('Pestaña actualizada', msgOk);
+    } catch (err) {
+      showBrandingFeedback(false, err.message || 'No se pudo guardar el nombre de la pestaña.');
+      Toast.error('Error al guardar', err.message);
+    } finally {
+      if (saveBtn) saveBtn.disabled = false;
+    }
+  }
+
+  form?.addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const val = (titleInput?.value || '').trim();
+    if (!val) {
+      showBrandingFeedback(false, 'Ingresa un nombre válido para la pestaña.');
+      return;
+    }
+    await saveTabTitle(val, `Nombre de pestaña actualizado a "${val}".`);
+  });
+
+  resetTitleBtn?.addEventListener('click', async () => {
+    await saveTabTitle('Shidell', 'Nombre de pestaña restablecido a "Shidell".');
+  });
+
+  const openFilePicker = () => fileInput?.click();
+  uploadBtn?.addEventListener('click', openFilePicker);
+  iconThumb?.addEventListener('click', openFilePicker);
+
+  fileInput?.addEventListener('change', async () => {
+    const file = fileInput.files?.[0];
+    fileInput.value = '';
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      showBrandingFeedback(false, 'La imagen del ícono no debe superar los 2 MB.');
+      return;
+    }
+    if (uploadBtn) uploadBtn.disabled = true;
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const updated = await API.admin.uploadConfigIcon(fd);
+      renderBrandingAdminState(updated);
+      if (window.ShidellBranding) window.ShidellBranding.broadcast(updated);
+      const okMsg = 'Ícono del sistema actualizado para todas las plataformas.';
+      showBrandingFeedback(true, okMsg);
+      Toast.success('Ícono actualizado', okMsg);
+    } catch (err) {
+      showBrandingFeedback(false, err.message || 'No se pudo subir la imagen del ícono.');
+      Toast.error('Error al subir imagen', err.message);
+    } finally {
+      if (uploadBtn) uploadBtn.disabled = false;
+    }
+  });
+
+  resetIconBtn?.addEventListener('click', async () => {
+    resetIconBtn.disabled = true;
+    try {
+      const updated = await API.admin.resetConfigIcon();
+      renderBrandingAdminState(updated);
+      if (window.ShidellBranding) window.ShidellBranding.broadcast(updated);
+      const okMsg = 'Se restableció el ícono predeterminado del sistema.';
+      showBrandingFeedback(true, okMsg);
+      Toast.success('Ícono restablecido', okMsg);
+    } catch (err) {
+      showBrandingFeedback(false, err.message || 'No se pudo restablecer el ícono.');
+      Toast.error('Error', err.message);
+    } finally {
+      resetIconBtn.disabled = false;
+    }
+  });
+}
 
 async function testApi() {
   try {

@@ -44,7 +44,9 @@ const Auth = (() => {
   }
 
   async function logout() {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {});
+    const u = getUser();
+    const headers = u?.sessionToken ? { Authorization: `Bearer ${u.sessionToken}` } : {};
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', keepalive: true, headers }).catch(() => {});
     clearUser();
     window.location.href = '/login.html';
   }

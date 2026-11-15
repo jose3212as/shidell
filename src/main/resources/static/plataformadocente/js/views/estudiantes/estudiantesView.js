@@ -78,6 +78,9 @@ export const EstudiantesView = {
                         nombres: est.nombres,
                         apellidos: est.apellidos,
                         email: est.email,
+                        nivel: est.nivel,
+                        grado: est.grado,
+                        seccion: est.seccion,
                         cursos: []
                     });
                 }
@@ -133,17 +136,22 @@ export const EstudiantesView = {
             return;
         }
 
-        grid.innerHTML = estudiantes.map(est => `
-            <article class="premium-card student-card">
-                <div class="student-card-header">
+        grid.innerHTML = estudiantes.map(est => {
+            const iniciales = `${(est.nombres || 'E').charAt(0)}${(est.apellidos || '').charAt(0)}`.toUpperCase();
+            const profileUrl = `#/estudiante-perfil?id=${encodeURIComponent(est.id)}&from=estudiantes`;
+            const aulaTag = (est.grado && est.seccion) ? `${est.grado}° ${est.seccion}${est.nivel ? ` · ${est.nivel}` : ''}` : '';
+            return `
+            <article class="premium-card student-card" style="cursor:default;">
+                <a href="${profileUrl}" class="student-card-header" style="text-decoration:none; color:inherit;">
                     <div class="student-card-avatar">
-                        ${est.nombres.charAt(0)}${est.apellidos.charAt(0)}
+                        ${iniciales}
                     </div>
                     <div>
                         <h3 class="student-card-title">${est.nombres} ${est.apellidos}</h3>
                         <p class="student-card-subtitle"><i class="ph ph-envelope-simple"></i> ${est.email}</p>
+                        ${aulaTag ? `<p class="student-card-subtitle" style="color:var(--primary); font-weight:600; font-size:12px; margin-top:4px;"><i class="ph ph-graduation-cap"></i> ${aulaTag}</p>` : ''}
                     </div>
-                </div>
+                </a>
 
                 <div class="student-card-courses">
                     <p class="student-card-courses-label">Cursos inscritos contigo</p>
@@ -157,10 +165,13 @@ export const EstudiantesView = {
                 </div>
 
                 <div class="student-card-actions">
-                    <button class="btn-secondary" style="flex:1; justify-content:center; padding:8px; border-radius:10px; font-size:13px;" onclick="alert('Perfil detallado en construcción')">Ver Perfil</button>
-                    <a href="#/mensajes" class="btn-primary" style="padding:8px 12px; border-radius:10px; display:flex; align-items:center; justify-content:center; text-decoration:none;"><i class="ph ph-chat-circle-dots"></i></a>
+                    <a href="${profileUrl}" class="btn-secondary" style="flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; padding:9px 12px; border-radius:10px; font-size:13px; text-decoration:none; color:var(--text-primary);">
+                        <i class="ph ph-user-circle"></i> Ver Perfil
+                    </a>
+                    <a href="#/mensajes?contacto=${encodeURIComponent(est.id)}" class="btn-primary" title="Enviar mensaje" style="padding:8px 12px; border-radius:10px; display:flex; align-items:center; justify-content:center; text-decoration:none;"><i class="ph ph-chat-circle-dots"></i></a>
                 </div>
             </article>
-        `).join('');
+        `;
+        }).join('');
     }
 };

@@ -1,0 +1,1086 @@
+/* ==========================================================================
+   EXPEDIENTE ACADÉMICO DEL ESTUDIANTE — Diseño Editorial Abierto (Sin Cajas)
+   Dual Theme: [data-theme="dark"] & [data-theme="light"]
+   Tipografía: Source Serif 4 (display / pull-quotes) + Plus Jakarta Sans + JetBrains Mono
+   ========================================================================== */
+
+:root,
+:root[data-theme="dark"] {
+    --ep-ink: #F3F0E8;
+    --ep-ink-muted: #9DA4B2;
+    --ep-ink-faint: #676E7C;
+    --ep-rule: rgba(255, 255, 255, 0.12);
+    --ep-rule-soft: rgba(255, 255, 255, 0.06);
+    --ep-hover: rgba(255, 255, 255, 0.028);
+    --ep-accent: #D8A24A;
+    --ep-accent-ink: #0B0D11;
+    --ep-ok: #34D399;
+    --ep-warn: #FBBF24;
+    --ep-danger: #F87171;
+    --ep-info: #60A5FA;
+    --ep-action-bg: #D8A24A;
+    --ep-action-ink: #0B0D11;
+    --ep-action-hover: #E5B35F;
+}
+
+:root[data-theme="light"] {
+    --ep-ink: #111318;
+    --ep-ink-muted: #525866;
+    --ep-ink-faint: #868C98;
+    --ep-rule: rgba(17, 19, 24, 0.12);
+    --ep-rule-soft: rgba(17, 19, 24, 0.065);
+    --ep-hover: rgba(17, 19, 24, 0.024);
+    --ep-accent: #111318;
+    --ep-accent-ink: #FFFFFF;
+    --ep-ok: #15803D;
+    --ep-warn: #B45309;
+    --ep-danger: #B91C1C;
+    --ep-info: #1D4ED8;
+    --ep-action-bg: #111318;
+    --ep-action-ink: #FFFFFF;
+    --ep-action-hover: #262A34;
+}
+
+.ep-page {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding: 4px 0 48px;
+    color: var(--ep-ink);
+    font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, sans-serif);
+}
+
+/* ── Barra superior minimalista (sin recuadros) ───────────────────────────── */
+.ep-util-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ep-rule);
+    margin-bottom: 26px;
+}
+
+.ep-util-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    min-width: 0;
+}
+
+.ep-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ep-ink-muted);
+    text-decoration: none;
+    transition: color 0.16s ease, transform 0.16s ease;
+}
+
+.ep-back-link:hover {
+    color: var(--ep-accent);
+    transform: translateX(-2px);
+}
+
+.ep-util-sep {
+    color: var(--ep-ink-faint);
+    font-family: var(--font-mono, monospace);
+    font-size: 12px;
+}
+
+.ep-util-context {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ep-ink-faint);
+}
+
+.ep-util-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.ep-switcher {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-bottom: 1px solid var(--ep-rule);
+    padding-bottom: 2px;
+}
+
+.ep-switch-arrow {
+    width: 26px;
+    height: 26px;
+    border: none;
+    background: transparent;
+    color: var(--ep-ink-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: color 0.15s ease;
+}
+
+.ep-switch-arrow:hover:not(:disabled) {
+    color: var(--ep-accent);
+}
+
+.ep-switch-arrow:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.ep-switcher-select {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--ep-ink);
+    font-family: var(--font-sans, inherit);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 4px;
+    max-width: 220px;
+    cursor: pointer;
+}
+
+.ep-switcher-select option {
+    background: var(--bg-surface);
+    color: var(--ep-ink);
+}
+
+.ep-text-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    font-family: var(--font-sans, inherit);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ep-ink-muted);
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ep-text-action:hover {
+    color: var(--ep-ink);
+    border-bottom-color: var(--ep-rule);
+}
+
+/* ── Encabezado Editorial Abierto ─────────────────────────────────────────── */
+.ep-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px;
+    flex-wrap: wrap;
+    padding-bottom: 26px;
+}
+
+.ep-identity-block {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    min-width: 0;
+    flex: 1 1 460px;
+}
+
+.ep-monogram {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    border: 1px solid var(--ep-rule);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 22px;
+    font-weight: 600;
+    font-style: italic;
+    color: var(--ep-ink);
+    background: transparent;
+    flex-shrink: 0;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.ep-monogram img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ep-identity-copy {
+    min-width: 0;
+    flex: 1;
+}
+
+.ep-kicker-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.ep-kicker {
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ep-ink-muted);
+}
+
+.ep-status-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.ep-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.ep-status-inline.DESTACADO { color: var(--ep-ok); }
+.ep-status-inline.DESTACADO .ep-status-dot { background: var(--ep-ok); }
+
+.ep-status-inline.BUENO { color: var(--ep-info); }
+.ep-status-inline.BUENO .ep-status-dot { background: var(--ep-info); }
+
+.ep-status-inline.ATENCION { color: var(--ep-warn); }
+.ep-status-inline.ATENCION .ep-status-dot { background: var(--ep-warn); }
+
+.ep-status-inline.RIESGO { color: var(--ep-danger); }
+.ep-status-inline.RIESGO .ep-status-dot { background: var(--ep-danger); }
+
+.ep-status-inline.SIN_EVALUACIONES { color: var(--ep-ink-muted); }
+.ep-status-inline.SIN_EVALUACIONES .ep-status-dot { background: var(--ep-ink-faint); }
+
+.ep-name {
+    margin: 0;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(2.15rem, 4vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.03;
+    letter-spacing: -0.03em;
+    color: var(--ep-ink);
+}
+
+.ep-byline {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13.5px;
+    color: var(--ep-ink-muted);
+    line-height: 1.45;
+}
+
+.ep-byline strong {
+    color: var(--ep-ink);
+    font-weight: 600;
+}
+
+.ep-byline-sep {
+    color: var(--ep-ink-faint);
+}
+
+.ep-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.ep-btn-solid {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 6px;
+    background: var(--ep-action-bg);
+    color: var(--ep-action-ink);
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid var(--ep-action-bg);
+    cursor: pointer;
+    transition: background 0.16s ease, transform 0.14s ease;
+}
+
+.ep-btn-solid:hover {
+    background: var(--ep-action-hover);
+    border-color: var(--ep-action-hover);
+    transform: translateY(-1px);
+}
+
+.ep-btn-underline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 2px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ep-ink);
+    text-decoration: none;
+    border-bottom: 1.5px solid var(--ep-rule);
+    transition: border-color 0.16s ease, color 0.16s ease;
+}
+
+.ep-btn-underline:hover {
+    color: var(--ep-accent);
+    border-bottom-color: var(--ep-accent);
+}
+
+/* ── Banda Tipográfica de Cifras Clave (entre filetes horizontales) ───────── */
+.ep-metrics-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--ep-rule);
+    border-bottom: 1px solid var(--ep-rule);
+}
+
+.ep-metric-col {
+    padding: 20px 22px;
+    border-right: 1px solid var(--ep-rule);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.ep-metric-col:first-child {
+    padding-left: 0;
+}
+
+.ep-metric-col:last-child {
+    border-right: none;
+    padding-right: 0;
+}
+
+.ep-metric-label {
+    font-family: var(--font-mono, monospace);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ep-ink-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ep-metric-figure {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: clamp(2.15rem, 3.3vw, 2.9rem);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    font-variant-numeric: tabular-nums;
+    color: var(--ep-ink);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.ep-metric-figure.is-empty {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ep-ink-muted);
+}
+
+.ep-metric-unit {
+    font-family: var(--font-serif, Georgia, serif);
+    font-style: italic;
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--ep-ink-muted);
+}
+
+.ep-metric-note {
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--ep-ink-muted);
+}
+
+.ep-sig-ok     { color: var(--ep-ok) !important; }
+.ep-sig-warn   { color: var(--ep-warn) !important; }
+.ep-sig-danger { color: var(--ep-danger) !important; }
+.ep-sig-info   { color: var(--ep-info) !important; }
+
+/* ── Nota Editorial Prioritaria (sin caja, solo línea izquierda) ─────────── */
+.ep-dispatch {
+    margin: 24px 0 8px;
+    padding: 4px 0 4px 18px;
+    border-left: 3px solid var(--ep-rule);
+}
+
+.ep-dispatch.is-danger { border-left-color: var(--ep-danger); }
+.ep-dispatch.is-warn   { border-left-color: var(--ep-warn); }
+.ep-dispatch.is-ok     { border-left-color: var(--ep-ok); }
+.ep-dispatch.is-info   { border-left-color: var(--ep-info); }
+
+.ep-dispatch-kicker {
+    font-family: var(--font-mono, monospace);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+    color: var(--ep-ink-muted);
+    margin-bottom: 5px;
+}
+
+.ep-dispatch.is-danger .ep-dispatch-kicker { color: var(--ep-danger); }
+.ep-dispatch.is-warn   .ep-dispatch-kicker { color: var(--ep-warn); }
+.ep-dispatch.is-ok     .ep-dispatch-kicker { color: var(--ep-ok); }
+
+.ep-dispatch-lead {
+    margin: 0;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 17.5px;
+    line-height: 1.5;
+    color: var(--ep-ink);
+    max-width: 82ch;
+}
+
+.ep-dispatch-lead em {
+    font-style: italic;
+}
+
+.ep-dispatch-actions {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+.ep-inline-jump {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-family: var(--font-sans, inherit);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ep-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ep-rule);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ep-inline-jump:hover {
+    color: var(--ep-accent);
+    border-bottom-color: var(--ep-accent);
+}
+
+/* ── Navegación por subrayado limpia ─────────────────────────────────────── */
+.ep-tabs-line {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    border-bottom: 1px solid var(--ep-rule);
+    margin: 24px 0 28px;
+    overflow-x: auto;
+}
+
+.ep-tab-link {
+    position: relative;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 12px 0;
+    border: none;
+    background: transparent;
+    font-family: var(--font-sans, inherit);
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ep-ink-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ep-tab-link:hover {
+    color: var(--ep-ink);
+}
+
+.ep-tab-link.active {
+    color: var(--ep-ink);
+    font-weight: 700;
+    border-bottom-color: var(--ep-ink);
+}
+
+.ep-tab-num {
+    font-family: var(--font-mono, monospace);
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--ep-ink-faint);
+}
+
+.ep-tab-link.active .ep-tab-num {
+    color: var(--ep-accent);
+}
+
+.ep-tab-num.is-alert {
+    color: var(--ep-danger);
+    font-weight: 600;
+}
+
+/* ── Cuerpo Asimétrico Abierto (2 columnas separadas por filete vertical) ── */
+.ep-split {
+    display: grid;
+    grid-template-columns: minmax(0, 1.58fr) minmax(290px, 0.92fr);
+    gap: 0;
+    align-items: start;
+}
+
+.ep-main-col {
+    padding-right: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+    min-width: 0;
+}
+
+.ep-rail-col {
+    padding-left: 34px;
+    border-left: 1px solid var(--ep-rule);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-width: 0;
+}
+
+/* Cabeceras de sección */
+.ep-sec-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ep-rule);
+    margin-bottom: 6px;
+}
+
+.ep-sec-title-wrap {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ep-sec-title {
+    margin: 0;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    color: var(--ep-ink);
+}
+
+.ep-sec-kicker {
+    font-family: var(--font-mono, monospace);
+    font-size: 10.5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ep-ink-faint);
+}
+
+.ep-group-tag {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+    color: var(--ep-ink-faint);
+    padding: 14px 0 4px;
+}
+
+/* ── Filas tipo Libro Mayor (Ledger Rows — sin recuadros) ─────────────────── */
+.ep-ledger-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.ep-ledger-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 6px;
+    border-bottom: 1px solid var(--ep-rule-soft);
+    transition: background 0.14s ease;
+}
+
+.ep-ledger-row:hover {
+    background: var(--ep-hover);
+}
+
+.ep-ledger-row.is-mine {
+    padding-left: 10px;
+    border-left: 2px solid var(--ep-accent);
+}
+
+.ep-ledger-left {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+    flex: 1 1 240px;
+}
+
+.ep-course-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+}
+
+.ep-course-dot.color-purple { background: #A78BFA; }
+.ep-course-dot.color-blue   { background: #60A5FA; }
+.ep-course-dot.color-green  { background: #34D399; }
+.ep-course-dot.color-orange { background: #FB923C; }
+.ep-course-dot.color-red    { background: #F87171; }
+.ep-course-dot.color-yellow { background: #FBBF24; }
+.ep-course-dot.color-cyan   { background: #22D3EE; }
+
+.ep-ledger-titles {
+    min-width: 0;
+    flex: 1;
+}
+
+.ep-ledger-title-line {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.ep-ledger-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ep-ink);
+    line-height: 1.3;
+}
+
+.ep-mine-mark {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ep-accent);
+}
+
+.ep-ledger-sub {
+    font-size: 12.5px;
+    color: var(--ep-ink-muted);
+    margin-top: 2px;
+    line-height: 1.35;
+}
+
+.ep-ledger-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+}
+
+.ep-thin-track-wrap {
+    width: 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ep-thin-track-meta {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    color: var(--ep-ink-faint);
+}
+
+.ep-thin-track {
+    height: 2px;
+    width: 100%;
+    background: var(--ep-rule);
+    overflow: hidden;
+}
+
+.ep-thin-fill {
+    height: 100%;
+    background: var(--ep-ink);
+    transition: width 0.35s ease;
+}
+
+.ep-thin-fill.color-purple { background: #A78BFA; }
+.ep-thin-fill.color-blue   { background: #60A5FA; }
+.ep-thin-fill.color-green  { background: #34D399; }
+.ep-thin-fill.color-orange { background: #FB923C; }
+.ep-thin-fill.color-red    { background: #F87171; }
+.ep-thin-fill.color-yellow { background: #FBBF24; }
+.ep-thin-fill.color-cyan   { background: #22D3EE; }
+
+.ep-score-num {
+    min-width: 58px;
+    text-align: right;
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 19px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--ep-ink);
+}
+
+.ep-score-num.is-muted {
+    font-family: var(--font-sans, sans-serif);
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--ep-ink-faint);
+}
+
+.ep-score-num.is-risk {
+    color: var(--ep-danger);
+}
+
+.ep-score-num.is-ok {
+    color: var(--ep-ok);
+}
+
+.ep-mono-date {
+    font-family: var(--font-mono, monospace);
+    font-size: 11.5px;
+    color: var(--ep-ink-muted);
+    white-space: nowrap;
+}
+
+/* Indicadores tipográficos limpios (punto + palabra, sin pastilla rellena) */
+.ep-dot-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono, monospace);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.ep-dot-state::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+.ep-dot-state.CALIFICADA, .ep-dot-state.PRESENTE, .ep-dot-state.Aprobado { color: var(--ep-ok); }
+.ep-dot-state.ENTREGADA, .ep-dot-state.JUSTIFICADO { color: var(--ep-info); }
+.ep-dot-state.PENDIENTE, .ep-dot-state.TARDE { color: var(--ep-warn); }
+.ep-dot-state.ATRASADA, .ep-dot-state.AUSENTE, .ep-dot-state.Desaprobado { color: var(--ep-danger); }
+
+/* ── Rail Lateral Abierto (Apoderado + Ficha Personal) ────────────────────── */
+.ep-contact-entry {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--ep-rule-soft);
+}
+
+.ep-contact-entry:last-child {
+    border-bottom: none;
+}
+
+.ep-contact-role {
+    font-family: var(--font-mono, monospace);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.11em;
+    color: var(--ep-ink-faint);
+    margin-bottom: 4px;
+}
+
+.ep-contact-name {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ep-ink);
+    line-height: 1.25;
+    margin-bottom: 6px;
+}
+
+.ep-contact-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 13px;
+    color: var(--ep-ink-muted);
+    margin-bottom: 10px;
+}
+
+.ep-dl {
+    display: flex;
+    flex-direction: column;
+}
+
+.ep-dl-row {
+    display: grid;
+    grid-template-columns: 118px minmax(0, 1fr);
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--ep-rule-soft);
+    align-items: baseline;
+}
+
+.ep-dl-row:last-child {
+    border-bottom: none;
+}
+
+.ep-dl-row dt {
+    font-family: var(--font-mono, monospace);
+    font-size: 10.5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ep-ink-faint);
+}
+
+.ep-dl-row dd {
+    margin: 0;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ep-ink);
+    word-break: break-word;
+}
+
+/* ── Sub-filtros de Texto y Tablas Limpias (Pestañas Notas/Entregas/Asist) ─ */
+.ep-subtoolbar {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--ep-rule);
+    margin-bottom: 8px;
+}
+
+.ep-subfilter-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.ep-filter-btn {
+    background: transparent;
+    border: none;
+    padding: 4px 0;
+    font-family: var(--font-sans, inherit);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ep-ink-muted);
+    cursor: pointer;
+    border-bottom: 1.5px solid transparent;
+    transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.ep-filter-btn:hover {
+    color: var(--ep-ink);
+}
+
+.ep-filter-btn.active {
+    color: var(--ep-ink);
+    font-weight: 700;
+    border-bottom-color: var(--ep-ink);
+}
+
+.ep-asist-summary-strip {
+    display: flex;
+    align-items: baseline;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.ep-asist-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ep-ink-muted);
+}
+
+.ep-asist-stat strong {
+    font-family: var(--font-serif, Georgia, serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ep-ink);
+    font-variant-numeric: tabular-nums;
+}
+
+.ep-ledger-wrap {
+    overflow-x: auto;
+}
+
+.ep-ledger-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.ep-ledger-table th {
+    padding: 12px 10px 10px 0;
+    font-family: var(--font-mono, monospace);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ep-ink-faint);
+    border-bottom: 1px solid var(--ep-rule);
+    white-space: nowrap;
+}
+
+.ep-ledger-table td {
+    padding: 14px 10px 14px 0;
+    font-size: 13.5px;
+    color: var(--ep-ink);
+    border-bottom: 1px solid var(--ep-rule-soft);
+    vertical-align: top;
+}
+
+.ep-ledger-table tbody tr:hover td {
+    background: var(--ep-hover);
+}
+
+.ep-table-note {
+    font-size: 12px;
+    color: var(--ep-ink-muted);
+    margin-top: 3px;
+    line-height: 1.4;
+}
+
+.ep-empty-inline {
+    padding: 28px 0;
+    font-family: var(--font-serif, Georgia, serif);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ep-ink-muted);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1040px) {
+    .ep-metrics-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ep-metric-col:nth-child(2n) {
+        border-right: none;
+        padding-right: 0;
+    }
+    .ep-metric-col:nth-child(odd) {
+        padding-left: 0;
+    }
+    .ep-metric-col:nth-child(n+3) {
+        border-top: 1px solid var(--ep-rule);
+    }
+    .ep-split {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+    .ep-main-col {
+        padding-right: 0;
+    }
+    .ep-rail-col {
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px solid var(--ep-rule);
+        padding-top: 28px;
+    }
+}
+
+@media (max-width: 640px) {
+    .ep-metrics-strip {
+        grid-template-columns: 1fr;
+    }
+    .ep-metric-col {
+        border-right: none;
+        padding: 16px 0 !important;
+        border-top: 1px solid var(--ep-rule);
+    }
+    .ep-metric-col:first-child {
+        border-top: none;
+    }
+    .ep-identity-block {
+        gap: 14px;
+    }
+    .ep-monogram {
+        width: 50px;
+        height: 50px;
+        font-size: 18px;
+    }
+    .ep-thin-track-wrap {
+        display: none;
+    }
+    .ep-dl-row {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+}
+
+/* ── Impresión limpia (Expediente Académico) ─────────────────────────────── */
+@media print {
+    .sidebar,
+    .topbar,
+    .teacher-footer,
+    .ep-util-bar,
+    .ep-header-actions,
+    .ep-tabs-line,
+    .ep-subfilter-links,
+    .ep-dispatch-actions,
+    .ep-inline-jump {
+        display: none !important;
+    }
+    .main-wrapper {
+        margin-left: 0 !important;
+    }
+    .content-area {
+        padding: 0 !important;
+    }
+    .ep-page {
+        color: #111318 !important;
+        --ep-ink: #111318;
+        --ep-ink-muted: #4b5563;
+        --ep-ink-faint: #6b7280;
+        --ep-rule: #d1d5db;
+        --ep-rule-soft: #e5e7eb;
+    }
+}

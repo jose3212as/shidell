@@ -60,6 +60,14 @@ public class SecurityValidationTest {
             boolean passed = result.getResponse().getStatus() == 401;
             printResult("Acceso sin token a endpoint protegido (/api/auth/me)", passed, "Código devuelto: " + result.getResponse().getStatus());
             assertTrue(passed, "El sistema debería devolver 401 No Autorizado");
+
+            MvcResult getUsersResult = mockMvc.perform(get("/api/users")).andReturn();
+            assertTrue(getUsersResult.getResponse().getStatus() == 401,
+                    "GET /api/users sin token debe devolver 401");
+
+            MvcResult getHijosResult = mockMvc.perform(get("/api/admin/padres/1/hijos")).andReturn();
+            assertTrue(getHijosResult.getResponse().getStatus() == 401,
+                    "GET /api/admin/padres/{id}/hijos sin token debe devolver 401");
         } catch (Exception e) {
             printResult("Acceso sin token", false, e.getMessage());
             throw e;

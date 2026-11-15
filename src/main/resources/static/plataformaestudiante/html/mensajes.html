@@ -1,18 +1,20 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="/vendor/shidell-theme.js?v=20261114d"></script>
+    <meta name="theme-color" content="#144272">
     <title>Shidell - Mensajería</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../js/session-api.js?v=20261019d"></script>
     <script src="../js/icon-helper.js?v=20261019d"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
+    <link rel="stylesheet" href="../css/styles.css?v=20261114s">
     <link rel="stylesheet" href="../css/mensajes.css?v=20261019d">
 </head>
-<body>
+<body class="mensajes-body">
     <div class="dashboard">
         <!-- Sidebar Principal -->
         <aside class="sidebar">
@@ -40,7 +42,7 @@
                     <p>Comunícate directamente con tus docentes y compañeros de curso</p>
                 </div>
                 <div class="topbar-actions">
-                    <button class="notification-btn" type="button">
+                    <button class="notification-btn" type="button" aria-label="Notificaciones">
                         <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
                         <span class="badge"></span>
                     </button>
@@ -54,14 +56,15 @@
                 </div>
             </header>
 
-            <div class="content-area" style="padding-top: 0;">
-                <div class="messaging-layout">
+            <div class="content-area">
+                <div class="messaging-layout" id="messaging-layout">
                     <!-- Panel Izquierdo: Conversaciones -->
                     <div class="chats-sidebar">
                         <div class="chats-sidebar-top">
                             <div class="chats-sidebar-title">
                                 <img src="../icons/svg/chat-conversation.svg" alt="Conversaciones">
                                 <span>Conversaciones</span>
+                                <span class="sidebar-unread-pill" id="total-unread-badge" style="display:none;">0</span>
                             </div>
                             <button type="button" class="btn-new-chat-compact" id="btn-sidebar-new-chat" title="Iniciar nueva conversación">
                                 <img src="../icons/svg/plus-white.svg" alt="Nueva">
@@ -72,7 +75,8 @@
                         <div class="sidebar-search">
                             <div class="search-input-wrapper">
                                 <img src="../icons/svg/search-muted.svg" class="search-svg-icon" alt="Buscar">
-                                <input type="text" id="chat-search-input" placeholder="Buscar por nombre o rol...">
+                                <input type="text" id="chat-search-input" placeholder="Buscar por nombre, curso o rol..." autocomplete="off">
+                                <button type="button" id="sidebar-clear-search" class="btn-clear-search" style="display:none;" title="Limpiar búsqueda">✕</button>
                             </div>
                             <div class="course-filter-wrapper">
                                 <label class="course-filter-label" for="course-filter">
@@ -93,15 +97,25 @@
                     <!-- Panel Derecho: Chat Activo -->
                     <div class="chat-area">
                         <!-- Conversación activa -->
-                        <div id="chat-active" style="display: none; flex-direction: column; height: 100%;">
+                        <div id="chat-active" class="chat-active-panel" style="display: none;">
                             <div class="chat-header">
+                                <button type="button" class="btn-chat-back" id="btn-back-chats" aria-label="Volver a lista de chats" title="Volver">
+                                    <img src="../icons/svg/arrow-left.svg" alt="Volver">
+                                </button>
                                 <div class="convo-avatar" id="active-avatar">??</div>
                                 <div class="chat-header-info">
-                                    <span class="chat-header-name" id="active-name">Selecciona un contacto</span>
-                                    <span class="chat-header-status" id="active-status">
-                                        <img src="../icons/svg/status-online.svg" class="status-svg-icon" alt="Estado">
-                                        <span>En línea</span>
-                                    </span>
+                                    <div class="chat-header-name-row">
+                                        <span class="chat-header-name" id="active-name">Selecciona un contacto</span>
+                                        <span class="chat-header-badge" id="active-role-badge" style="display:none;"></span>
+                                    </div>
+                                    <div class="chat-header-sub-row">
+                                        <span class="chat-header-status" id="active-status">
+                                            <img src="../icons/svg/status-online.svg" class="status-svg-icon" alt="Estado">
+                                            <span>En línea</span>
+                                        </span>
+                                        <span class="chat-header-dot" id="active-dot" style="display:none;">•</span>
+                                        <span class="chat-header-extra" id="active-extra"></span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -111,8 +125,11 @@
 
                             <!-- Vista previa de archivo adjunto -->
                             <div id="file-preview" class="file-preview-bar">
-                                <img src="../icons/svg/file-doc.svg" alt="Archivo">
-                                <span id="file-name-preview" style="flex: 1; font-weight: 700;"></span>
+                                <img src="../icons/svg/file-doc.svg" alt="Archivo" class="file-preview-icon">
+                                <div class="file-preview-info">
+                                    <span id="file-name-preview" class="file-preview-name"></span>
+                                    <span id="file-size-preview" class="file-preview-size"></span>
+                                </div>
                                 <button type="button" class="file-preview-close" id="cancel-file" title="Quitar archivo">
                                     <img src="../icons/svg/close-muted.svg" alt="Quitar">
                                 </button>
@@ -123,8 +140,8 @@
                                 <label for="msg-file" class="btn-attach-file" title="Adjuntar documento o imagen">
                                     <img src="../icons/svg/paperclip-navy.svg" alt="Adjuntar">
                                 </label>
-                                <input type="file" id="msg-file" style="display: none;" accept=".pdf,.doc,.docx,.jpg,.png">
-                                <input type="text" class="chat-input" id="chat-input" placeholder="Escribe tu mensaje aquí...">
+                                <input type="file" id="msg-file" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.webp">
+                                <input type="text" class="chat-input" id="chat-input" placeholder="Escribe tu mensaje aquí..." autocomplete="off">
                                 <button type="button" class="btn-send" id="btn-send-msg" title="Enviar mensaje">
                                     <img src="../icons/svg/send-plane.svg" alt="Enviar">
                                 </button>
@@ -152,25 +169,42 @@
     </div>
 
     <!-- Modal de Contactos -->
-    <div class="overlay" id="contacts-modal">
-        <div class="modal">
+    <div class="overlay" id="contacts-modal" aria-hidden="true" role="dialog">
+        <div class="modal contacts-modal-dialog">
             <div class="modal-header-row">
-                <h2>Seleccionar Contacto</h2>
-                <button type="button" class="modal-close-btn" id="close-contacts" title="Cerrar">
+                <div class="modal-title-group">
+                    <h2>Nueva Conversación</h2>
+                    <p class="modal-subtitle">Selecciona un docente o compañero para escribirle</p>
+                </div>
+                <button type="button" class="modal-close-btn" id="close-contacts" title="Cerrar ventana">
                     <img src="../icons/svg/close-muted.svg" alt="Cerrar">
                 </button>
             </div>
+            
+            <div class="modal-search-wrapper">
+                <div class="search-input-wrapper">
+                    <img src="../icons/svg/search-muted.svg" class="search-svg-icon" alt="Buscar">
+                    <input type="text" id="modal-search-input" placeholder="Buscar por nombre, curso o rol..." autocomplete="off">
+                    <button type="button" id="modal-clear-search" class="btn-clear-search" style="display:none;" title="Limpiar búsqueda">✕</button>
+                </div>
+                <div class="modal-category-tabs" id="modal-category-tabs">
+                    <button type="button" class="modal-tab active" data-filter="all">Todos</button>
+                    <button type="button" class="modal-tab" data-filter="DOCENTE">Docentes</button>
+                    <button type="button" class="modal-tab" data-filter="ESTUDIANTE">Compañeros</button>
+                </div>
+            </div>
+
             <div id="contacts-list-modal" class="contacts-modal-list">
                 <!-- Contactos desde API -->
             </div>
         </div>
     </div>
 
-    <script src="../js/app.js?v=20261019d"></script>
-    <script src="../js/notificaciones.js?v=20261019d"></script>
-    <script src="../js/mensajes.js?v=20261019d"></script>
+    <script src="/vendor/shidell-presence.js?v=20261115a"></script>
+    <script src="../js/app.js?v=20261115a"></script>
+    <script src="../js/notificaciones.js?v=20261114s"></script>
+    <script src="../js/mensajes.js?v=20261115a"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/vendor/alertas.js?v=20261019d"></script>
 </body>
 </html>
-

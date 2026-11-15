@@ -4,8 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.shidell.model.dto.AsistenciaDTO;
 import org.example.shidell.model.entity.Asistencia;
 import org.example.shidell.model.entity.UserEntity;
-import org.example.shidell.repository.AsistenciaRepository;
 import org.example.shidell.repository.UserRepository;
+import org.example.shidell.service.AsistenciaService;
 import org.example.shidell.mapper.EntityMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +35,7 @@ class AsistenciaControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private AsistenciaRepository asistenciaRepository;
+    private AsistenciaService asistenciaService;
 
     @MockBean
     private UserRepository userRepository;
@@ -76,7 +76,7 @@ class AsistenciaControllerTest {
     @DisplayName("GET /api/asistencia/estudiante/{estudianteId} - Estudiante accede a su propia asistencia")
     void getAsistenciaEstudiante_estudianteAccedeASuPropiaAsistencia_retornaLista() throws Exception {
         when(userRepository.findById(2L)).thenReturn(Optional.of(estudiante));
-        when(asistenciaRepository.findByEstudiante(estudiante)).thenReturn(List.of(asistencia));
+        when(asistenciaService.getAsistenciasCompletas(estudiante)).thenReturn(List.of(asistencia));
         when(mapper.toDTO(asistencia)).thenReturn(asistenciaDTO);
 
         mockMvc.perform(get("/api/asistencia/estudiante/2")
@@ -86,21 +86,21 @@ class AsistenciaControllerTest {
                 .andExpect(jsonPath("$[0].asistio").value(true))
                 .andExpect(jsonPath("$[0].descripcion").value("Asistió"));
 
-        verify(asistenciaRepository, times(1)).findByEstudiante(estudiante);
+        verify(asistenciaService, times(1)).getAsistenciasCompletas(estudiante);
     }
 
     @Test
     @DisplayName("GET /api/asistencia/estudiante/{estudianteId} - Padre accede a la asistencia de su hijo")
     void getAsistenciaEstudiante_padreAccedeAHijo_retornaLista() throws Exception {
         when(userRepository.findById(2L)).thenReturn(Optional.of(estudiante));
-        when(asistenciaRepository.findByEstudiante(estudiante)).thenReturn(List.of(asistencia));
+        when(asistenciaService.getAsistenciasCompletas(estudiante)).thenReturn(List.of(asistencia));
         when(mapper.toDTO(asistencia)).thenReturn(asistenciaDTO);
 
         mockMvc.perform(get("/api/asistencia/estudiante/2")
                         .requestAttr("authUser", padre))
                 .andExpect(status().isOk());
 
-        verify(asistenciaRepository, times(1)).findByEstudiante(estudiante);
+        verify(asistenciaService, times(1)).getAsistenciasCompletas(estudiante);
     }
 
     @Test
@@ -116,6 +116,6 @@ class AsistenciaControllerTest {
                         .requestAttr("authUser", otroEstudiante))
                 .andExpect(status().isForbidden());
 
-        verifyNoInteractions(asistenciaRepository);
+        verifyNoInteractions(asistenciaService);
     }
 }

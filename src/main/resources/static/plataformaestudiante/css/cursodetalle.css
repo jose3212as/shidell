@@ -823,3 +823,77 @@
     font-size: 14px;
     color: #94a3b8;
 }
+
+/* ── TAB EXÁMENES Y NOTAS (Minimalista por Bimestre) ── */
+.cd-exam-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.cd-exam-row:last-child {
+    border-bottom: none;
+}
+
+.cd-exam-main {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.cd-exam-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.cd-exam-meta {
+    font-size: 12.5px;
+    color: #64748b;
+}
+
+.cd-exam-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.cd-exam-score {
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+    min-width: 68px;
+    text-align: right;
+}
+
+.cd-exam-score span {
+    font-size: 12px;
+    font-weight: 600;
+    color: #94a3b8;
+}
+
+.cd-exam-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.cd-exam-pill.aprobado {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.cd-exam-pill.riesgo {
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+.cd-exam-pill.programado {
+    background: #fef3c7;
+    color: #92400e;
+}

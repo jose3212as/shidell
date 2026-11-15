@@ -47,6 +47,9 @@ function renderDistribucionRol(usuarios) {
   if (!ctx) return;
   if (chartRolesInstance) chartRolesInstance.destroy();
 
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  const labelColor = isDark ? '#cbd5e1' : '#475569';
+
   chartRolesInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -63,7 +66,7 @@ function renderDistribucionRol(usuarios) {
       maintainAspectRatio: false,
       cutout: '70%',
       plugins: {
-        legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 12 } } }
+        legend: { position: 'bottom', labels: { color: labelColor, font: { family: 'Inter', size: 12 } } }
       }
     }
   });
@@ -84,6 +87,10 @@ function renderDistribucionGrado(estudiantes) {
   if (!ctx) return;
   if (chartGradosInstance) chartGradosInstance.destroy();
 
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  const tickColor = isDark ? '#94a3b8' : '#475569';
+  const gridColor = isDark ? 'rgba(148, 163, 184, 0.16)' : '#e2e8f0';
+
   chartGradosInstance = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -91,7 +98,7 @@ function renderDistribucionGrado(estudiantes) {
       datasets: [{
         label: 'Estudiantes',
         data: data,
-        backgroundColor: '#0ea5e9',
+        backgroundColor: isDark ? '#38bdf8' : '#0ea5e9',
         borderRadius: 6,
         barPercentage: 0.6
       }]
@@ -103,12 +110,20 @@ function renderDistribucionGrado(estudiantes) {
         legend: { display: false }
       },
       scales: {
-        y: { beginAtZero: true, grid: { color: '#334155', drawBorder: false }, ticks: { stepSize: 1, color: '#94a3b8' } },
-        x: { grid: { display: false }, ticks: { color: '#94a3b8', maxRotation: 45, minRotation: 45 } }
+        y: { beginAtZero: true, grid: { color: gridColor, drawBorder: false }, ticks: { stepSize: 1, color: tickColor } },
+        x: { grid: { display: false }, ticks: { color: tickColor, maxRotation: 45, minRotation: 45 } }
       }
     }
   });
 }
+
+window.addEventListener('shidell:theme-changed', () => {
+  const data = window._reporteData;
+  if (data) {
+    renderDistribucionRol(data.usuarios || []);
+    renderDistribucionGrado((data.usuarios || []).filter(u => u.rol === 'ESTUDIANTE'));
+  }
+});
 
 function renderDocentesCursos(docentes, cursos) {
   const tbody = document.getElementById('docentes-tbody');

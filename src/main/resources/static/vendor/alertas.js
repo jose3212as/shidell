@@ -81,10 +81,20 @@ window.AppAlerts = {
     purgeLegacyStudyHub();
     document.addEventListener('DOMContentLoaded', purgeLegacyStudyHub);
 
+    if (!window.ShidellTheme && !document.querySelector('script[src*="shidell-theme.js"]')) {
+        const th = document.createElement('script');
+        th.src = '/vendor/shidell-theme.js?v=20261114d';
+        document.head.appendChild(th);
+    }
     if (!window.__shidellMobileShellLoaded && !document.querySelector('script[src*="mobile-shell.js"]')) {
         const s = document.createElement('script');
-        s.src = '/vendor/mobile-shell.js?v=20261019d';
+        s.src = '/vendor/mobile-shell.js?v=20261114m2';
         document.head.appendChild(s);
+    }
+    if (!window.ShidellMotion && !document.querySelector('script[src*="shidell-motion.js"]')) {
+        const m = document.createElement('script');
+        m.src = '/vendor/shidell-motion.js?v=20261114m3';
+        document.head.appendChild(m);
     }
     if (window.location.pathname.toLowerCase().includes('plataformaestudiante') &&
         !window.__shidellStudentSuiteLoaded &&

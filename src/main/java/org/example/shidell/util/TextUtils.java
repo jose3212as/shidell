@@ -7,13 +7,21 @@ import java.util.Locale;
 public class TextUtils {
 
     /**
+     * Elimina marcas diacríticas conservando mayúsculas y caracteres originales.
+     */
+    public static String sinAcentos(String valor) {
+        if (valor == null) return "";
+        return Normalizer.normalize(valor, Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "");
+    }
+
+    /**
      * Normaliza un texto eliminando acentos y convirtiéndolo a minúsculas
      * con separación por espacios simples.
      */
     public static String normalizar(String valor) {
         String texto = limpiarTexto(valor);
-        return Normalizer.normalize(texto, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "")
+        return sinAcentos(texto)
                 .toLowerCase(Locale.ROOT)
                 .replaceAll("[^a-z0-9]+", " ")
                 .trim();

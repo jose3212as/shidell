@@ -2,13 +2,19 @@ package org.example.shidell.service;
 
 import org.example.shidell.model.entity.Asistencia;
 import org.example.shidell.model.entity.Curso;
+import org.example.shidell.model.entity.Matricula;
 import org.example.shidell.model.entity.UserEntity;
 import org.example.shidell.repository.AsistenciaRepository;
 import org.example.shidell.repository.CursoRepository;
+import org.example.shidell.repository.MatriculaRepository;
+import org.example.shidell.util.AcademicCalendarUtil;
+import org.example.shidell.util.AcademicGroupHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,31 +30,14 @@ public class AsistenciaService {
     private CursoRepository cursoRepository;
 
     @Autowired
-    private org.example.shidell.repository.MatriculaRepository matriculaRepository;
+    private MatriculaRepository matriculaRepository;
 
     public List<Asistencia> getAsistenciasCompletas(UserEntity estudiante) {
-        String nivel = estudiante.getNivel();
-        String grado = estudiante.getGrado();
-        String seccion = estudiante.getSeccion();
-        String turno = estudiante.getTurno();
-
-        if (nivel == null || grado == null || seccion == null) {
-            org.example.shidell.model.entity.Matricula m = matriculaRepository.findByEstudianteAndAnioEscolar(estudiante, 2026).orElse(null);
-            if (m == null) {
-                List<org.example.shidell.model.entity.Matricula> list = matriculaRepository.findByEstudiante(estudiante);
-                if (!list.isEmpty()) m = list.get(0);
-            }
-            if (m != null && m.getAula() != null) {
-                nivel = m.getAula().getNivel();
-                grado = m.getAula().getGrado();
-                seccion = m.getAula().getSeccion();
-                turno = m.getAula().getTurno();
-            }
-        }
+        AcademicGroupHelper.AcademicGroup grupo = AcademicGroupHelper.resolve(estudiante, matriculaRepository);
 
         // 1. Obtener cursos del estudiante
-        List<Curso> cursos = (nivel != null && grado != null && seccion != null)
-                ? cursoRepository.findByGrupoAcademico(nivel, grado, seccion, turno)
+        List<Curso> cursos = grupo.isComplete()
+                ? cursoRepository.findByGrupoAcademico(grupo.nivel(), grupo.grado(), grupo.seccion(), grupo.turno())
                 : List.of();
 
         // 2. Obtener asistencias reales guardadas en DB
@@ -62,19 +51,37 @@ public class AsistenciaService {
 
         List<Asistencia> completas = new ArrayList<>(registradas);
 
-        // 3. Definir rango escolar (Marzo 1 hasta HOY)
-        LocalDate inicioClases = LocalDate.of(LocalDate.now().getYear(), 3, 1);
+        // 3. Definir rango según bloques lectivos oficiales MINEDU (excluyendo vacaciones inter-bloque y feriados)
         LocalDate hoy = LocalDate.now();
+        int anioEscolar = hoy.getYear();
+        LocalDate fechaMatricula = (matriculaRepository != null && estudiante != null)
+                ? matriculaRepository.findByEstudianteAndAnioEscolar(estudiante, anioEscolar)
+                        .map(Matricula::getFechaMatricula)
+                        .orElse(null)
+                : null;
+        List<AcademicCalendarUtil.BloqueLectivo> bloques = AcademicCalendarUtil.bloquesLectivos(anioEscolar);
 
-        // 4. Inyectar "PRESENTE" en días pasados donde hubo clase pero el profesor no guardó nada
+        // 4. Inyectar "PRESENTE" únicamente en días lectivos programados hasta hoy (sin feriados ni recesos)
         for (Curso curso : cursos) {
-            if (curso.getDiaSemana() == null) continue;
-            
-            LocalDate fecha = inicioClases;
-            while (!fecha.isAfter(hoy)) {
-                if (fecha.getDayOfWeek().getValue() == curso.getDiaSemana()) {
+            if (curso.getDiaSemana() == null || curso.getDiaSemana() < 1 || curso.getDiaSemana() > 7) continue;
+
+            DayOfWeek diaObjetivo = DayOfWeek.of(curso.getDiaSemana());
+            for (AcademicCalendarUtil.BloqueLectivo bloque : bloques) {
+                if (bloque.inicio().isAfter(hoy)) {
+                    break;
+                }
+                LocalDate techoBloque = bloque.fin().isBefore(hoy) ? bloque.fin() : hoy;
+                LocalDate inicioBloque = (fechaMatricula != null && fechaMatricula.isAfter(bloque.inicio()))
+                        ? fechaMatricula
+                        : bloque.inicio();
+                if (inicioBloque.isAfter(techoBloque)) {
+                    continue;
+                }
+
+                LocalDate fecha = inicioBloque.with(TemporalAdjusters.nextOrSame(diaObjetivo));
+                while (!fecha.isAfter(techoBloque)) {
                     String clave = curso.getId() + "|" + fecha.toString();
-                    if (!mapaRegistradas.containsKey(clave)) {
+                    if (!AcademicCalendarUtil.esFeriado(fecha) && !mapaRegistradas.containsKey(clave)) {
                         Asistencia asis = new Asistencia();
                         asis.setEstudiante(estudiante);
                         asis.setCurso(curso);
@@ -82,11 +89,11 @@ public class AsistenciaService {
                         asis.setEstado("PRESENTE");
                         completas.add(asis);
                     }
+                    fecha = fecha.plusWeeks(1);
                 }
-                fecha = fecha.plusDays(1);
             }
         }
-        
+
         return completas;
     }
 }

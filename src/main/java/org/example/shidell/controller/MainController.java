@@ -1,12 +1,21 @@
 package org.example.shidell.controller;
 
+import org.example.shidell.service.SystemConfigService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api")
 public class MainController {
+
+    @Autowired
+    private SystemConfigService systemConfigService;
 
     @GetMapping("/status")
     public String getStatus() {
@@ -14,12 +23,9 @@ public class MainController {
     }
 
     @GetMapping("/config")
-    public java.util.Map<String, Object> getConfig() {
-        java.util.Map<String, Object> config = new java.util.HashMap<>();
-        config.put("año", 2026);
-        config.put("nombreInstitucion", "Shidell");
-        config.put("totalSemanas", 36);
-        config.put("mensajeGlobal", "Bienvenido al ciclo académico 2026");
-        return config;
+    public ResponseEntity<Map<String, Object>> getConfig() {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore().mustRevalidate())
+                .body(systemConfigService.toPublicConfigMap());
     }
 }

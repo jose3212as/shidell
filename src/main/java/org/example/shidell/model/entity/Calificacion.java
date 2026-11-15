@@ -24,6 +24,10 @@ public class Calificacion {
     @JoinColumn(name = "estudiante_id")
     private UserEntity estudiante;
 
+    @ManyToOne
+    @JoinColumn(name = "evaluacion_id")
+    private Evaluacion evaluacion;
+
     public Calificacion() {}
 
     public Long getId() { return id; }
@@ -40,4 +44,6 @@ public class Calificacion {
     public void setCurso(Curso curso) { this.curso = curso; }
     public UserEntity getEstudiante() { return estudiante; }
     public void setEstudiante(UserEntity estudiante) { this.estudiante = estudiante; }
+    public Evaluacion getEvaluacion() { return evaluacion; }
+    public void setEvaluacion(Evaluacion evaluacion) { this.evaluacion = evaluacion; }
 }

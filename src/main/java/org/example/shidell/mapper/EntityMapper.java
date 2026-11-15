@@ -2,18 +2,25 @@ package org.example.shidell.mapper;
 
 import org.example.shidell.model.entity.*;
 import org.example.shidell.model.dto.*;
+import org.example.shidell.repository.MatriculaRepository;
+import org.example.shidell.util.AcademicGroupHelper;
 import org.example.shidell.util.TextUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 @Component
 public class EntityMapper {
 
-    @Autowired
-    private org.example.shidell.repository.MatriculaRepository matriculaRepository;
+    @Autowired(required = false)
+    private MatriculaRepository matriculaRepository;
+
+    @Autowired(required = false)
+    private org.example.shidell.repository.AulaRepository aulaRepository;
+
+    @Autowired(required = false)
+    private org.example.shidell.repository.CursoRepository cursoRepository;
 
     public UserDTO toDTO(UserEntity entity) {
         if (entity == null) return null;
@@ -33,23 +40,27 @@ public class EntityMapper {
         dto.setFotoPerfil(entity.getFotoPerfil());
         dto.setCodigoPlaza(entity.getCodigoPlaza());
         if ("ESTUDIANTE".equalsIgnoreCase(entity.getRol())) {
-            matriculaRepository.findByEstudianteAndAnioEscolar(entity, 2026).ifPresent(m -> {
-                dto.setNivel(m.getAula().getNivel());
-                dto.setGrado(m.getAula().getGrado());
-                dto.setSeccion(m.getAula().getSeccion());
-                dto.setTurno(m.getAula().getTurno());
-            });
+            AcademicGroupHelper.AcademicGroup grupo = AcademicGroupHelper.resolve(entity, matriculaRepository);
+            aplicarAlcanceAcademico(dto, grupo.nivel(), grupo.grado(), grupo.seccion(), grupo.turno());
+        } else if ("DOCENTE".equalsIgnoreCase(entity.getRol())) {
+            AcademicGroupHelper.AcademicGroup alcance = org.example.shidell.util.DocenteScopeHelper.resolve(
+                    entity, aulaRepository, cursoRepository);
+            aplicarAlcanceAcademico(dto, alcance.nivel(), alcance.grado(), alcance.seccion(), alcance.turno());
         } else {
-            dto.setNivel(entity.getNivel());
-            dto.setGrado(entity.getGrado());
-            dto.setSeccion(entity.getSeccion());
-            dto.setTurno(entity.getTurno());
+            aplicarAlcanceAcademico(dto, entity.getNivel(), entity.getGrado(), entity.getSeccion(), entity.getTurno());
         }
         dto.setUltimaConexion(entity.getUltimaConexion());
         if (entity.getPadre() != null) {
             dto.setPadreId(entity.getPadre().getId());
         }
         return dto;
+    }
+
+    private void aplicarAlcanceAcademico(UserDTO dto, String nivel, String grado, String seccion, String turno) {
+        dto.setNivel(nivel);
+        dto.setGrado(grado);
+        dto.setSeccion(seccion);
+        dto.setTurno(turno);
     }
 
     public CursoDTO toDTO(Curso entity) {
@@ -59,12 +70,10 @@ public class EntityMapper {
         dto.setNombre(TextUtils.limpiarTexto(entity.getNombre()));
         dto.setIcono(entity.getIcono());
         dto.setColor(entity.getColor());
-        if (entity.getAula() != null) {
-            dto.setNivel(entity.getAula().getNivel());
-            dto.setGrado(entity.getAula().getGrado());
-            dto.setSeccion(entity.getAula().getSeccion());
-            dto.setTurno(entity.getAula().getTurno());
-        }
+        dto.setNivel(entity.getNivel());
+        dto.setGrado(entity.getGrado());
+        dto.setSeccion(entity.getSeccion());
+        dto.setTurno(entity.getTurno());
         dto.setHoraInicio(entity.getHoraInicio());
         dto.setHoraFin(entity.getHoraFin());
         dto.setDiaSemana(entity.getDiaSemana());
@@ -138,6 +147,26 @@ public class EntityMapper {
         dto.setFecha(entity.getFecha());
         dto.setEstado(nota20 >= 11 ? "Aprobado" : "Desaprobado");
         dto.setCurso(toDTO(entity.getCurso()));
+        dto.setEstudiante(toDTO(entity.getEstudiante()));
+        if (entity.getEvaluacion() != null) {
+            dto.setEvaluacionId(entity.getEvaluacion().getId());
+            dto.setTipo(entity.getEvaluacion().getTipo());
+            dto.setPeso(entity.getEvaluacion().getPeso());
+        }
+        return dto;
+    }
+
+    public EvaluacionDTO toDTO(Evaluacion entity) {
+        if (entity == null) return null;
+        EvaluacionDTO dto = new EvaluacionDTO();
+        dto.setId(entity.getId());
+        dto.setTitulo(TextUtils.limpiarTexto(entity.getTitulo()));
+        dto.setTipo(entity.getTipo() != null ? entity.getTipo() : "ACTIVIDAD");
+        dto.setBimestre(entity.getBimestre() != null ? entity.getBimestre() : 1);
+        dto.setPeso(entity.getPeso() != null ? entity.getPeso() : 1.0);
+        dto.setNotaMaxima(entity.getNotaMaxima() != null ? entity.getNotaMaxima() : 20.0);
+        dto.setFecha(entity.getFecha());
+        dto.setCursoId(entity.getCurso() != null ? entity.getCurso().getId() : null);
         return dto;
     }
 

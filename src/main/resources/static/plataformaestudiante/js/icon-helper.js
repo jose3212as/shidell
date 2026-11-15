@@ -10,6 +10,19 @@
 
     const ICON_BASE = '../icons';
     const FALLBACK_ICON = `${ICON_BASE}/regular/book-open.svg`;
+    const ICON_ALIASES = {
+        palette: 'paint-brush',
+        church: 'hands-praying',
+        plant: 'flask',
+        laptop: 'code',
+        'lock-simple': 'lock',
+        folder: 'folder-open'
+    };
+
+    function resolveAlias(name) {
+        const clean = String(name || '').trim();
+        return ICON_ALIASES[clean] || clean || 'book-open';
+    }
 
     /**
      * Extrae el nombre limpio del ícono a partir de cualquier formato.
@@ -24,13 +37,13 @@
             for (const p of parts) {
                 if (p !== 'ph' && p !== 'ph-fill') {
                     const clean = p.replace(/^ph-/, '');
-                    if (clean) return clean;
+                    if (clean) return resolveAlias(clean);
                 }
             }
         }
 
         let name = str.replace(/^ph-/, '');
-        return name || 'book-open';
+        return resolveAlias(name);
     }
 
     /**
@@ -88,6 +101,7 @@
         }
 
         if (!iconName) iconName = extractIconName(classString);
+        else iconName = resolveAlias(iconName);
 
         const path = getIconPath(iconName, weight);
         const cls = 'icon-img' + (extraClasses.length ? ' ' + extraClasses.join(' ') : '');

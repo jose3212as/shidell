@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.example.shidell.model.entity.Asistencia;
 import org.example.shidell.model.entity.UserEntity;
 import org.example.shidell.model.dto.AsistenciaDTO;
-import org.example.shidell.repository.AsistenciaRepository;
 import org.example.shidell.repository.UserRepository;
 import org.example.shidell.mapper.EntityMapper;
 import org.example.shidell.exception.ResourceNotFoundException;

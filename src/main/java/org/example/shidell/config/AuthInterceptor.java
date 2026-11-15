@@ -32,20 +32,16 @@ public class AuthInterceptor implements HandlerInterceptor {
         // 2. Si no es ruta de la API, permitir otros recursos estáticos
         if (!path.startsWith("/api/")) return true;
 
-        // 3. Rutas públicas de autenticación
-        if (path.startsWith("/api/auth/")) return true;
+        // 3. Rutas públicas de autenticación y estado
+        if (path.startsWith("/api/auth/") || "/api/status".equals(path) || "/api/config".equals(path)) {
+            return true;
+        }
 
         AuthSessionService authSessionService = authSessionServiceProvider.getIfAvailable();
         if (authSessionService == null) return true;
 
         UserEntity user = authSessionService.authenticate(extractToken(request)).orElse(null);
         if (user == null) {
-            if ("GET".equals(request.getMethod()) && !path.startsWith("/api/admin/")) {
-                return true;
-            }
-            if ("GET".equals(request.getMethod()) && path.startsWith("/api/admin/padres/")) {
-                return true;
-            }
             return reject(response, HttpServletResponse.SC_UNAUTHORIZED, "Sesión inválida o expirada");
         }
 
@@ -91,7 +87,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         if (path.startsWith("/api/entregas")) {
             if (path.endsWith("/calificar")) return "DOCENTE".equals(rol);
-            return Set.of("GET", "POST").contains(method) && Set.of("ESTUDIANTE", "DOCENTE").contains(rol);
+            if ("GET".equals(method)) return Set.of("ESTUDIANTE", "DOCENTE", "PADRE").contains(rol);
+            return "POST".equals(method) && "ESTUDIANTE".equals(rol);
         }
 
         if (path.startsWith("/api/tareas")) {
@@ -105,10 +102,21 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         if (path.startsWith("/api/users")) {
+            if ("/api/users".equals(path) && "GET".equals(method)) {
+                return "DOCENTE".equals(rol);
+            }
             return Set.of("GET", "PUT").contains(method) && Set.of("ESTUDIANTE", "DOCENTE", "PADRE").contains(rol);
         }
 
-        if (path.startsWith("/api/notificaciones") || path.startsWith("/api/mensajes")
+        if (path.startsWith("/api/notificaciones/admin")) {
+            return false;
+        }
+
+        if (path.startsWith("/api/notificaciones")) {
+            return Set.of("GET", "PUT").contains(method) && Set.of("ESTUDIANTE", "DOCENTE", "PADRE").contains(rol);
+        }
+
+        if (path.startsWith("/api/mensajes")
                 || path.startsWith("/api/progreso") || path.startsWith("/api/asistencia")
                 || path.startsWith("/api/calendario")
                 || path.startsWith("/api/cursos")) {

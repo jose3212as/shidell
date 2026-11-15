@@ -128,3 +128,490 @@
     font-size: 12px;
     color: var(--text-secondary);
 }
+
+/* Toolbar & subfiltros */
+.grades-toolbar {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.grades-toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.grades-primary-btn {
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 13.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border-radius: 10px;
+}
+
+.grades-primary-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.grades-subfilters {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.grades-filter-tabs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.grades-tab-btn {
+    border: 1px solid var(--border-color-dark);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    padding: 7px 13px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-family: inherit;
+}
+
+.grades-tab-btn:hover {
+    color: var(--text-primary);
+    border-color: var(--primary);
+}
+
+.grades-tab-btn.active {
+    background: var(--primary);
+    color: var(--primary-ink);
+    border-color: var(--primary);
+    font-weight: 700;
+}
+
+.grades-subfilters-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.grades-bimestre-select {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color-dark);
+    color: var(--text-primary);
+    padding: 7px 12px;
+    border-radius: 9px;
+    font-size: 12.5px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.grades-summary-text {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Guía inicial cuando aún no hay columnas */
+.grades-onboarding-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding: 16px 20px;
+    border-radius: 12px;
+    background: var(--accent-tint-subtle);
+    border: 1px dashed var(--accent-border);
+}
+
+.grades-onboarding-copy h4 {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.grades-onboarding-copy p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+.grades-onboarding-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.grades-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 14px;
+    border-radius: 9px;
+    border: 1px solid var(--border-color-dark);
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    font-family: inherit;
+}
+
+.grades-link-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Cabecera enriquecida de columnas */
+.grades-table th.grade-col-header {
+    min-width: 155px;
+    vertical-align: top;
+    padding: 12px 12px;
+}
+
+.grades-table th.grade-col-header.is-editing {
+    background: var(--primary-light);
+    border-bottom-color: var(--primary);
+}
+
+.grade-th-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+}
+
+.grade-type-pill {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 999px;
+}
+
+.grade-type-pill.type-examen {
+    background: var(--red-light);
+    color: var(--red-dark);
+}
+
+.grade-type-pill.type-practica {
+    background: var(--blue-light);
+    color: var(--blue);
+}
+
+.grade-type-pill.type-actividad,
+.grade-type-pill.type-participacion {
+    background: var(--green-light);
+    color: var(--green-dark);
+}
+
+.grade-type-pill.type-tarea {
+    background: var(--yellow-light);
+    color: var(--yellow-dark);
+}
+
+.grade-meta-chip {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.grade-meta-chip.weight {
+    color: var(--primary);
+    border-color: var(--accent-border-soft);
+}
+
+.grade-th-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+    max-width: 190px;
+    margin: 0 auto 8px auto;
+    white-space: normal;
+    word-break: break-word;
+}
+
+.grade-th-sub {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-tertiary);
+}
+
+.grade-th-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.btn-col-grade {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 7px;
+    border: 1px solid var(--accent-border);
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 11.5px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.16s ease;
+}
+
+.btn-col-grade:hover,
+.btn-col-grade.active {
+    background: var(--primary);
+    color: var(--primary-ink);
+    border-color: var(--primary);
+}
+
+.btn-col-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.16s ease;
+}
+
+.btn-col-delete:hover {
+    border-color: var(--red);
+    color: var(--red);
+    background: var(--red-light);
+}
+
+/* Celdas clickeables y edición inline tipo planilla */
+.grade-cell-btn {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 3px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.grade-cell-btn:hover {
+    border-color: var(--accent-border);
+    background: var(--primary-light);
+}
+
+.grades-edit-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: var(--primary-light);
+    border: 1px solid var(--accent-border);
+}
+
+.grades-edit-bar-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    font-size: 13.5px;
+    color: var(--text-primary);
+}
+
+.grades-edit-bar-info i {
+    color: var(--primary);
+    font-size: 18px;
+}
+
+.grades-edit-hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.grades-edit-bar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.grades-dirty-pill {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.btn-edit-secondary {
+    padding: 8px 14px;
+    border-radius: 9px;
+    border: 1px solid var(--border-color-dark);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-edit-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 9px;
+    border: none;
+    background: var(--primary);
+    color: var(--primary-ink);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.btn-edit-primary:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.grade-edit-cell {
+    background: var(--accent-tint-subtle);
+}
+
+.grade-inline-input {
+    width: 78px;
+    padding: 7px 8px;
+    text-align: center;
+    border-radius: 9px;
+    border: 1.5px solid var(--accent-border-strong);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    font-family: var(--font-mono, inherit);
+    font-size: 14px;
+    font-weight: 700;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.grade-inline-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.grade-inline-input.is-invalid {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px var(--red-light);
+}
+
+/* Presets & detalles del modal Nueva Evaluación */
+.eval-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.eval-preset-chip {
+    border: 1px solid var(--border-color-dark);
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    padding: 6px 11px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.16s ease;
+}
+
+.eval-preset-chip:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.eval-check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-color);
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.eval-check-row input[type="checkbox"] {
+    margin-top: 2px;
+    accent-color: var(--primary);
+    width: 16px;
+    height: 16px;
+}
+
+.eval-modal-tip {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: var(--accent-tint-subtle);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.eval-modal-tip i {
+    color: var(--primary);
+    font-size: 17px;
+    flex-shrink: 0;
+}
+
+#modal-nueva-evaluacion .premium-modal {
+    max-height: 92vh;
+    overflow-y: auto;
+}
+
+#modal-nueva-evaluacion .modal-body {
+    padding: 22px 26px;
+    gap: 15px;
+}

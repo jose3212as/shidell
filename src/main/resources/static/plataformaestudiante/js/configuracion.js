@@ -113,6 +113,7 @@
         const viewEl = document.getElementById('settings-view');
         viewEl.innerHTML = (vistas[vistaActual] || renderPerfil)();
         conectarEventosVista();
+        window.ShidellTheme?.syncUI();
     }
 
     function conectarEventosVista() {
@@ -227,10 +228,18 @@
     }
 
     function renderCuenta() {
+        const theme = (window.ShidellTheme && window.ShidellTheme.getTheme()) || document.documentElement.dataset.theme || 'light';
         return `
             <div class="settings-section">
                 <div class="settings-header">
                     <div><span class="settings-kicker">Cuenta</span><h2>Opciones de cuenta</h2></div>
+                </div>
+                <div class="toggle-row" style="margin-bottom: 16px;">
+                    <div><img src="../icons/regular/moon.svg" class="icon-img" alt="moon"><strong>Apariencia del portal</strong><span>Elige entre modo claro y modo oscuro en tu cuenta.</span></div>
+                    <div class="shidell-theme-choice-pills" role="group" aria-label="Tema del portal">
+                        <button type="button" class="shidell-theme-choice-btn ${theme === 'light' ? 'active' : ''}" data-theme-choice="light">Claro</button>
+                        <button type="button" class="shidell-theme-choice-btn ${theme === 'dark' ? 'active' : ''}" data-theme-choice="dark">Oscuro</button>
+                    </div>
                 </div>
                 <div class="account-grid">
                     <button class="account-card" id="btn-info-cuenta"><img src="../icons/regular/identification-card.svg" class="icon-img" alt="identification-card"><strong>Informacion de la cuenta</strong><span>Ver ID, rol y datos basicos.</span></button>

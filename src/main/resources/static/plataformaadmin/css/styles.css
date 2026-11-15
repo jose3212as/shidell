@@ -5,9 +5,8 @@
     --border: #e5e7eb;
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
-body { background: var(--bg-light); color: #1f2937; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--bg-light); color: #1f2937; font-family: var(--font-sans, 'Plus Jakarta Sans', system-ui, sans-serif); }
 
 .dashboard { display: flex; min-height: 100vh; }
 

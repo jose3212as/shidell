@@ -53,6 +53,10 @@ const API = (() => {
       cursos:        ()       => request('GET',    '/admin/cursos'),
       editarCurso:   (id, d)  => request('PUT',    `/admin/cursos/${id}`, d),
       clonar:        (d)      => request('POST',   '/admin/cursos/clonar', d),
+      config:        ()       => request('GET',    '/admin/config'),
+      updateConfig:  (d)      => request('PUT',    '/admin/config', d),
+      uploadConfigIcon:(form) => request('POST',   '/admin/config/icon', form, true),
+      resetConfigIcon: ()     => request('DELETE', '/admin/config/icon'),
     },
 
     // ── Docente ──────────────────────────────────────────

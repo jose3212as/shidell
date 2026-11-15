@@ -310,6 +310,49 @@ html {
         font-size: 20px !important;
     }
 
+    /* Panel de Notificaciones adaptable en Smartphone */
+    .notification-backdrop {
+        position: fixed !important;
+        inset: 0 !important;
+        background: rgba(15, 23, 42, 0.4) !important;
+        backdrop-filter: blur(3px) !important;
+        -webkit-backdrop-filter: blur(3px) !important;
+        z-index: 2490 !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.25s ease !important;
+    }
+    .notification-backdrop.visible {
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .notification-panel {
+        position: fixed !important;
+        top: 64px !important;
+        left: 12px !important;
+        right: 12px !important;
+        width: auto !important;
+        max-width: calc(100vw - 24px) !important;
+        border-radius: 18px !important;
+        padding: 16px 14px !important;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.22) !important;
+        z-index: 2500 !important;
+        max-height: calc(100vh - 140px) !important;
+        max-height: calc(100dvh - 140px) !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        transform-origin: top center !important;
+    }
+
+    .notification-panel-list {
+        max-height: calc(100vh - 220px) !important;
+        max-height: calc(100dvh - 220px) !important;
+        overscroll-behavior: contain !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
     .top-user-info {
         padding-left: 8px !important;
         margin-left: 0 !important;

@@ -201,11 +201,35 @@ function initShared(pageTitle, breadcrumb = 'Admin / Shidell') {
 }
 
 /* ─── Panel de notificaciones ───────────────────────────── */
+let _adminNotifs = [];
+let _adminNotifTab = 'all';
+
+function positionAdminNotifPanel(panel, btn) {
+  if (!panel || !btn || !panel.classList.contains('visible')) return;
+  const rect = btn.getBoundingClientRect();
+  panel.style.position = 'fixed';
+  if (window.innerWidth <= 640) {
+    panel.style.top = `${Math.max(60, Math.round(rect.bottom + 8))}px`;
+    panel.style.left = '12px';
+    panel.style.right = '12px';
+    panel.style.width = 'auto';
+  } else {
+    panel.style.left = 'auto';
+    panel.style.top = `${Math.round(rect.bottom + 12)}px`;
+    panel.style.right = `${Math.max(16, Math.round(window.innerWidth - rect.right))}px`;
+  }
+}
+
 function initNotifPanel() {
   const btn = document.getElementById('notif-btn');
   if (!btn) return;
 
   let panel = null;
+
+  const closePanel = () => {
+    panel?.classList.remove('visible');
+    panel?.classList.add('hidden');
+  };
 
   btn.addEventListener('click', async (e) => {
     e.stopPropagation();
@@ -213,62 +237,128 @@ function initNotifPanel() {
       panel = document.createElement('div');
       panel.className = 'notif-panel hidden';
       panel.id = 'notif-panel';
-      panel.innerHTML = `
-        <div class="notif-panel-header">
-          <h4>Notificaciones</h4>
-          <button class="notif-mark-all">Marcar todas leídas</button>
-        </div>
-        <div class="notif-list" id="notif-list">
-          <div class="empty-state" style="padding:30px">
-            <i class="ph ph-bell-slash"></i>
-            <h3>Sin notificaciones</h3>
-          </div>
-        </div>`;
+      panel.setAttribute('role', 'dialog');
+      panel.setAttribute('aria-label', 'Centro de notificaciones');
       document.body.appendChild(panel);
-
-      // Cargar notificaciones reales
-      const user = Auth.getUser();
-      if (user) {
-        try {
-          const notifs = await API.notificaciones.porUsuario(user.id);
-          renderNotifs(notifs);
-        } catch {}
-      }
+      panel.addEventListener('click', ev => ev.stopPropagation());
     }
-    panel.classList.toggle('hidden');
+
+    const user = Auth.getUser();
+    if (user) {
+      try {
+        const notifs = await API.notificaciones.porUsuario(user.id);
+        renderNotifs(notifs);
+      } catch {
+        renderNotifs([]);
+      }
+    } else {
+      renderNotifs([]);
+    }
+
+    const willOpen = !panel.classList.contains('visible');
+    if (willOpen) {
+      panel.classList.remove('hidden');
+      panel.classList.add('visible');
+      positionAdminNotifPanel(panel, btn);
+    } else {
+      closePanel();
+    }
   });
 
   document.addEventListener('click', (e) => {
-    if (panel && !panel.contains(e.target) && e.target !== btn) {
-      panel.classList.add('hidden');
+    if (panel && !panel.contains(e.target) && !e.target.closest('#notif-btn')) {
+      closePanel();
     }
   });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePanel();
+  });
+  window.addEventListener('resize', () => positionAdminNotifPanel(panel, btn));
+  window.addEventListener('scroll', () => positionAdminNotifPanel(panel, btn), { passive: true });
 }
 
 function renderNotifs(notifs) {
-  const list = document.getElementById('notif-list');
-  if (!list) return;
-  const unread = notifs.filter(n => !n.leida);
+  _adminNotifs = Array.isArray(notifs) ? notifs : [];
+  const panel = document.getElementById('notif-panel');
+  const unreadList = _adminNotifs.filter(n => !n.leida);
+  const unreadCount = unreadList.length;
   const dot = document.getElementById('notif-dot');
-  if (dot) dot.style.display = unread.length ? 'block' : 'none';
+  if (dot) dot.style.display = unreadCount ? 'block' : 'none';
+  if (!panel) return;
 
-  if (!notifs.length) return;
-  list.innerHTML = notifs.slice(0, 10).map(n => `
-    <div class="notif-item ${n.leida ? '' : 'unread'}" onclick="markNotifRead(${n.id})">
-      <div class="notif-icon" style="background:var(--primary-light);color:var(--primary)">
-        <i class="ph ph-bell"></i>
-      </div>
+  const list = (_adminNotifTab === 'unread' ? unreadList : _adminNotifs).slice(0, 12);
+  const rowsHtml = list.map(n => `
+    <button type="button" class="notif-item ${n.leida ? '' : 'unread'}" onclick="markNotifRead(${Number(n.id)})">
+      <div class="notif-icon"><i class="ph ph-bell"></i></div>
       <div class="notif-body">
-        <div class="notif-title">${n.titulo || 'Notificación'}</div>
-        <div class="notif-text">${n.mensaje || ''}</div>
-        <div class="notif-time">${formatDate(n.fecha)}</div>
+        <div class="np-row-top">
+          <strong class="notif-title">${escapeHtml(n.titulo || 'Notificación')}</strong>
+          <span class="notif-time">${escapeHtml(formatDate(n.fecha))}</span>
+        </div>
+        <div class="notif-text">${escapeHtml(n.mensaje || '')}</div>
       </div>
-      ${!n.leida ? '<div class="notif-dot"></div>' : ''}
-    </div>`).join('');
+      <div class="np-unread-col" aria-hidden="true">${n.leida ? '' : '<span class="np-unread-dot"></span>'}</div>
+    </button>`).join('');
+
+  panel.innerHTML = `
+    <div class="np-head">
+      <div class="np-title-wrap">
+        <h4>Notificaciones</h4>
+        <span class="notif-badge-pill">${unreadCount > 0 ? `${unreadCount} sin leer` : 'Al día'}</span>
+      </div>
+      <div class="notif-header-actions">
+        <button type="button" class="np-action-pill notif-mark-all" ${unreadCount === 0 ? 'disabled' : ''}>
+          <i class="ph ph-checks"></i><span>Marcar leídas</span>
+        </button>
+        <button type="button" class="np-close-btn" id="admin-np-close" aria-label="Cerrar"><i class="ph ph-x"></i></button>
+      </div>
+    </div>
+    <div class="np-tabs" role="tablist">
+      <button type="button" role="tab" class="np-tab ${_adminNotifTab === 'all' ? 'is-active' : ''}" data-adm-tab="all">
+        <span>Todas</span><span class="np-tab-count">${_adminNotifs.length}</span>
+      </button>
+      <button type="button" role="tab" class="np-tab ${_adminNotifTab === 'unread' ? 'is-active' : ''}" data-adm-tab="unread">
+        <span>Sin leer</span><span class="np-tab-count">${unreadCount}</span>
+      </button>
+    </div>
+    <div class="notif-list" id="notif-list">
+      ${rowsHtml || `
+        <div class="np-empty">
+          <span class="np-empty-icon"><i class="ph ph-bell-simple"></i></span>
+          <p class="np-empty-title">${_adminNotifTab === 'unread' ? 'Todo al día' : 'Sin novedades por ahora'}</p>
+          <p class="np-empty-copy">${_adminNotifTab === 'unread' ? 'No hay avisos sin leer.' : 'Aquí aparecerán las notificaciones administrativas.'}</p>
+        </div>
+      `}
+    </div>`;
+
+  panel.querySelector('#admin-np-close')?.addEventListener('click', () => {
+    panel.classList.remove('visible');
+    panel.classList.add('hidden');
+  });
+  panel.querySelectorAll('[data-adm-tab]').forEach(t => {
+    t.addEventListener('click', () => {
+      _adminNotifTab = t.getAttribute('data-adm-tab') || 'all';
+      renderNotifs(_adminNotifs);
+    });
+  });
+  panel.querySelector('.notif-mark-all')?.addEventListener('click', async () => {
+    const user = Auth.getUser();
+    if (!user) return;
+    await Promise.all(unreadList.map(n => API.notificaciones.marcarLeida(n.id).catch(() => {})));
+    const fresh = await API.notificaciones.porUsuario(user.id).catch(() => []);
+    renderNotifs(fresh);
+  });
 }
 
 async function markNotifRead(id) {
-  try { await API.notificaciones.marcarLeida(id); } catch {}
+  try {
+    await API.notificaciones.marcarLeida(id);
+    const user = Auth.getUser();
+    if (user) {
+      const fresh = await API.notificaciones.porUsuario(user.id).catch(() => []);
+      renderNotifs(fresh);
+    }
+  } catch {}
 }
 
 /* ─── Helpers globales ──────────────────────────────────── */

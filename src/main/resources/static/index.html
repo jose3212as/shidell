@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261115c"></script>
+  <title>Shidell — Plataforma de Gestión y Convivencia Escolar</title>
+  <meta name="description" content="Plataforma de gestión académica escolar que conecta a docentes, directores, alumnos y familias en tiempo real. Registro de notas, asistencia y horarios.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  
+  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/vendor/shidell-modern-system.css?v=20261114m3">
+  <script src="/vendor/shidell-motion.js?v=20261114m3" defer></script>
+</head>
+<body>
+
+  <!-- ========================================================================
+       HEADER OPERATIVO
+       ======================================================================== -->
+  <header class="site-header">
+    <div class="editorial-shell">
+      <div class="header-inner">
+        <div class="brand-group">
+          <a href="/" class="brand-mark">
+            <span>SHIDELL</span>
+            <span class="dot"></span>
+          </a>
+          <span class="period-badge">
+            <span class="live-pulse"></span>
+            CICLO 2026 · BIMESTRE II
+          </span>
+        </div>
+
+        <nav class="nav-editorial" aria-label="Navegación principal">
+          <a href="#aula-en-vivo"><span class="nav-idx">01.</span> Horarios en Vivo</a>
+          <a href="#flujo-operativo"><span class="nav-idx">02.</span> Ciclo de Evaluación</a>
+          <a href="#matriz-roles"><span class="nav-idx">03.</span> Matriz de Roles</a>
+          <a href="#soporte"><span class="nav-idx">04.</span> Mesa de Partes</a>
+        </nav>
+
+        <div class="header-cta-group">
+          <a href="/register.html" class="btn-text-subtle">Admisión</a>
+          <a href="/auth/login.html" class="btn-primary-action">
+            <span>Ingresar al Sistema</span>
+            <i class="ph-bold ph-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ======================================================================
+         HERO SECTION: ASIMETRÍA + DATOS REALES DE AULA
+         ====================================================================== -->
+    <section class="hero-section">
+      <div class="editorial-shell">
+        <div class="hero-grid">
+          
+          <!-- Columna Editorial Izquierda -->
+          <div class="hero-text-side">
+            <span class="kicker-context">
+              <i class="ph ph-shield-check"></i>
+              Plataforma Oficial de Gestión Escolar
+            </span>
+            <h1 class="hero-title">
+              El pulso académico de la escuela, <em>sincronizado</em> entre el aula y el hogar.
+            </h1>
+            <p class="hero-paragraph">
+              Registro inmediato de calificaciones de clase, control biométrico y visual de asistencia, y seguimiento directo para las familias sin demoras burocráticas ni duplicación de actas físicas.
+            </p>
+
+            <div class="portal-launch-box">
+              <div class="launch-box-header">
+                <span class="launch-box-title">Selecciona tu portal de ingreso:</span>
+                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--text-faint);">Acceso con DNI / Código</span>
+              </div>
+              <div class="portal-pill-grid">
+                
+                <a href="/auth/login.html?rol=estudiante" class="portal-pill-card">
+                  <div class="pill-info">
+                    <span class="pill-name">Estudiantes</span>
+                    <span class="pill-scope">Horarios, deberes y notas</span>
+                  </div>
+                  <i class="ph-bold ph-arrow-right"></i>
+                </a>
+
+                <a href="/auth/login.html?rol=docente" class="portal-pill-card">
+                  <div class="pill-info">
+                    <span class="pill-name">Docentes</span>
+                    <span class="pill-scope">Asistencia y registro de aula</span>
+                  </div>
+                  <i class="ph-bold ph-arrow-right"></i>
+                </a>
+
+                <a href="/auth/login.html?rol=padres" class="portal-pill-card">
+                  <div class="pill-info">
+                    <span class="pill-name">Padres y Familias</span>
+                    <span class="pill-scope">Libreta virtual y citaciones</span>
+                  </div>
+                  <i class="ph-bold ph-arrow-right"></i>
+                </a>
+
+                <a href="/auth/login.html?rol=admin" class="portal-pill-card">
+                  <div class="pill-info">
+                    <span class="pill-name">Secretaría y Dirección</span>
+                    <span class="pill-scope">Matrículas y actas MINEDU</span>
+                  </div>
+                  <i class="ph-bold ph-arrow-right"></i>
+                </a>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Mockup Vivo de Horario y Asistencia -->
+          <aside class="live-classroom-sheet" id="aula-en-vivo" aria-label="Muestra del sistema en vivo">
+            <div class="sheet-meta-bar">
+              <div>
+                <span class="sheet-classroom-id">
+                  <i class="ph-bold ph-chalkboard"></i>
+                  Aula 4to B — Secundaria
+                </span>
+                <p class="sheet-level">Pabellón Central · Tutor: Lic. R. Quispe</p>
+              </div>
+              <span class="live-indicator-pill">
+                <span class="live-pulse"></span>
+                EN CLASE
+              </span>
+            </div>
+
+            <!-- Tabla de Malla Semanal en Vivo -->
+            <table class="schedule-table">
+              <thead>
+                <tr>
+                  <th>Bloque</th>
+                  <th>Asignatura</th>
+                  <th>Docente</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>08:00 - 09:30</td>
+                  <td>Álgebra y Funciones</td>
+                  <td>Lic. R. Quispe</td>
+                  <td><span class="status-chip chip-done">Finalizada</span></td>
+                </tr>
+                <tr class="in-progress">
+                  <td>09:45 - 11:15</td>
+                  <td>Comunicación y Redacción</td>
+                  <td>Mg. L. Flores</td>
+                  <td><span class="status-chip chip-live">En curso</span></td>
+                </tr>
+                <tr>
+                  <td>11:30 - 13:00</td>
+                  <td>Química y Laboratorio</td>
+                  <td>Ing. C. Torres</td>
+                  <td><span class="status-chip chip-next">11:30 hrs</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Asistencia en Vivo del Salón -->
+            <div class="attendance-compact-panel">
+              <div class="panel-header-mini">
+                <span>Asistencia al instante en sala</span>
+                <span style="color: var(--accent-cobalt);">28 de 30 alumnos</span>
+              </div>
+              <div class="attendance-bar-container" title="93.3% de asistencia">
+                <div class="bar-present"></div>
+                <div class="bar-absent"></div>
+              </div>
+              <div class="attendance-legend">
+                <span>Presentes: <strong>28</strong></span>
+                <span>Faltas justif.: <strong>2</strong></span>
+                <span>Injustif.: <strong>0</strong></span>
+              </div>
+            </div>
+
+            <!-- Estadísticas Clave de Aula -->
+            <div class="sheet-quick-stats">
+              <div class="stat-brick">
+                <span class="val">15.4</span>
+                <span class="lbl">Promedio salón</span>
+              </div>
+              <div class="stat-brick">
+                <span class="val">03</span>
+                <span class="lbl">Tareas en revisión</span>
+              </div>
+              <div class="stat-brick">
+                <span class="val">100%</span>
+                <span class="lbl">Temario cubierto</span>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         BANDA TÉCNICA OPERATIVA (ESPECIFICACIONES DEL COLEGIO)
+         ====================================================================== -->
+    <section class="specs-strip">
+      <div class="editorial-shell">
+        <div class="specs-grid">
+          <div class="spec-cell">
+            <div class="spec-number">14</div>
+            <div class="spec-title">Módulos Escolares</div>
+            <div class="spec-desc">Gestión integral de horarios, tareas, asistencia, actas y mensajería oficial.</div>
+          </div>
+          <div class="spec-cell">
+            <div class="spec-number">04</div>
+            <div class="spec-title">Perfiles Segregados</div>
+            <div class="spec-desc">Privacidad estricta por credencial para Estudiantes, Docentes, Familias y Dirección.</div>
+          </div>
+          <div class="spec-cell">
+            <div class="spec-number">PostgreSQL</div>
+            <div class="spec-title">Persistencia Robusta</div>
+            <div class="spec-desc">Registro transaccional íntegro con auditoría de cambios y copias de seguridad continuas.</div>
+          </div>
+          <div class="spec-cell">
+            <div class="spec-number">MINEDU</div>
+            <div class="spec-title">Formato Oficial</div>
+            <div class="spec-desc">Exportación directa a actas bimestrales conforme a la normativa educativa nacional.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         EL CICLO DE 3 MINUTOS (FLUJO OPERATIVO COMPLETO)
+         ====================================================================== -->
+    <section class="workflow-section" id="flujo-operativo">
+      <div class="editorial-shell">
+        <span class="section-kicker">Demostración Operativa</span>
+        <h2 class="section-heading">El ciclo de una evaluación: del aula a la familia en 3 minutos.</h2>
+        <p class="section-intro">
+          Shidell reemplaza los procesos diferidos de fin de mes por un flujo continuo donde cada evento escolar produce un registro inmediato sin esfuerzo duplicado.
+        </p>
+
+        <div class="workflow-steps-layout">
+          
+          <!-- Paso 1: Docente -->
+          <article class="step-card">
+            <div class="step-header">
+              <span class="step-idx">PASO 01</span>
+              <span class="step-role-badge">Docente</span>
+            </div>
+            <h3>Publicación de Rúbrica y Criterios</h3>
+            <p>
+              El profesor sube las pautas de la tarea asignada desde su panel de aula, estableciendo el plazo de entrega y los criterios de evaluación vigentes.
+            </p>
+            <div class="step-ui-snippet">
+              <div class="snippet-line">
+                <span class="snippet-label">Asignatura:</span>
+                <span class="snippet-val">Comunicación</span>
+              </div>
+              <div class="snippet-line">
+                <span class="snippet-label">Entrega máx:</span>
+                <span class="snippet-val">Viernes 23:59 hrs</span>
+              </div>
+              <div class="snippet-line">
+                <span class="snippet-label">Tipo:</span>
+                <span class="snippet-val">Ensayo argumentativo</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Paso 2: Alumno -->
+          <article class="step-card">
+            <div class="step-header">
+              <span class="step-idx">PASO 02</span>
+              <span class="step-role-badge">Estudiante</span>
+            </div>
+            <h3>Envío Digital con Constancia Temporal</h3>
+            <p>
+              El estudiante carga su archivo digital antes del cierre. El sistema genera un identificador único de entrega para evitar disputas de recepción.
+            </p>
+            <div class="step-ui-snippet">
+              <div class="snippet-line">
+                <span class="snippet-label">Archivo:</span>
+                <span class="snippet-val">Ensayo_G4_Final.pdf</span>
+              </div>
+              <div class="snippet-line">
+                <span class="snippet-label">Hora registro:</span>
+                <span class="snippet-val">19:42 hrs (A tiempo)</span>
+              </div>
+              <div class="snippet-line">
+                <span class="snippet-label">Estado:</span>
+                <span class="snippet-val" style="color: var(--status-live-text);">Recepcionado</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Paso 3: Apoderado -->
+          <article class="step-card">
+            <div class="step-header">
+              <span class="step-idx">PASO 03</span>
+              <span class="step-role-badge">Familia y Dirección</span>
+            </div>
+            <h3>Retroalimentación y Libreta en Vivo</h3>
+            <p>
+              Al registrar la nota (0-20) y observaciones pedagógicas, el promedio bimestral se recalcula y queda disponible en la libreta virtual de la familia.
+            </p>
+            <div class="step-ui-snippet">
+              <div class="snippet-line">
+                <span class="snippet-label">Calificación:</span>
+                <span class="snippet-val">17 / 20 (Logro destacado)</span>
+              </div>
+              <div class="snippet-line">
+                <span class="snippet-label">Promedio bim:</span>
+                <span class="snippet-val">16.2</span>
+              </div>
+              <div class="snippet-line">
+                <span class="snippet-label">Firma familiar:</span>
+                <span class="snippet-val">Enterado digitalmente</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         MATRIZ DE PERMISOS Y CAPACIDADES POR ROL
+         ====================================================================== -->
+    <section class="matrix-section" id="matriz-roles">
+      <div class="editorial-shell">
+        <span class="section-kicker">Transparencia y Gobernanza</span>
+        <h2 class="section-heading">Matriz de capacidades y acceso por tipo de usuario.</h2>
+        <p class="section-intro">
+          Cada perfil cuenta con interfaces y accesos adaptados estrictamente a sus responsabilidades dentro de la institución escolar.
+        </p>
+
+        <div class="matrix-table-wrap">
+          <table class="permissions-table">
+            <thead>
+              <tr>
+                <th>Capacidad Operativa</th>
+                <th>Estudiante</th>
+                <th>Docente</th>
+                <th>Padre / Apoderado</th>
+                <th>Secretaría / Admin</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Consulta de Horario y Aulas Asignadas</strong></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Consulta personal</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Agenda semanal</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Horario de hijos</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Configuración global</span></td>
+              </tr>
+              <tr>
+                <td><strong>Envío y Recepción de Deberes / Tareas</strong></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Carga de tareas</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Calificación y rúbrica</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Seguimiento de entregas</span></td>
+                <td><span class="role-tag-disabled">— Solo auditoría</span></td>
+              </tr>
+              <tr>
+                <td><strong>Toma de Asistencia en el Aula</strong></td>
+                <td><span class="role-tag-disabled">— Sin acceso</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Marcación en vivo</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Notificación de falta</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Consolidado mensual</span></td>
+              </tr>
+              <tr>
+                <td><strong>Ingreso de Notas Bimestrales</strong></td>
+                <td><span class="role-tag-disabled">— Solo lectura</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Registro oficial</span></td>
+                <td><span class="role-tag-disabled">— Solo lectura</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Cierre formal de actas</span></td>
+              </tr>
+              <tr>
+                <td><strong>Mensajería Institucional y Citaciones</strong></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Docentes del aula</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Alumnos y tutores</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Tutor y directivos</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-check"></i> Comunicados masivos</span></td>
+              </tr>
+              <tr>
+                <td><strong>Emisión de Boletas Oficiales en PDF</strong></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-download-simple"></i> Descarga personal</span></td>
+                <td><span class="role-tag-disabled">— Registro previo</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-download-simple"></i> Boleta firmada</span></td>
+                <td><span class="role-tag-active"><i class="ph-bold ph-printer"></i> Emisión masiva</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         SOPORTE Y MESA DE PARTES VIRTUAL
+         ====================================================================== -->
+    <section class="support-section" id="soporte">
+      <div class="editorial-shell">
+        <div class="support-grid">
+          
+          <div class="support-card">
+            <h3>
+              <i class="ph-bold ph-headset"></i>
+              Mesa de Ayuda Técnica
+            </h3>
+            <p>
+              Si tienes problemas para recuperar tus credenciales institucionales o cargar comprobantes de justificación médica, contáctate con el equipo de soporte de Shidell:
+            </p>
+            <div class="contact-item">
+              <span class="label">Horario de atención:</span>
+              <span class="value">Lunes a Viernes de 07:30 a 16:30 hrs</span>
+            </div>
+            <div class="contact-item">
+              <span class="label">Correo soporte:</span>
+              <span class="value">soporte.academico@shidell.edu.pe</span>
+            </div>
+            <div class="contact-item">
+              <span class="label">Ubicación física:</span>
+              <span class="value">Oficina de Cómputo · Pabellón B, Piso 1</span>
+            </div>
+          </div>
+
+          <div class="support-card">
+            <h3>
+              <i class="ph-bold ph-buildings"></i>
+              Secretaría y Admisiones
+            </h3>
+            <p>
+              Información sobre el proceso de postulación bimestral, traslados de matrícula y expedición de certificados de estudios oficiales:
+            </p>
+            <div class="contact-item">
+              <span class="label">Secretaría general:</span>
+              <span class="value">secretaria@shidell.edu.pe</span>
+            </div>
+            <div class="contact-item">
+              <span class="label">Teléfono directo:</span>
+              <span class="value">(01) 480-2100 anexo 104</span>
+            </div>
+            <div class="contact-item">
+              <span class="label">Registro escolar:</span>
+              <span class="value">
+                <a href="/register.html" style="color: var(--accent-cobalt); text-decoration: underline;">
+                  Completar ficha de postulante en línea →
+                </a>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========================================================================
+       FOOTER EDITORIAL Y FICHA TÉCNICA DEL SISTEMA
+       ======================================================================== -->
+  <footer class="site-footer">
+    <div class="editorial-shell">
+      <div class="footer-grid">
+        
+        <div>
+          <div class="brand-mark" style="font-size: 19px;">
+            <span>SHIDELL</span>
+            <span class="dot"></span>
+          </div>
+          <p class="footer-brand-desc">
+            Plataforma integral de gestión curricular, evaluación y convivencia escolar. Diseñada para garantizar trazabilidad pedagógica y comunicación transparente entre el colegio y el hogar.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Portales Directos</h4>
+          <ul class="footer-links">
+            <li><a href="/auth/login.html?rol=estudiante">Portal Estudiantes</a></li>
+            <li><a href="/auth/login.html?rol=docente">Portal Docentes</a></li>
+            <li><a href="/auth/login.html?rol=padres">Portal Padres de Familia</a></li>
+            <li><a href="/auth/login.html?rol=admin">Administración y Matrícula</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Documentación</h4>
+          <ul class="footer-links">
+            <li><a href="#flujo-operativo">Ciclo de Evaluaciones</a></li>
+            <li><a href="#matriz-roles">Matriz de Privilegios</a></li>
+            <li><a href="/register.html">Admisiones 2026</a></li>
+            <li><a href="#soporte">Mesa de Partes Virtual</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-col-title">Ficha del Sistema</h4>
+          <ul class="footer-links" style="font-family: var(--font-mono); font-size: 12px;">
+            <li>Versión: <strong>1.4.2-SNAPSHOT</strong></li>
+            <li>Servidor: <strong>Spring Boot 3.3.0</strong></li>
+            <li>Persistencia: <strong>PostgreSQL 18</strong></li>
+            <li>Estado: <span style="color: var(--status-live-text); font-weight: 700;">● Servicios en Línea</span></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom-bar">
+        <span>© 2026 Shidell — Todos los derechos reservados.</span>
+        <span>Diseño Editorial Institucional · Conforme a la Norma MINEDU</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

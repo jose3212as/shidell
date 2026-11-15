@@ -2,6 +2,85 @@
 // FIXED: clave sesión, evento hijo-cargado, campo nota20, asistencia via progreso
 instalarAuthFetchPadres();
 
+window.PadresPrefs = (() => {
+    const DEFAULTS = {
+        defaultChildId: null,
+        notifDefaultTab: 'all',
+        notifPollMs: 30000,
+        showNotifBadge: true,
+        reduceMotion: false,
+        contactSchedule: 'CUALQUIERA'
+    };
+
+    function keyFor(userId) {
+        return `shidell_padres_prefs_${userId || 'anon'}`;
+    }
+
+    function sanitize(raw) {
+        const src = raw && typeof raw === 'object' ? raw : {};
+        const poll = Number(src.notifPollMs);
+        return {
+            defaultChildId: src.defaultChildId ? Number(src.defaultChildId) : null,
+            notifDefaultTab: src.notifDefaultTab === 'unread' ? 'unread' : 'all',
+            notifPollMs: [0, 15000, 30000, 60000].includes(poll) ? poll : DEFAULTS.notifPollMs,
+            showNotifBadge: src.showNotifBadge !== false,
+            reduceMotion: Boolean(src.reduceMotion),
+            contactSchedule: ['MANANA', 'TARDE', 'CUALQUIERA'].includes(src.contactSchedule)
+                ? src.contactSchedule
+                : DEFAULTS.contactSchedule
+        };
+    }
+
+    function applyToDocument(prefs) {
+        const clean = sanitize(prefs);
+        if (clean.reduceMotion) {
+            document.documentElement.dataset.motion = 'reduced';
+        } else {
+            delete document.documentElement.dataset.motion;
+        }
+    }
+
+    return {
+        defaults() {
+            return { ...DEFAULTS };
+        },
+        get(userId) {
+            try {
+                const parsed = JSON.parse(localStorage.getItem(keyFor(userId)) || 'null');
+                return sanitize(parsed);
+            } catch {
+                return { ...DEFAULTS };
+            }
+        },
+        update(userId, patch) {
+            const next = sanitize({ ...this.get(userId), ...(patch || {}) });
+            try {
+                localStorage.setItem(keyFor(userId), JSON.stringify(next));
+            } catch {}
+            applyToDocument(next);
+            window.dispatchEvent(new CustomEvent('shidell:padres-prefs-changed', { detail: { userId, prefs: next } }));
+            return next;
+        },
+        reset(userId) {
+            const next = { ...DEFAULTS };
+            try {
+                localStorage.setItem(keyFor(userId), JSON.stringify(next));
+            } catch {}
+            applyToDocument(next);
+            window.dispatchEvent(new CustomEvent('shidell:padres-prefs-changed', { detail: { userId, prefs: next } }));
+            return next;
+        },
+        applyToDocument
+    };
+})();
+
+(() => {
+    try {
+        const u = JSON.parse(localStorage.getItem('shidell_user') || 'null');
+        if (u?.id) window.PadresPrefs.applyToDocument(window.PadresPrefs.get(u.id));
+    } catch {}
+})();
+
 function instalarAuthFetchPadres() {
     if (window.__shidellAuthFetch) return;
     window.__shidellAuthFetch = true;
@@ -14,6 +93,19 @@ function instalarAuthFetchPadres() {
         if (!headers.has('Authorization')) headers.set('Authorization', `Bearer ${user.sessionToken}`);
         return originalFetch(input, { ...init, headers });
     };
+}
+
+function iniciarPresenciaPadres(getUserFn) {
+    if (window.ShidellPresence?.startHeartbeat) {
+        window.ShidellPresence.startHeartbeat(getUserFn);
+        return;
+    }
+    if (document.querySelector('script[data-shidell-presence]')) return;
+    const script = document.createElement('script');
+    script.src = '/vendor/shidell-presence.js?v=20261115a';
+    script.dataset.shidellPresence = 'true';
+    script.onload = () => window.ShidellPresence?.startHeartbeat?.(getUserFn);
+    document.head.appendChild(script);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -33,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Exponemos al padre globalmente para que otras páginas lo usen
     window._padreActual = padre;
     refrescarPadreDesdeBackend(padre);
+    iniciarPresenciaPadres(() => window._padreActual || padre);
 
     // ── 2. Rellenar UI con datos del padre ─────────────────
     document.querySelectorAll('.padre-nombre').forEach(el => {
@@ -58,7 +151,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            hijoActivo = hijos[0];
+            const prefsActuales = window.PadresPrefs ? window.PadresPrefs.get(padre.id) : {};
+            const queryHijoId = Number(new URLSearchParams(window.location.search).get('hijoId') || 0);
+            let sessionHijoId = 0;
+            try {
+                sessionHijoId = Number(sessionStorage.getItem(`shidell_padre_active_child_${padre.id}`) || 0);
+            } catch {}
+            const prefHijoId = Number(prefsActuales.defaultChildId || 0);
+
+            hijoActivo =
+                hijos.find(h => h.id === queryHijoId) ||
+                hijos.find(h => h.id === sessionHijoId) ||
+                hijos.find(h => h.id === prefHijoId) ||
+                hijos[0];
+
+            try {
+                if (hijoActivo?.id) {
+                    sessionStorage.setItem(`shidell_padre_active_child_${padre.id}`, String(hijoActivo.id));
+                }
+            } catch {}
+
             window._hijoActivo = hijoActivo;
             renderHijoActivo();
 
@@ -66,13 +178,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const selectorHijo = document.getElementById('hijo-selector-list');
             if (selectorHijo && hijos.length > 1) {
                 selectorHijo.innerHTML = '';
-                hijos.forEach((h, i) => {
+                hijos.forEach((h) => {
                     const btn = document.createElement('button');
-                    btn.className = `btn-hijo${i === 0 ? ' active' : ''}`;
+                    btn.className = `btn-hijo${h.id === hijoActivo.id ? ' active' : ''}`;
                     btn.textContent = h.nombres;
                     btn.onclick = () => {
                         hijoActivo = h;
                         window._hijoActivo = h;
+                        try {
+                            sessionStorage.setItem(`shidell_padre_active_child_${padre.id}`, String(h.id));
+                        } catch {}
                         document.querySelectorAll('.btn-hijo').forEach(b => b.classList.remove('active'));
                         btn.classList.add('active');
                         renderHijoActivo();
@@ -81,7 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     };
                     selectorHijo.appendChild(btn);
                 });
-                document.getElementById('hijo-switch-wrap').style.display = 'flex';
+                const switchWrap = document.getElementById('hijo-switch-wrap');
+                if (switchWrap) switchWrap.style.display = 'flex';
             }
 
             // FIXED: disparar evento hijo-cargado para que las subpáginas lo reciban
@@ -236,71 +352,148 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── 8. Mensajes recientes ──────────────────────────────
     async function cargarMensajesRecientes() {
         const container = document.getElementById('mensajes-list');
-        if (!container) return;
+        const elMsg = document.getElementById('stat-mensajes');
+        if (!container && !elMsg) return;
         try {
-            const res = await fetch(`/api/mensajes/recientes/${padre.id}`);
+            const [res, resUnread] = await Promise.all([
+                fetch(`/api/mensajes/recientes/${padre.id}`),
+                fetch(`/api/mensajes/noleidos/${padre.id}`).catch(() => null)
+            ]);
             const contactos = res.ok ? await res.json() : [];
+            const noLeidosFallback = contactos.filter(c => Number(c.noLeidos || 0) > 0).length;
+            const noLeidos = (resUnread && resUnread.ok) ? Number(await resUnread.json()) : noLeidosFallback;
+            if (elMsg) elMsg.textContent = Number.isFinite(noLeidos) ? noLeidos : noLeidosFallback;
+            if (!container) return;
+
             container.innerHTML = '';
             if (contactos.length === 0) {
                 container.innerHTML = '<p style="padding:16px; color:#94a3b8; text-align:center;">Sin mensajes recientes.</p>';
                 return;
             }
             for (const c of contactos.slice(0, 3)) {
-                const resMsg = await fetch(`/api/mensajes/conversacion?u1=${padre.id}&u2=${c.id}`);
-                const msgs   = resMsg.ok ? await resMsg.json() : [];
-                const ultimo = msgs[msgs.length - 1];
                 const initials = ((c.nombres || '?')[0] + (c.apellidos || '?')[0]).toUpperCase();
+                const fullName = `${c.nombres || ''} ${c.apellidos || ''}`.trim();
+                const displayName = (c.rol === 'DOCENTE' && !/^prof\.?\s/i.test(fullName))
+                    ? `Prof. ${fullName}`
+                    : fullName;
+                const preview = c.ultimoMensaje || (Number(c.noLeidos || 0) > 0 ? `${c.noLeidos} mensaje(s) sin leer` : 'Toca para ver la conversación');
+                const fechaRaw = c.fechaUltimoMensaje || '';
+                const timeStr = fechaRaw ? new Date(fechaRaw).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }) : '';
+
                 const div = document.createElement('div');
                 div.className = 'message-card';
-                div.onclick   = () => window.location.href = `mensajes.html?chatId=${c.id}`;
+                div.onclick = () => window.location.href = `mensajes.html?chatId=${c.id}`;
                 div.innerHTML = `
                     <div class="msg-avatar">${avatarPersona(c, initials)}</div>
                     <div class="msg-body">
                         <div class="msg-header">
-                            <span class="msg-author">${(c.rol === 'DOCENTE' ? 'Prof. ' : '') + c.nombres + ' ' + c.apellidos}</span>
-                            <span class="msg-role">${c.rol === 'DOCENTE' ? 'Docente' : c.rol}</span>
+                            <span class="msg-author">${escapeHtml(displayName)}</span>
+                            <span class="msg-role">${c.rol === 'DOCENTE' ? 'Docente' : escapeHtml(c.rol || '')}</span>
                         </div>
-                        <p class="msg-snippet">${ultimo ? ultimo.contenido : 'Sin mensajes'}</p>
+                        <p class="msg-snippet">${escapeHtml(preview)}</p>
                     </div>
                     <div class="msg-meta">
-                        <span class="msg-time">${ultimo ? new Date(ultimo.fechaEnvio).toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'}) : ''}</span>
+                        <span class="msg-time">${escapeHtml(timeStr)}</span>
                     </div>
                 `;
                 container.appendChild(div);
             }
-
-            // Actualizar stat de mensajes sin leer
-            const noLeidos = contactos.filter(c => c.noLeidos > 0).length;
-            const elMsg = document.getElementById('stat-mensajes');
-            if (elMsg) elMsg.textContent = noLeidos;
-
         } catch (e) { console.error('Error mensajes:', e); }
     }
 
     // ── 9. Notificaciones ──────────────────────────────────
     let notificationPanel = null;
+    let notifBackdrop = null;
+    let notifActiveTab = window.PadresPrefs ? window.PadresPrefs.get(padre.id).notifDefaultTab : 'all';
+    let ultimaListaNotifs = [];
+    let notifPollTimer = null;
+
+    function actualizarBadgeNotif(lista) {
+        const noLeidas = (Array.isArray(lista) ? lista : []).filter(n => !n.leida).length;
+        const badge = document.querySelector('.notification-btn .badge');
+        if (!badge) return;
+        const prefs = window.PadresPrefs ? window.PadresPrefs.get(padre.id) : { showNotifBadge: true };
+        badge.textContent = noLeidas > 9 ? '9+' : String(noLeidas);
+        badge.style.display = (prefs.showNotifBadge !== false && noLeidas > 0) ? 'flex' : 'none';
+    }
+
+    function programarPollingNotifs() {
+        if (notifPollTimer) {
+            clearInterval(notifPollTimer);
+            notifPollTimer = null;
+        }
+        const prefs = window.PadresPrefs ? window.PadresPrefs.get(padre.id) : { notifPollMs: 30000 };
+        const ms = Number(prefs.notifPollMs);
+        if (ms > 0) {
+            notifPollTimer = setInterval(cargarNotificaciones, ms);
+        }
+    }
+
+    function fmtTiempoPadre(f) {
+        if (!f) return '';
+        const d = new Date(f);
+        if (Number.isNaN(d.getTime())) return '';
+        const diff = Date.now() - d.getTime();
+        if (diff < 60000) return 'Ahora';
+        if (diff < 3600000) return `Hace ${Math.floor(diff / 60000)} min`;
+        if (diff < 86400000) return `Hace ${Math.floor(diff / 3600000)} h`;
+        return d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' });
+    }
+
+    function cerrarNotifPadre() {
+        notificationPanel?.classList.remove('visible');
+        notifBackdrop?.classList.remove('visible');
+    }
+
+    function posicionarNotifPadre(btn) {
+        if (!notificationPanel || !notificationPanel.classList.contains('visible')) return;
+        const target = btn || document.querySelector('.notification-btn');
+        if (!target) return;
+        const rect = target.getBoundingClientRect();
+        notificationPanel.style.position = 'fixed';
+        if (window.innerWidth <= 640) {
+            notificationPanel.style.top = `${Math.max(60, Math.round(rect.bottom + 8))}px`;
+            notificationPanel.style.left = '12px';
+            notificationPanel.style.right = '12px';
+            notificationPanel.style.width = 'auto';
+        } else {
+            notificationPanel.style.left = 'auto';
+            notificationPanel.style.top = `${Math.round(rect.bottom + 12)}px`;
+            notificationPanel.style.right = `${Math.max(16, Math.round(window.innerWidth - rect.right))}px`;
+        }
+    }
 
     async function cargarNotificaciones() {
         try {
             const res = await fetch(`/api/notificaciones/usuario/${padre.id}`);
             if (!res.ok) return;
             const nots = await res.json();
-            const noLeidas = nots.filter(n => !n.leida).length;
-            const badge = document.querySelector('.notification-btn .badge');
-            if (badge) {
-                badge.textContent = noLeidas > 9 ? '9+' : noLeidas;
-                badge.style.display = noLeidas > 0 ? 'flex' : 'none';
-            }
-            renderNotificationPanel(nots);
+            ultimaListaNotifs = Array.isArray(nots) ? nots : [];
+            actualizarBadgeNotif(ultimaListaNotifs);
+            renderNotificationPanel(ultimaListaNotifs);
         } catch (e) { console.error('Error notificaciones:', e); }
     }
 
     function toggleNotificationPanel(btn) {
         if (!notificationPanel) return;
-        const isVisible = notificationPanel.classList.contains('visible');
-        notificationPanel.classList.toggle('visible', !isVisible);
-        notificationPanel.style.top = `${btn.offsetTop + btn.offsetHeight + 10}px`;
-        notificationPanel.style.right = '20px';
+        const willOpen = !notificationPanel.classList.contains('visible');
+        if (!willOpen) {
+            cerrarNotifPadre();
+            return;
+        }
+        if (!notifBackdrop) {
+            notifBackdrop = document.getElementById('notificationBackdrop');
+            if (!notifBackdrop) {
+                notifBackdrop = document.createElement('div');
+                notifBackdrop.id = 'notificationBackdrop';
+                notifBackdrop.className = 'notification-backdrop';
+                notifBackdrop.addEventListener('click', cerrarNotifPadre);
+                document.body.appendChild(notifBackdrop);
+            }
+        }
+        notifBackdrop.classList.add('visible');
+        notificationPanel.classList.add('visible');
+        posicionarNotifPadre(btn);
     }
 
     function renderNotificationPanel(notificaciones) {
@@ -308,18 +501,26 @@ document.addEventListener('DOMContentLoaded', () => {
             notificationPanel = document.createElement('div');
             notificationPanel.id = 'notificationPanel';
             notificationPanel.className = 'notification-panel';
+            notificationPanel.setAttribute('role', 'dialog');
+            notificationPanel.setAttribute('aria-label', 'Centro de notificaciones');
             document.body.appendChild(notificationPanel);
             notificationPanel.addEventListener('click', e => e.stopPropagation());
-            
-            document.addEventListener('click', () => {
-                if (notificationPanel) notificationPanel.classList.remove('visible');
+
+            document.addEventListener('click', () => cerrarNotifPadre());
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') cerrarNotifPadre();
             });
+            window.addEventListener('resize', () => posicionarNotifPadre());
+            window.addEventListener('scroll', () => posicionarNotifPadre(), { passive: true });
         }
 
-        const items = [];
-        notificaciones.slice(0, 10).forEach(n => {
+        const unreadList = notificaciones.filter(n => !n.leida);
+        const unreadCount = unreadList.length;
+        const list = (notifActiveTab === 'unread' ? unreadList : notificaciones).slice(0, 12);
+
+        const items = list.map(n => {
             let icon = 'ph-bell';
-            let titulo = n.titulo;
+            let titulo = n.titulo || 'Notificación';
             if (titulo.includes('[CRITICO]')) {
                 icon = 'ph-warning-circle';
                 titulo = titulo.replace('[CRITICO]', '').trim();
@@ -328,27 +529,74 @@ document.addEventListener('DOMContentLoaded', () => {
                 titulo = titulo.replace('[ALERTA]', '').trim();
             }
 
-            items.push(`
-                <button class="notif-row ${n.leida ? '' : 'unread'}" data-id="${n.id}">
+            return `
+                <button type="button" class="notif-row ${n.leida ? '' : 'unread'}" data-id="${escapeHtml(n.id)}">
                     <span class="notif-icon"><i class="ph ${icon}"></i></span>
                     <span class="notif-content">
-                        <strong>${titulo}</strong>
-                        <small>${n.mensaje}</small>
-                        <span class="time">${new Date(n.fecha).toLocaleString()}</span>
+                        <span class="np-row-top">
+                            <strong>${escapeHtml(titulo)}</strong>
+                            <span class="notif-time">${escapeHtml(fmtTiempoPadre(n.fecha))}</span>
+                        </span>
+                        <small>${escapeHtml(n.mensaje || '')}</small>
                     </span>
+                    <span class="np-unread-col" aria-hidden="true">${n.leida ? '' : '<span class="np-unread-dot"></span>'}</span>
                 </button>
-            `);
+            `;
         });
 
+        const emptyTitle = notifActiveTab === 'unread' ? 'Todo al día' : 'Sin novedades por ahora';
+        const emptyCopy = notifActiveTab === 'unread'
+            ? 'No tienes avisos sin leer.'
+            : 'Aquí aparecerán avisos de asistencia, tareas y notas de tus hijos.';
+
         notificationPanel.innerHTML = `
-            <div class="notification-panel-header">
-                <h3>Notificaciones</h3>
-                <button id="btn-marcar-todas" title="Marcar como leídas"><i class="ph ph-checks"></i></button>
+            <div class="np-head">
+                <div class="np-title-wrap">
+                    <h3>Notificaciones</h3>
+                    <span class="notif-badge-pill">${unreadCount > 0 ? `${unreadCount} sin leer` : 'Al día'}</span>
+                </div>
+                <div class="notif-header-actions">
+                    <button type="button" id="btn-marcar-todas" class="np-action-pill" ${unreadCount === 0 ? 'disabled' : ''} title="Marcar todas como leídas">
+                        <i class="ph ph-checks"></i>
+                        <span>Marcar leídas</span>
+                    </button>
+                    <button type="button" id="np-close-btn" class="np-close-btn" title="Cerrar" aria-label="Cerrar notificaciones">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="np-tabs" role="tablist">
+                <button type="button" role="tab" class="np-tab ${notifActiveTab === 'all' ? 'is-active' : ''}" data-pad-np-tab="all" aria-selected="${notifActiveTab === 'all'}">
+                    <span>Todas</span>
+                    <span class="np-tab-count">${notificaciones.length}</span>
+                </button>
+                <button type="button" role="tab" class="np-tab ${notifActiveTab === 'unread' ? 'is-active' : ''}" data-pad-np-tab="unread" aria-selected="${notifActiveTab === 'unread'}">
+                    <span>Sin leer</span>
+                    <span class="np-tab-count">${unreadCount}</span>
+                </button>
             </div>
             <div class="notification-panel-list">
-                ${items.length ? items.join('') : '<div class="notif-empty"><i class="ph ph-bell-slash"></i><p>No tienes notificaciones pendientes.</p></div>'}
+                ${items.length ? items.join('') : `
+                    <div class="np-empty">
+                        <span class="np-empty-icon"><i class="ph ph-bell-simple"></i></span>
+                        <p class="np-empty-title">${emptyTitle}</p>
+                        <p class="np-empty-copy">${emptyCopy}</p>
+                    </div>
+                `}
             </div>
         `;
+
+        notificationPanel.querySelector('#np-close-btn')?.addEventListener('click', cerrarNotifPadre);
+
+        notificationPanel.querySelectorAll('[data-pad-np-tab]').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const next = tab.getAttribute('data-pad-np-tab');
+                if (next && next !== notifActiveTab) {
+                    notifActiveTab = next;
+                    renderNotificationPanel(ultimaListaNotifs);
+                }
+            });
+        });
 
         notificationPanel.querySelectorAll('.notif-row').forEach(row => {
             row.addEventListener('click', async (e) => {
@@ -365,7 +613,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnMarcarTodas = notificationPanel.querySelector('#btn-marcar-todas');
         if (btnMarcarTodas) {
             btnMarcarTodas.addEventListener('click', async () => {
-                await Promise.all(notificaciones.filter(n => !n.leida).map(n =>
+                await Promise.all(unreadList.map(n =>
                     fetch(`/api/notificaciones/${n.id}/leer`, { method: 'PUT' }).catch(() => {})
                 ));
                 cargarNotificaciones();
@@ -383,22 +631,46 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── 10. Logout ─────────────────────────────────────────
-    // ── 10. Logout ─────────────────────────────────────────
     const btnLogouts = document.querySelectorAll('#btn-logout, .btn-logout, .dropdown-item');
     btnLogouts.forEach(btn => {
         if (btn && (btn.id === 'btn-logout' || btn.classList.contains('btn-logout'))) {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 e.preventDefault();
+                if (window.ShidellPresence?.notifyLogout) {
+                    await window.ShidellPresence.notifyLogout(padre);
+                } else {
+                    const headers = padre?.sessionToken ? { Authorization: `Bearer ${padre.sessionToken}` } : {};
+                    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', keepalive: true, headers }).catch(() => {});
+                }
                 localStorage.removeItem('shidell_user');
                 localStorage.removeItem('shidell_admin');
-                window.location.href = '/login.html';
+                try {
+                    sessionStorage.removeItem(`shidell_padre_active_child_${padre.id}`);
+                } catch {}
+                const goLogin = () => { window.location.href = '/login.html'; };
+                if (window.ShidellMotion && typeof window.ShidellMotion.playPortalHandoff === 'function') {
+                    window.ShidellMotion.playPortalHandoff({ rol: 'AUTH', originEl: btn }, goLogin);
+                } else {
+                    goLogin();
+                }
             });
         }
     });
 
+    window.addEventListener('shidell:padres-prefs-changed', (ev) => {
+        const nextPrefs = ev?.detail?.prefs;
+        if (!nextPrefs) return;
+        actualizarBadgeNotif(ultimaListaNotifs);
+        if (!notificationPanel || !notificationPanel.classList.contains('visible')) {
+            notifActiveTab = nextPrefs.notifDefaultTab;
+        }
+        programarPollingNotifs();
+    });
+
     // ── Arrancar ───────────────────────────────────────────
     cargarHijos();
-    setInterval(cargarNotificaciones, 30000);
+    cargarNotificaciones();
+    programarPollingNotifs();
 });
 
 function escapeHtml(value) {

@@ -63,10 +63,30 @@ public class AuthController {
         if (user.getEmail() == null || user.getEmail().isBlank() || user.getPassword() == null || user.getPassword().isBlank()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Email y contraseña son obligatorios"));
         }
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        String emailNorm = user.getEmail().trim().toLowerCase(java.util.Locale.ROOT);
+        if (!emailNorm.contains("@") || !emailNorm.contains(".")) {
+            return ResponseEntity.badRequest().body(Map.of("error", "El correo electrónico no tiene un formato válido"));
+        }
+        if (user.getPassword().length() < 6) {
+            return ResponseEntity.badRequest().body(Map.of("error", "La contraseña debe tener al menos 6 caracteres"));
+        }
+
+        String rolRaw = user.getRol();
+        String rolPermitido = (rolRaw == null || rolRaw.isBlank())
+                ? "ESTUDIANTE"
+                : rolRaw.trim().toUpperCase(java.util.Locale.ROOT);
+        if (!java.util.Set.of("ESTUDIANTE", "PADRE", "DOCENTE").contains(rolPermitido)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "El rol solicitado no está permitido en el registro público."));
+        }
+
+        if (userRepository.findByEmail(emailNorm).isPresent()) {
             return ResponseEntity.badRequest().body(Map.of("error", "El correo ya está registrado"));
         }
 
+        user.setId(null);
+        user.setEmail(emailNorm);
+        user.setRol(rolPermitido);
         user.setPassword(authSessionService.hashPassword(user.getPassword()));
         UserEntity saved = userRepository.save(user);
         String token = authSessionService.issueToken(saved);
@@ -86,7 +106,12 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        authSessionService.authenticate(extraerToken(request)).ifPresent(user -> {
+            // Al cerrar sesión explícitamente, expira la ventana activa (> 15 min) para mostrarse Desconectado de inmediato
+            user.setUltimaConexion(java.time.LocalDateTime.now().minusMinutes(30));
+            userRepository.save(user);
+        });
         ResponseCookie cookie = ResponseCookie.from("SHIDELL_SESSION", "")
                 .httpOnly(true).secure(false).sameSite("Lax").path("/").maxAge(Duration.ZERO).build();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(Map.of("ok", true));

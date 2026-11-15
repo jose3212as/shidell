@@ -13,6 +13,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
     Optional<UserEntity> findByCodigoPlaza(String codigoPlaza);
     List<UserEntity> findByRol(String rol);
+    long countByRol(String rol);
     List<UserEntity> findByPadreId(Long padreId);
 
     @Query("SELECT m.estudiante FROM Matricula m WHERE m.aula.nivel = :nivel AND m.aula.grado = :grado AND m.aula.seccion = :seccion")

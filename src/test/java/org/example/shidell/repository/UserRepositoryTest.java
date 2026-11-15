@@ -21,12 +21,21 @@ class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AulaRepository aulaRepository;
+
+    @Autowired
+    private MatriculaRepository matriculaRepository;
+
     private UserEntity estudiante;
     private UserEntity docente;
     private UserEntity padre;
+    private Aula aulaManana;
 
     @BeforeEach
     void setUp() {
+        matriculaRepository.deleteAll();
+        aulaRepository.deleteAll();
         userRepository.deleteAll();
 
         padre = new UserEntity();
@@ -50,6 +59,9 @@ class UserRepositoryTest {
         estudiante.setPadre(padre);
         estudiante = userRepository.save(estudiante);
 
+        aulaManana = aulaRepository.save(new Aula("SECUNDARIA", "3", "A", "MAÑANA", 2026));
+        matricular(estudiante, aulaManana);
+
         docente = new UserEntity();
         docente.setNombres("Carlos");
         docente.setApellidos("Ríos");
@@ -57,6 +69,15 @@ class UserRepositoryTest {
         docente.setPassword("{SHA256}hash");
         docente.setRol("DOCENTE");
         docente = userRepository.save(docente);
+    }
+
+    private void matricular(UserEntity alumno, Aula aula) {
+        Matricula m = new Matricula();
+        m.setEstudiante(alumno);
+        m.setAula(aula);
+        m.setAnioEscolar(2026);
+        m.setEstado("ACTIVO");
+        matriculaRepository.save(m);
     }
 
     // ── findByEmail ────────────────────────────────────────────────
@@ -112,11 +133,8 @@ class UserRepositoryTest {
         estudiante2.setEmail("luis@shidell.com");
         estudiante2.setPassword("{SHA256}hash");
         estudiante2.setRol("ESTUDIANTE");
-        estudiante2.setNivel("SECUNDARIA");
-        estudiante2.setGrado("3");
-        estudiante2.setSeccion("A");
-        estudiante2.setTurno("MAÑANA");
-        userRepository.save(estudiante2);
+        estudiante2 = userRepository.save(estudiante2);
+        matricular(estudiante2, aulaManana);
 
         List<UserEntity> grupo = userRepository.findByNivelAndGradoAndSeccion("SECUNDARIA", "3", "A");
 
@@ -133,11 +151,9 @@ class UserRepositoryTest {
         estudianteTarde.setEmail("lucia@shidell.com");
         estudianteTarde.setPassword("{SHA256}hash");
         estudianteTarde.setRol("ESTUDIANTE");
-        estudianteTarde.setNivel("SECUNDARIA");
-        estudianteTarde.setGrado("3");
-        estudianteTarde.setSeccion("A");
-        estudianteTarde.setTurno("TARDE");
-        userRepository.save(estudianteTarde);
+        estudianteTarde = userRepository.save(estudianteTarde);
+        Aula aulaTarde = aulaRepository.save(new Aula("SECUNDARIA", "3", "A", "TARDE", 2026));
+        matricular(estudianteTarde, aulaTarde);
 
         List<UserEntity> manana = userRepository.findByGrupoAcademico("SECUNDARIA", "3", "A", "MAÑANA");
 

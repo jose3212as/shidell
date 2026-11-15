@@ -3,15 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261114d"></script>
   <title>Asistencia — Shidell Admin</title>
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
   <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
-  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/variables.css?v=20261114s">
   <link rel="stylesheet" href="../css/base.css">
   <link rel="stylesheet" href="../css/animations.css">
   <link rel="stylesheet" href="../css/layout.css">
   <link rel="stylesheet" href="../css/components.css">
   <link rel="stylesheet" href="../css/shared.css">
+  <style>
+    .att-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 1100px) {
+      .att-stats-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .att-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .att-stat-card {
+      padding: 16px 14px;
+      text-align: center;
+    }
+    .att-info-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      border-radius: var(--border-radius-lg);
+      background: var(--color-bg-card);
+      border: 1px solid var(--border-color);
+    }
+    .att-info-bar.is-warning {
+      border-color: rgba(245, 158, 11, 0.45);
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .att-info-main {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      flex: 1;
+    }
+    .att-info-title {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .att-info-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+    .att-actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .att-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 10px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border-strong);
+      background: var(--color-bg-input);
+      color: var(--text-secondary);
+      transition: all var(--transition-fast);
+    }
+    .att-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+    .att-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .att-btn.is-active[data-estado="PRESENTE"] {
+      background: var(--green);
+      border-color: var(--green);
+      color: #ffffff;
+    }
+    .att-btn.is-active[data-estado="TARDE"] {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: #ffffff;
+    }
+    .att-btn.is-active[data-estado="AUSENTE"] {
+      background: var(--red);
+      border-color: var(--red);
+      color: #ffffff;
+    }
+    .att-btn.is-active[data-estado="JUSTIFICADO"] {
+      background: var(--cyan);
+      border-color: var(--cyan);
+      color: #ffffff;
+    }
+    .badge-yellow {
+      background: var(--yellow-light);
+      color: var(--yellow);
+    }
+    .badge-gray {
+      background: rgba(148, 163, 184, 0.16);
+      color: var(--text-secondary);
+    }
+    .att-origin-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    .att-origin-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+    .att-origin-pill.is-saved {
+      background: var(--green-light);
+      color: var(--green);
+    }
+    .att-origin-pill.is-default {
+      background: rgba(148, 163, 184, 0.16);
+      color: var(--text-secondary);
+    }
+  </style>
 </head>
 <body>
 <div class="app-shell" id="app-shell">
@@ -22,43 +157,61 @@
           <h1>Asistencia</h1>
           <p>Consulta y registra la asistencia de estudiantes por curso y fecha</p>
         </div>
+        <div class="page-header-actions">
+          <button type="button" class="btn btn-primary" id="btn-confirmar-todos" style="display:none;">
+            <i class="ph ph-checks"></i>
+            <span>Confirmar pendientes (Presente)</span>
+          </button>
+        </div>
       </div>
 
       <!-- Selectores -->
       <div class="card mb-20">
-        <div class="d-flex gap-16 items-center flex-wrap">
-          <div class="d-flex flex-col gap-8" style="flex:2;min-width:200px">
-            <label class="form-label">Curso</label>
+        <div class="d-flex gap-16 items-center flex-wrap" style="position:relative;z-index:1;">
+          <div class="d-flex flex-col gap-8" style="flex:2;min-width:220px">
+            <label class="form-label" for="curso-select">Curso</label>
             <select class="form-control form-select" id="curso-select">
               <option value="">Cargando cursos...</option>
             </select>
           </div>
-          <div class="d-flex flex-col gap-8" style="flex:1;min-width:160px">
-            <label class="form-label">Fecha</label>
+          <div class="d-flex flex-col gap-8" style="flex:1;min-width:170px">
+            <label class="form-label" for="fecha-picker">Fecha</label>
             <input class="form-control" id="fecha-picker" type="date">
           </div>
         </div>
       </div>
 
+      <!-- Contexto de regla de asistencia -->
+      <div class="att-info-bar" id="asistencia-context-banner" style="display:none;">
+        <div class="att-info-main">
+          <div class="att-info-title" id="att-context-title"></div>
+          <div class="att-info-desc" id="att-context-desc"></div>
+        </div>
+      </div>
+
       <!-- Stats -->
-      <div class="grid-4 mb-20" style="grid-template-columns:repeat(5,1fr)">
-        <div class="card" style="padding:14px;text-align:center">
+      <div class="att-stats-grid">
+        <div class="card att-stat-card">
           <div class="text-2xl font-black text-primary" id="stat-total">—</div>
           <div class="text-xs text-muted mt-4">Total</div>
         </div>
-        <div class="card" style="padding:14px;text-align:center">
+        <div class="card att-stat-card">
           <div class="text-2xl font-black" style="color:var(--green)" id="stat-presente">—</div>
           <div class="text-xs text-muted mt-4">Presentes</div>
         </div>
-        <div class="card" style="padding:14px;text-align:center">
-          <div class="text-2xl font-black" style="color:var(--red)" id="stat-ausente">—</div>
-          <div class="text-xs text-muted mt-4">Ausentes</div>
-        </div>
-        <div class="card" style="padding:14px;text-align:center">
+        <div class="card att-stat-card">
           <div class="text-2xl font-black" style="color:var(--yellow)" id="stat-tarde">—</div>
           <div class="text-xs text-muted mt-4">Tarde</div>
         </div>
-        <div class="card" style="padding:14px;text-align:center">
+        <div class="card att-stat-card">
+          <div class="text-2xl font-black" style="color:var(--red)" id="stat-ausente">—</div>
+          <div class="text-xs text-muted mt-4">Ausentes</div>
+        </div>
+        <div class="card att-stat-card">
+          <div class="text-2xl font-black" style="color:var(--cyan)" id="stat-justificado">—</div>
+          <div class="text-xs text-muted mt-4">Justificados</div>
+        </div>
+        <div class="card att-stat-card">
           <div class="text-2xl font-black text-primary" id="stat-pct">—</div>
           <div class="text-xs text-muted mt-4">% Asistencia</div>
         </div>
@@ -66,15 +219,15 @@
 
       <!-- Tabla asistencia -->
       <div class="card">
-        <div class="table-wrapper">
+        <div class="table-wrapper" style="position:relative;z-index:1;">
           <table class="table">
             <thead>
               <tr>
                 <th>#</th>
                 <th>Estudiante</th>
                 <th>Estado</th>
-                <th>Fecha</th>
-                <th>Acción</th>
+                <th>Registro / Fecha</th>
+                <th>Marcar asistencia</th>
               </tr>
             </thead>
             <tbody id="asistencia-tbody">
@@ -82,7 +235,7 @@
                 <div class="empty-state">
                   <i class="ph ph-calendar-check"></i>
                   <h3>Selecciona un curso y fecha</h3>
-                  <p>Los estudiantes y su asistencia aparecerán aquí.</p>
+                  <p>Los estudiantes sin marca en una fecha lectiva figuran como <strong>Presente por defecto</strong>.</p>
                 </div>
               </td></tr>
             </tbody>
@@ -96,8 +249,8 @@
 <script src="../js/config.js"></script>
 <script src="../js/api.js"></script>
 <script src="../js/auth.js"></script>
-<script src="../js/shared.js"></script>
-<script src="../js/asistencia.js"></script>
+<script src="../js/shared.js?v=20261114s"></script>
+<script src="../js/asistencia.js?v=20261115a"></script>
 
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

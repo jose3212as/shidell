@@ -2,8 +2,8 @@
    SHIDELL ADMIN — DESIGN TOKENS
    Fuente única de verdad para todos los valores de diseño
    ========================================================= */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
 @import url('/vendor/mobile-shell.css?v=20261018');
+@import url('/vendor/shidell-modern-system.css?v=20261114m');
 
 :root {
   /* ── Core Palette (Light Theme) ────────────────────────── */
@@ -75,7 +75,7 @@
   --border-radius-xl:   28px;
 
   /* ── Typography ──────────────────────────────────────── */
-  --font-family:        'Outfit', 'Inter', system-ui, sans-serif;
+  --font-family:        'Plus Jakarta Sans', system-ui, sans-serif;
   --font-size-xs:       12px;
   --font-size-sm:       13px;
   --font-size-base:     15px;

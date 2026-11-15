@@ -1,9 +1,11 @@
 package org.example.shidell.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.example.shidell.model.entity.Entrega;
 import org.example.shidell.model.dto.EntregaDTO;
 import org.example.shidell.service.EntregaService;
 import org.example.shidell.mapper.EntityMapper;
+import org.example.shidell.util.AccessControlHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,28 +29,34 @@ public class EntregaController {
     public ResponseEntity<?> subirEntrega(@RequestParam Long tareaId,
                                           @RequestParam Long estudianteId,
                                           @RequestParam(required = false) String comentario,
-                                          @RequestParam(value = "archivo", required = false) MultipartFile archivo) {
+                                          @RequestParam(value = "archivo", required = false) MultipartFile archivo,
+                                          HttpServletRequest request) {
         if (archivo == null || archivo.isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Selecciona un archivo PDF, DOC o DOCX para entregar la tarea."));
         }
-        Entrega saved = entregaService.subirEntrega(tareaId, estudianteId, comentario, archivo);
+        Entrega saved = entregaService.subirEntrega(
+                tareaId, estudianteId, comentario, archivo, AccessControlHelper.getAuthUser(request));
         return ResponseEntity.ok(mapper.toDTO(saved));
     }
 
     @GetMapping("/tarea/{tareaId}")
-    public List<EntregaDTO> getEntregasPorTarea(@PathVariable Long tareaId) {
-        return entregaService.obtenerEntregasPorTarea(tareaId).stream().map(mapper::toDTO).toList();
+    public List<EntregaDTO> getEntregasPorTarea(@PathVariable Long tareaId, HttpServletRequest request) {
+        return entregaService.obtenerEntregasPorTarea(tareaId, AccessControlHelper.getAuthUser(request))
+                .stream().map(mapper::toDTO).toList();
     }
 
     @GetMapping("/usuario/{estudianteId}")
-    public List<EntregaDTO> getEntregasByEstudiante(@PathVariable Long estudianteId) {
-        return entregaService.obtenerEntregasPorEstudiante(estudianteId).stream().map(mapper::toDTO).toList();
+    public List<EntregaDTO> getEntregasByEstudiante(@PathVariable Long estudianteId, HttpServletRequest request) {
+        return entregaService.obtenerEntregasPorEstudiante(estudianteId, AccessControlHelper.getAuthUser(request))
+                .stream().map(mapper::toDTO).toList();
     }
 
     @PutMapping("/{entregaId}/calificar")
     public EntregaDTO calificarEntrega(@PathVariable Long entregaId,
-                                    @RequestParam Double nota,
-                                    @RequestParam(required = false) String comentario) {
-        return mapper.toDTO(entregaService.calificarEntrega(entregaId, nota, comentario));
+                                       @RequestParam Double nota,
+                                       @RequestParam(required = false) String comentario,
+                                       HttpServletRequest request) {
+        return mapper.toDTO(entregaService.calificarEntrega(
+                entregaId, nota, comentario, AccessControlHelper.getAuthUser(request)));
     }
 }

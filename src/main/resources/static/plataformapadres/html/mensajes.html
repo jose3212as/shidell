@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261115c"></script>
     <title>Shidell - Mensajes</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <link rel="stylesheet" href="../css/styles.css?v=20261115a">
     <style>
         /* Modern Messaging Layout Styles */
         .messaging-layout {
@@ -320,9 +322,23 @@
             </div>
             <div class="topbar-actions">
                 <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
-                <div class="top-user-info">
-                    <div class="user-details"><span class="user-name padre-nombre">Padre</span></div>
-                    <div class="avatar"><i class="ph-fill ph-user-circle" style="font-size:32px;"></i></div>
+                <div class="top-user-info" style="cursor:pointer;">
+                    <div class="user-dropdown">
+                        <div class="avatar" id="topbar-avatar"><i class="ph-fill ph-user-circle" style="font-size:32px;"></i></div>
+                        <div class="user-info-text" style="display:flex; flex-direction:column; align-items:flex-start; margin-right:5px; text-align:left;">
+                            <span class="user-name padre-nombre" id="topbar-name" style="font-size:14px; font-weight:700; color:var(--text-primary); line-height:1.2;">Padre</span>
+                            <span id="topbar-role" style="font-size:12px; font-weight:500; color:var(--text-secondary); line-height:1.2;">Padre de Familia</span>
+                        </div>
+                        <i class="ph ph-caret-down dropdown-icon"></i>
+                        <div class="dropdown-menu">
+                            <a href="configuracion.html" class="dropdown-item">
+                                <i class="ph ph-gear"></i><span>Configuración</span>
+                            </a>
+                            <a href="#" class="dropdown-item btn-logout">
+                                <i class="ph ph-sign-out"></i><span>Cerrar sesión</span>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -352,7 +368,7 @@
                                 <div class="convo-avatar" id="active-avatar" style="width: 48px; height: 48px; font-size: 16px;">??</div>
                                 <div>
                                     <span class="convo-name" id="active-name" style="font-size: 16px; margin-bottom: 2px;">Selecciona un chat</span>
-                                    <span id="active-status" style="font-size: 12px; color: var(--green); font-weight: 500; display: flex; align-items: center; gap: 4px;"><span style="width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block;"></span> En línea</span>
+                                    <span id="active-status" class="chat-status-indicator is-offline"><span class="presence-dot"></span><span>Desconectado</span></span>
                                 </div>
                             </div>
 
@@ -411,8 +427,9 @@
         </div>
 </div>
 
-<script src="../js/app.js"></script>
-<script src="../js/mensajes.js"></script>
+<script src="/vendor/shidell-presence.js?v=20261115a"></script>
+<script src="../js/app.js?v=20261115a"></script>
+<script src="../js/mensajes.js?v=20261115a"></script>
 
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -1,0 +1,1658 @@
+/* ============================================================================
+   SHIDELL UNIFIED DUAL-THEME STYLESHEET
+   Covers: PADRE, ESTUDIANTE, ADMIN, AUTH, LANDING + Shared Components
+   Zero FOUC · Handcrafted High-Contrast Dark Surfaces · Portal Accent Identity
+   ============================================================================ */
+
+/* --------------------------------------------------------------------------
+   0. SHARED THEME TOGGLE BUTTON & VIEW TRANSITIONS
+   -------------------------------------------------------------------------- */
+@keyframes shidellThemeCircle {
+    from {
+        clip-path: circle(0px at var(--vt-x, 82%) var(--vt-y, 44px));
+    }
+    to {
+        clip-path: circle(150vmax at var(--vt-x, 82%) var(--vt-y, 44px));
+    }
+}
+
+html.shidell-theme-transition::view-transition-old(root),
+html.shidell-theme-transition::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+html.shidell-theme-transition::view-transition-new(root) {
+    animation: shidellThemeCircle 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    z-index: 9999;
+}
+
+.shidell-theme-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color-dark, var(--border-color, #e2e8f0));
+    background: var(--bg-surface, var(--color-bg-card, #ffffff));
+    color: var(--text-primary, #0f172a);
+    font-family: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, transform 0.16s ease, box-shadow 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.shidell-theme-btn:hover {
+    border-color: var(--primary, #144272);
+    background: var(--primary-light, #eaf1f8);
+    color: var(--primary, #144272);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.shidell-theme-btn:active {
+    transform: scale(0.97);
+}
+
+.shidell-theme-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+}
+
+.shidell-theme-btn .st-sun { display: none; }
+.shidell-theme-btn .st-moon { display: block; color: var(--primary, #144272); }
+
+html[data-theme="dark"] .shidell-theme-btn .st-sun { display: block; color: #fbbf24; }
+html[data-theme="dark"] .shidell-theme-btn .st-moon { display: none; }
+
+/* Landing header compact pill */
+.shidell-theme-btn.landing-theme-toggle {
+    height: 38px;
+    padding: 0 13px;
+    border-radius: 10px;
+    border-color: var(--border-rule, #e2e3df);
+    background: var(--surface-card, #ffffff);
+    color: var(--text-ink, #111215);
+    font-size: 13px;
+}
+
+.shidell-theme-btn.landing-theme-toggle:hover {
+    border-color: var(--accent-cobalt, #0e3a75);
+    background: var(--accent-cobalt-light, #e9f0f8);
+    color: var(--accent-cobalt, #0e3a75);
+}
+
+/* Auth floating glassmorphic pill */
+.shidell-theme-btn.auth-theme-toggle {
+    position: fixed;
+    top: 18px;
+    right: 20px;
+    z-index: 650;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    color: #0f172a;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 26px rgba(10, 38, 71, 0.18);
+}
+
+html[data-theme="dark"] .shidell-theme-btn.auth-theme-toggle {
+    background: rgba(17, 25, 40, 0.90);
+    border-color: rgba(148, 163, 184, 0.28);
+    color: #f1f5f9;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Admin compact topbar button */
+.shidell-theme-btn.admin-theme-toggle {
+    height: 40px;
+    padding: 0 13px;
+    border-radius: 11px;
+    background: var(--color-bg-card, #ffffff);
+    border-color: var(--border-color, #e2e8f0);
+    color: var(--text-primary, #0f172a);
+}
+
+@media (max-width: 640px) {
+    .shidell-theme-btn:not(.auth-theme-toggle) {
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .shidell-theme-btn.auth-theme-toggle {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .shidell-theme-label {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   1. GLOBAL DARK MODE FOUNDATION (All Non-Docente Portals)
+   -------------------------------------------------------------------------- */
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) {
+    color-scheme: dark;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) body {
+    background-color: var(--bg-main, var(--color-bg, var(--surface-paper, #0b111e)));
+    color: var(--text-primary, var(--text-ink, #f1f5f9));
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) ::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.5);
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) ::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.28);
+    border-radius: 8px;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) ::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.45);
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) input,
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) select,
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) textarea {
+    color-scheme: dark;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) select option,
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) select optgroup {
+    background-color: #111926;
+    color: #f1f5f9;
+}
+
+/* SweetAlert2 Global Dark Mode */
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .swal2-popup {
+    background: #121a27 !important;
+    color: #f1f5f9 !important;
+    border: 1px solid rgba(148, 163, 184, 0.22) !important;
+    box-shadow: 0 28px 64px rgba(0, 0, 0, 0.65) !important;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .swal2-title,
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .swal2-html-container {
+    color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .swal2-input,
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .swal2-textarea,
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .swal2-select {
+    background: #192436 !important;
+    color: #f1f5f9 !important;
+    border-color: rgba(148, 163, 184, 0.28) !important;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .swal2-footer {
+    border-top-color: rgba(148, 163, 184, 0.16) !important;
+    color: #94a3b8 !important;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .swal2-cancel {
+    background: #1f2b3d !important;
+    color: #e2e8f0 !important;
+}
+
+/* Shared Dark Notification Popover & Bell */
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .notification-btn,
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .topbar-btn {
+    background: var(--bg-surface, #111a2b);
+    border-color: var(--border-color-dark, rgba(148, 163, 184, 0.22));
+    color: var(--text-primary, #f1f5f9);
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .notif-row {
+    background: transparent !important;
+    border-color: rgba(148, 163, 184, 0.10) !important;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .notif-row:hover {
+    background: rgba(255, 255, 255, 0.04) !important;
+}
+
+html[data-theme="dark"]:not([data-portal="DOCENTE"]) .notif-row.unread {
+    background: transparent !important;
+    border-color: rgba(148, 163, 184, 0.10) !important;
+}
+
+/* Shared Mobile Shell Overrides in Dark Mode */
+@media (max-width: 900px) {
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .sidebar {
+        background: var(--bg-surface, var(--sidebar-bg, #0d1420)) !important;
+        border-right-color: var(--border-color-dark, rgba(148, 163, 184, 0.20)) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .topbar {
+        background: var(--st-topbar-glass, rgba(11, 17, 30, 0.92)) !important;
+        border-bottom-color: var(--border-color-dark, rgba(148, 163, 184, 0.18)) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .mobile-menu-btn,
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .mobile-chat-back,
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .mobile-drawer-close {
+        background: var(--bg-surface, #162033) !important;
+        border-color: var(--border-color-dark, rgba(148, 163, 184, 0.25)) !important;
+        color: var(--text-primary, #f1f5f9) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .mobile-menu-btn .icon-img,
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .mobile-chat-back .icon-img,
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .mobile-drawer-close .icon-img,
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .android-nav-item .icon-img {
+        filter: brightness(0) invert(0.86) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .android-nav-item.active .icon-img {
+        filter: brightness(0) invert(1) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .android-bottom-nav {
+        background: var(--st-bottom-nav, rgba(11, 17, 30, 0.96)) !important;
+        border-top-color: var(--border-color-dark, rgba(148, 163, 184, 0.18)) !important;
+        box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.48) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .android-nav-item {
+        color: var(--text-secondary, #94a3b8) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .android-nav-item.active {
+        color: var(--primary, #60a5fa) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .android-nav-item.active .android-nav-pill {
+        background: var(--primary-light, rgba(96, 165, 250, 0.16)) !important;
+        color: var(--primary, #60a5fa) !important;
+    }
+
+    html[data-theme="dark"]:not([data-portal="DOCENTE"]) .tarea-item-row {
+        background: var(--bg-surface, #111a2b) !important;
+        border-color: var(--border-color-dark, rgba(148, 163, 184, 0.20)) !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. PORTAL PADRE DE FAMILIA — Teal Nocturno (#0B1215 / #111A1E / #14B8A6)
+   -------------------------------------------------------------------------- */
+:root[data-theme="dark"][data-portal="PADRE"] {
+    --primary: #14b8a6;
+    --primary-light: rgba(20, 184, 166, 0.16);
+    --primary-hover: #0d9488;
+    --bg-main: #0b1215;
+    --bg-surface: #111a1e;
+    --bg-elevated: #172329;
+    --text-primary: #f0fdfa;
+    --text-secondary: #9fb4b0;
+    --text-tertiary: #6e8582;
+    --border-color: rgba(148, 163, 184, 0.12);
+    --border-color-dark: rgba(148, 163, 184, 0.22);
+
+    --blue-light: rgba(59, 130, 246, 0.16);   --blue: #60a5fa;
+    --green-light: rgba(16, 185, 129, 0.16); --green: #34d399;
+    --purple-light: rgba(139, 92, 246, 0.16);--purple: #a78bfa;
+    --yellow-light: rgba(245, 158, 11, 0.16);--yellow: #fbbf24;
+    --red-light: rgba(239, 68, 68, 0.16);    --red: #f87171;
+    --orange-light: rgba(249, 115, 22, 0.16);--orange: #fb923c;
+    --teal-light: rgba(20, 184, 166, 0.16);  --teal: #2dd4bf;
+
+    --np-accent: #14b8a6;
+    --np-accent-ink: #042f2e;
+    --np-accent-soft: rgba(20, 184, 166, 0.16);
+    --np-unread-bg: rgba(20, 184, 166, 0.09);
+    --np-unread-hover: rgba(20, 184, 166, 0.15);
+    --st-topbar-glass: rgba(11, 18, 21, 0.92);
+    --st-bottom-nav: rgba(11, 18, 21, 0.96);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .sidebar {
+    background: #0d1619;
+    border-right-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .topbar {
+    background: #0b1215;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .dropdown-menu,
+html[data-theme="dark"][data-portal="PADRE"] .stat-item,
+html[data-theme="dark"][data-portal="PADRE"] .main-panel,
+html[data-theme="dark"][data-portal="PADRE"] .messages-row,
+html[data-theme="dark"][data-portal="PADRE"] .notification-panel {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .stat-item:hover {
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .panel-item,
+html[data-theme="dark"][data-portal="PADRE"] .msg-mini {
+    background: var(--bg-elevated);
+    border-color: var(--border-color);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .panel-item:hover {
+    background: #1c2a31;
+    border-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .hijo-selector {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 55%, #134e4a 100%);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .btn-hijo.active {
+    background: #f0fdfa;
+    color: #0f766e;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .bg-blue-light   { background: rgba(59, 130, 246, 0.16); color: #60a5fa; }
+html[data-theme="dark"][data-portal="PADRE"] .bg-green-light  { background: rgba(16, 185, 129, 0.16); color: #34d399; }
+html[data-theme="dark"][data-portal="PADRE"] .bg-purple-light { background: rgba(139, 92, 246, 0.16); color: #a78bfa; }
+html[data-theme="dark"][data-portal="PADRE"] .bg-yellow-light { background: rgba(245, 158, 11, 0.16); color: #fbbf24; }
+html[data-theme="dark"][data-portal="PADRE"] .bg-red-light    { background: rgba(239, 68, 68, 0.16); color: #f87171; }
+html[data-theme="dark"][data-portal="PADRE"] .bg-orange-light { background: rgba(249, 115, 22, 0.16); color: #fb923c; }
+
+/* Padre — Mensajería */
+html[data-theme="dark"][data-portal="PADRE"] .messaging-layout,
+html[data-theme="dark"][data-portal="PADRE"] .contacts-sidebar,
+html[data-theme="dark"][data-portal="PADRE"] .chats-sidebar,
+html[data-theme="dark"][data-portal="PADRE"] .sidebar-search,
+html[data-theme="dark"][data-portal="PADRE"] .conversations-list,
+html[data-theme="dark"][data-portal="PADRE"] .chat-area,
+html[data-theme="dark"][data-portal="PADRE"] .chat-header,
+html[data-theme="dark"][data-portal="PADRE"] .chat-input-area,
+html[data-theme="dark"][data-portal="PADRE"] .modal,
+html[data-theme="dark"][data-portal="PADRE"] .modal-content {
+    background: var(--bg-surface) !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .chats-sidebar {
+    border-right-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .contacts-header,
+html[data-theme="dark"][data-portal="PADRE"] .sidebar-search,
+html[data-theme="dark"][data-portal="PADRE"] .modal-header {
+    border-bottom-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .search-input-wrapper {
+    background: var(--bg-elevated) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .search-input-wrapper:focus-within {
+    background: #0d1619 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .search-input-wrapper input {
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .chat-messages,
+html[data-theme="dark"][data-portal="PADRE"] .no-chat-selected {
+    background: #0d1619 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .no-chat-selected > div {
+    background: var(--bg-surface) !important;
+    border: 1px solid var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .contact-item:hover,
+html[data-theme="dark"][data-portal="PADRE"] .convo-item:hover,
+html[data-theme="dark"][data-portal="PADRE"] .modal-contact-row:hover {
+    background: var(--bg-elevated) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .contact-item.active,
+html[data-theme="dark"][data-portal="PADRE"] .convo-item.active {
+    background: rgba(20, 184, 166, 0.14) !important;
+    border-left-color: var(--primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .convo-name {
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .convo-preview {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .msg-received {
+    background: #1a282e !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .chat-input,
+html[data-theme="dark"][data-portal="PADRE"] .chat-input:focus,
+html[data-theme="dark"][data-portal="PADRE"] .contacts-search input {
+    background: var(--bg-elevated) !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .presence-inline.is-online,
+html[data-theme="dark"][data-portal="PADRE"] .chat-status-indicator.is-online {
+    color: #34d399 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .presence-inline.is-away,
+html[data-theme="dark"][data-portal="PADRE"] .chat-status-indicator.is-away {
+    color: #fbbf24 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .presence-inline.is-offline,
+html[data-theme="dark"][data-portal="PADRE"] .chat-status-indicator.is-offline {
+    color: #94a3b8 !important;
+}
+
+/* Padre — Tareas & Calificaciones & Asistencia */
+html[data-theme="dark"][data-portal="PADRE"] .docente-chip,
+html[data-theme="dark"][data-portal="PADRE"] .tarea-card,
+html[data-theme="dark"][data-portal="PADRE"] .curso-chip,
+html[data-theme="dark"][data-portal="PADRE"] .cal-card,
+html[data-theme="dark"][data-portal="PADRE"] .asistencia-card,
+html[data-theme="dark"][data-portal="PADRE"] .att-day,
+html[data-theme="dark"][data-portal="PADRE"] table,
+html[data-theme="dark"][data-portal="PADRE"] .table-card {
+    background: var(--bg-surface) !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .docente-chip {
+    background: var(--bg-elevated) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .docente-chip:hover {
+    background: rgba(20, 184, 166, 0.12) !important;
+    border-color: #14b8a6 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .docente-chip-role {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .tarea-card:hover {
+    background: #152126 !important;
+    border-color: rgba(45, 212, 191, 0.35) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .tarea-card-desc,
+html[data-theme="dark"][data-portal="PADRE"] .tarea-card-meta {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .tarea-tab-pill {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .tarea-tab-pill.active {
+    background: var(--primary);
+    color: #042f2e;
+    border-color: var(--primary);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] #filter-curso,
+html[data-theme="dark"][data-portal="PADRE"] select.filter-select {
+    background: var(--bg-elevated) !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] th {
+    background: var(--bg-elevated) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] td {
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] tr:hover td {
+    background: rgba(20, 184, 166, 0.05) !important;
+}
+
+/* Padre — Configuración (Overrides for .pf-* layout & legacy classes) */
+html[data-theme="dark"][data-portal="PADRE"] .config-panel,
+html[data-theme="dark"][data-portal="PADRE"] .pf-rail,
+html[data-theme="dark"][data-portal="PADRE"] .pf-stage,
+html[data-theme="dark"][data-portal="PADRE"] .pf-panel {
+    background: var(--bg-surface) !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .profile-banner {
+    background: linear-gradient(135deg, #0f766e 0%, #115e59 55%, #0d3b38 100%) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .config-tabs {
+    background: var(--bg-surface) !important;
+    border-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .config-tab,
+html[data-theme="dark"][data-portal="PADRE"] .pf-nav-btn {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-nav-sub {
+    color: var(--text-tertiary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .config-tab:hover,
+html[data-theme="dark"][data-portal="PADRE"] .pf-nav-btn:hover {
+    background: var(--bg-elevated) !important;
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-nav-btn.active {
+    background: rgba(20, 184, 166, 0.16) !important;
+    color: #5eead4 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .config-tab.active {
+    background: var(--primary) !important;
+    color: #042f2e !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-section-head,
+html[data-theme="dark"][data-portal="PADRE"] .pf-form-footer,
+html[data-theme="dark"][data-portal="PADRE"] .pf-rail-note {
+    border-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-section-head h2,
+html[data-theme="dark"][data-portal="PADRE"] .pf-nav-title,
+html[data-theme="dark"][data-portal="PADRE"] .pf-pref-copy strong,
+html[data-theme="dark"][data-portal="PADRE"] .pf-field label,
+html[data-theme="dark"][data-portal="PADRE"] .pf-readonly-head {
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-pill-editable {
+    background: rgba(20, 184, 166, 0.16) !important;
+    color: #5eead4 !important;
+    border-color: rgba(45, 212, 191, 0.35) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-pill-locked,
+html[data-theme="dark"][data-portal="PADRE"] .pf-status-badge {
+    background: var(--bg-elevated) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-status-badge {
+    background: rgba(16, 185, 129, 0.16) !important;
+    color: #6ee7b7 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-feedback.is-success {
+    background: rgba(16, 185, 129, 0.16) !important;
+    color: #6ee7b7 !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-feedback.is-error {
+    background: rgba(239, 68, 68, 0.16) !important;
+    color: #fca5a5 !important;
+    border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-feedback.is-info {
+    background: rgba(20, 184, 166, 0.16) !important;
+    color: #5eead4 !important;
+    border-color: rgba(45, 212, 191, 0.35) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .info-badge,
+html[data-theme="dark"][data-portal="PADRE"] .prof-card,
+html[data-theme="dark"][data-portal="PADRE"] .content-area .notif-item,
+html[data-theme="dark"][data-portal="PADRE"] .pref-item,
+html[data-theme="dark"][data-portal="PADRE"] .theme-choice-card,
+html[data-theme="dark"][data-portal="PADRE"] .pf-readonly-box,
+html[data-theme="dark"][data-portal="PADRE"] .pf-info-item,
+html[data-theme="dark"][data-portal="PADRE"] .pf-info-tile,
+html[data-theme="dark"][data-portal="PADRE"] .pf-hijo-card,
+html[data-theme="dark"][data-portal="PADRE"] .pf-child-card,
+html[data-theme="dark"][data-portal="PADRE"] .pf-empty-box,
+html[data-theme="dark"][data-portal="PADRE"] .pf-search-mini,
+html[data-theme="dark"][data-portal="PADRE"] .pf-pref-block,
+html[data-theme="dark"][data-portal="PADRE"] .pf-pref-row,
+html[data-theme="dark"][data-portal="PADRE"] .pf-sec-card {
+    background: var(--bg-elevated) !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-dl-row {
+    border-bottom-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-dl-label,
+html[data-theme="dark"][data-portal="PADRE"] .pf-info-label {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-dl-val,
+html[data-theme="dark"][data-portal="PADRE"] .pf-info-val,
+html[data-theme="dark"][data-portal="PADRE"] .pf-child-name-row h4,
+html[data-theme="dark"][data-portal="PADRE"] .pf-children-head h3 {
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-dl-val.is-muted,
+html[data-theme="dark"][data-portal="PADRE"] .pf-child-email {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-search-mini input {
+    background: transparent !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .form-field input,
+html[data-theme="dark"][data-portal="PADRE"] .form-field select,
+html[data-theme="dark"][data-portal="PADRE"] .pref-select,
+html[data-theme="dark"][data-portal="PADRE"] .pf-field input,
+html[data-theme="dark"][data-portal="PADRE"] .pf-field select,
+html[data-theme="dark"][data-portal="PADRE"] .pf-select,
+html[data-theme="dark"][data-portal="PADRE"] .pf-search-mini input {
+    background: #0d1619 !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .form-field input[readonly],
+html[data-theme="dark"][data-portal="PADRE"] .pf-field input[readonly] {
+    background: #132025 !important;
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .btn-sec,
+html[data-theme="dark"][data-portal="PADRE"] .pf-btn-secondary,
+html[data-theme="dark"][data-portal="PADRE"] .pf-mini-btn,
+html[data-theme="dark"][data-portal="PADRE"] .pf-mini-btn.is-outline {
+    background: var(--bg-elevated) !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-btn-secondary:hover:not(:disabled),
+html[data-theme="dark"][data-portal="PADRE"] .pf-mini-btn:hover,
+html[data-theme="dark"][data-portal="PADRE"] .pf-eye-btn:hover {
+    background: rgba(20, 184, 166, 0.16) !important;
+    color: #5eead4 !important;
+    border-color: rgba(45, 212, 191, 0.35) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-btn-danger-outline {
+    background: rgba(239, 68, 68, 0.10) !important;
+    color: #fca5a5 !important;
+    border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-segmented {
+    background: #0d1619 !important;
+    border-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-seg-btn {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .pf-seg-btn.active {
+    background: var(--bg-elevated) !important;
+    color: #5eead4 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .toggle-switch,
+html[data-theme="dark"][data-portal="PADRE"] .pf-switch,
+html[data-theme="dark"][data-portal="PADRE"] .pf-strength-track {
+    background: #2b3c42 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] .toggle-switch.on,
+html[data-theme="dark"][data-portal="PADRE"] .pf-switch[aria-checked="true"] {
+    background: var(--primary) !important;
+}
+
+/* Override dynamic JS-generated light inline backgrounds in Padre (fallback guard) */
+html[data-theme="dark"][data-portal="PADRE"] [style*="background:#f8fafc"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="background: #f8fafc"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="background:#f1f5f9"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="background: #f1f5f9"] {
+    background: var(--bg-elevated) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] [style*="color:#475569"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="color: #475569"] {
+    color: var(--text-secondary) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] [style*="color:#0f766e"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="color: #0f766e"] {
+    color: #5eead4 !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] [style*="color:#1e40af"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="color: #1e40af"] {
+    color: #93c5fd !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] [style*="background:#f0fdfa"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="background: #f0fdfa"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="background:#ecfdf5"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="background: #ecfdf5"] {
+    background: rgba(20, 184, 166, 0.14) !important;
+    color: #5eead4 !important;
+    border-color: rgba(20, 184, 166, 0.34) !important;
+}
+
+html[data-theme="dark"][data-portal="PADRE"] [style*="background:#fef3c7"],
+html[data-theme="dark"][data-portal="PADRE"] [style*="background: #fef3c7"] {
+    background: rgba(245, 158, 11, 0.16) !important;
+    color: #fcd34d !important;
+    border-color: rgba(245, 158, 11, 0.32) !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. PORTAL ESTUDIANTE — Azul Medianoche (#0B111E / #111A2B / #60A5FA)
+   -------------------------------------------------------------------------- */
+:root[data-theme="dark"][data-portal="ESTUDIANTE"] {
+    --primary: #60a5fa;
+    --primary-light: rgba(96, 165, 250, 0.16);
+    --primary-hover: #3b82f6;
+    --bg-main: #0b111e;
+    --bg-surface: #111a2b;
+    --bg-elevated: #172338;
+    --text-primary: #eef2ff;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --border-color: rgba(148, 163, 184, 0.12);
+    --border-color-dark: rgba(148, 163, 184, 0.22);
+
+    --blue-light: rgba(59, 130, 246, 0.16);   --blue: #60a5fa;
+    --green-light: rgba(16, 185, 129, 0.16); --green: #34d399;
+    --purple-light: rgba(139, 92, 246, 0.16);--purple: #a78bfa;
+    --yellow-light: rgba(245, 158, 11, 0.16);--yellow: #fbbf24;
+    --red-light: rgba(239, 68, 68, 0.16);    --red: #f87171;
+    --orange-light: rgba(249, 115, 22, 0.16);--orange: #fb923c;
+
+    /* Editorial Dashboard & Tareadetalle tokens */
+    --ed-canvas: #0b111e;
+    --ed-surface-warm: #111a2b;
+    --ed-subtle: #162238;
+    --ed-ink: #eef2ff;
+    --ed-ink-secondary: #cbd5e1;
+    --ed-muted: #94a3b8;
+    --ed-faint: #64748b;
+    --ed-rule: rgba(148, 163, 184, 0.20);
+    --ed-rule-soft: rgba(148, 163, 184, 0.10);
+    --ed-cobalt: #60a5fa;
+    --ed-cobalt-hover: #93c5fd;
+    --ed-cobalt-tint: rgba(96, 165, 250, 0.15);
+    --ed-status-done-bg: rgba(16, 185, 129, 0.16);
+    --ed-status-done-text: #6ee7b7;
+    --ed-status-done-dot: #34d399;
+    --ed-status-pending-bg: rgba(245, 158, 11, 0.16);
+    --ed-status-pending-text: #fcd34d;
+    --ed-status-pending-dot: #fbbf24;
+    --ed-status-late-bg: rgba(239, 68, 68, 0.16);
+    --ed-status-late-text: #fca5a5;
+    --ed-status-late-dot: #f87171;
+
+    --np-accent: #60a5fa;
+    --np-accent-ink: #081226;
+    --np-accent-soft: rgba(96, 165, 250, 0.16);
+    --np-unread-bg: rgba(96, 165, 250, 0.09);
+    --np-unread-hover: rgba(96, 165, 250, 0.15);
+    --st-topbar-glass: rgba(11, 17, 30, 0.92);
+    --st-bottom-nav: rgba(11, 17, 30, 0.96);
+}
+
+/* Base layout + editorial portalestudiante */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sidebar {
+    background: #0d1525;
+    border-right-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .main-wrapper,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .topbar {
+    background-color: var(--bg-main) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .editorial-metrics-ledger {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border-color-dark) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .home-banner {
+    background: linear-gradient(135deg, #132038 0%, #162642 100%);
+    border-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .stat-item,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .main-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .panel-item,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .task-item,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-mini-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .interactive-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .api-empty-state {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .panel-item:hover,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .task-item:hover {
+    background: var(--bg-elevated);
+}
+
+/* Estudiante — SVG <img class="icon-img"> High-Contrast Filter Calibration */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .icon-img {
+    filter: brightness(0) invert(0.90);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .nav-item .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .search-box .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .user-action .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .notif-empty .icon-img {
+    filter: brightness(0) invert(0.72);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .notif-row.unread .notif-icon .icon-img {
+    filter: invert(66%) sepia(60%) saturate(1800%) hue-rotate(192deg) brightness(102%) contrast(98%) !important;
+    opacity: 1 !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .nav-item.active .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .logo-icon .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-student-report .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-send .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-new-chat-compact .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-new-chat-primary .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .tarea-tab.active .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .notif-header-btn:hover img {
+    filter: brightness(0) invert(1) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .bg-blue-light .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .stat-footer-link .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .panel-link .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .td-back-link .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .td-btn-material .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .td-hero-icon .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-status .icon-img {
+    filter: invert(66%) sepia(60%) saturate(1800%) hue-rotate(192deg) brightness(102%) contrast(98%) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .bg-green-light .icon-img,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-status.status-completed .icon-img {
+    filter: invert(72%) sepia(56%) saturate(580%) hue-rotate(106deg) brightness(96%) contrast(92%) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .bg-purple-light .icon-img {
+    filter: invert(64%) sepia(54%) saturate(2200%) hue-rotate(225deg) brightness(102%) contrast(95%) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .bg-yellow-light .icon-img {
+    filter: invert(78%) sepia(56%) saturate(1400%) hue-rotate(356deg) brightness(102%) contrast(96%) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .bg-red-light .icon-img {
+    filter: invert(61%) sepia(62%) saturate(2400%) hue-rotate(324deg) brightness(100%) contrast(98%) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .bg-orange-light .icon-img {
+    filter: invert(67%) sepia(65%) saturate(1900%) hue-rotate(344deg) brightness(102%) contrast(98%) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .android-nav-item.active .android-nav-pill .icon-img {
+    filter: invert(66%) sepia(60%) saturate(1800%) hue-rotate(192deg) brightness(102%) contrast(98%) !important;
+}
+
+/* Estudiante — Student Suite / Chart pills */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chart-mode-pills {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chart-mode-pill {
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chart-mode-pill.active {
+    background: var(--primary);
+    color: #081226;
+}
+
+/* Estudiante — Mis Cursos & Curso Detalle */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .section-heading span#courses-count,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .view-switcher,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .progress-track,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-badge-academic {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-search-box input,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-status-filter select,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-list-item,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-loading,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-empty {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .view-toggle-btn.active {
+    background: var(--bg-surface);
+    color: var(--primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-main-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-tabs-header,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-week-header-btn,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-week-body-content,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-modal-card {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-course-main-title,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-subitem-title,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-forum-header-bar h3,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-forum-post-author,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-modal-header h3,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-tw-dates span {
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-week-accordion-row,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-tabs-header,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-forum-compose-box {
+    border-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-tab-item {
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-tab-badge {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-week-header-btn:hover,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-subitem-row:hover,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-forum-post,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-file-dropzone,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-modal-footer {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-tw-btn-action,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-btn-secondary,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-forum-compose-box input,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-modal-field textarea,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] [id^="starter-forum-input-"] {
+    background: #0e1625 !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cd-forum-post [style*="color:#1e293b"],
+html[data-theme="dark"][data-portal="ESTUDIANTE"] [style*="background:#f8fafc"] {
+    background: var(--bg-elevated) !important;
+    border-color: var(--border-color-dark) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Estudiante — Tareas, Tareas-page, Entrega modal, Boleta Comprobante, Tareadetalle */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .tarea-tab,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-filter,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .tareas-list-section,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-dialog,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-consigna,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-actions {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-dialog-header,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-task,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-consigna p,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-file,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-close,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-tags span,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-material-link,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-file-icon,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .entrega-btn-ghost {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .comprobante-card.boleta-sheet {
+    --boleta-paper: #0f172a;
+    --boleta-fold: #1e293b;
+    --boleta-ink: #e2e8f0;
+    --boleta-body: #f1f5f9;
+    --boleta-muted: #94a3b8;
+    --boleta-rule: rgba(148, 163, 184, 0.30);
+    --boleta-row-alt: rgba(148, 163, 184, 0.08);
+    --boleta-gold: #fbbf24;
+    --boleta-seal-ink: #111827;
+    --boleta-ok: #34d399;
+    --boleta-btn-bg: #f1f5f9;
+    --boleta-btn-fg: #0f172a;
+    --boleta-btn-hover: #e2e8f0;
+    box-shadow: 0 24px 60px rgba(2, 6, 23, 0.72);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .td-hero-icon {
+    background-color: var(--bg-elevated);
+    border: 1px solid var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .receipt-code-pill {
+    background-color: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .syllabus-receipt-section,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .td-material-box,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .td-textarea,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .syllabus-feedback-panel {
+    background-color: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+/* Estudiante — Calificaciones */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .semester-dropdown,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-stat-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-detail-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .widget-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .donut-inner,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .motivational-grade-icon,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-course-sidebar,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-course-detail-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-evaluations-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-history-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-print-report {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-item:hover,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-select-item:hover {
+    background: var(--bg-elevated);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .search-filter-box input {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+/* Estudiante — Calendario + FullCalendar v7 */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-shell,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-toolbar,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-body,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .calendar-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-modal,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .summary-box {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-shell {
+    --cal-accent: #60a5fa;
+    --cal-accent-soft: rgba(96, 165, 250, 0.16);
+    --cal-line: rgba(148, 163, 184, 0.20);
+    --cal-line-soft: rgba(148, 163, 184, 0.10);
+    --cal-muted: #94a3b8;
+    --cal-text: #eef2ff;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-mount {
+    --fc-breezy-primary: #3b82f6;
+    --fc-breezy-primary-over: #60a5fa;
+    --fc-breezy-primary-foreground: #ffffff;
+    --fc-breezy-now: #f87171;
+    --fc-breezy-highlight: rgba(96, 165, 250, 0.10);
+    --fc-breezy-selected: rgba(96, 165, 250, 0.18);
+    --fc-breezy-background: #111a2b;
+    --fc-breezy-faint: #152136;
+    --fc-breezy-muted: #1b2942;
+    --fc-breezy-border: rgba(148, 163, 184, 0.20);
+    --fc-breezy-muted-border: rgba(148, 163, 184, 0.12);
+    --fc-breezy-strong-border: rgba(148, 163, 184, 0.30);
+    --fc-breezy-foreground: #eef2ff;
+    --fc-breezy-muted-foreground: #94a3b8;
+    --fc-breezy-strong-foreground: #ffffff;
+    --fc-breezy-background-event: rgba(244, 63, 94, 0.14);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] #fcCalendar .fc {
+    background: var(--bg-surface) !important;
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-btn-today,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-nav-btn,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-filter-btn,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-dropdown,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-btn,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-field input,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-field textarea {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-segmented,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-viewicons,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-coord-bar,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-chip-btn,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-slot-header,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-dayhead-cell,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-hour-pill,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-list-time,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-list-status,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-modal-close,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-footer kbd {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-segmented button.active,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-icon-btn.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-chip-btn.active {
+    background: rgba(59, 130, 246, 0.20);
+    border-color: #60a5fa;
+    color: #93c5fd;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-dh-num,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-list-title {
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-coord-pill.is-week {
+    background: rgba(59, 130, 246, 0.16); color: #93c5fd; border-color: rgba(96, 165, 250, 0.32);
+}
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-coord-pill.is-recess {
+    background: rgba(245, 158, 11, 0.16); color: #fcd34d; border-color: rgba(245, 158, 11, 0.32);
+}
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-coord-pill.is-shift {
+    background: var(--bg-surface); color: var(--text-secondary); border-color: var(--border-color-dark);
+}
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-coord-pill.is-holiday,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-holiday-pill,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-dh-holiday {
+    background: rgba(244, 63, 94, 0.18); color: #fda4af; border-color: rgba(244, 63, 94, 0.34);
+}
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-coord-pill.is-action {
+    background: rgba(139, 92, 246, 0.18); color: #c4b5fd; border-color: rgba(139, 92, 246, 0.34);
+}
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .cal-coord-pill.is-action.is-task {
+    background: rgba(234, 179, 8, 0.16); color: #fde047; border-color: rgba(234, 179, 8, 0.34);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-day-holiday {
+    background: rgba(244, 63, 94, 0.08) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-bg-holiday {
+    background: repeating-linear-gradient(
+        -45deg,
+        rgba(244, 63, 94, 0.06),
+        rgba(244, 63, 94, 0.06) 10px,
+        rgba(244, 63, 94, 0.13) 10px,
+        rgba(244, 63, 94, 0.13) 20px
+    ) !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] #fcCalendar .sh-fc-col-event,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] #fcCalendar .sh-fc-row-event {
+    background: color-mix(in srgb, var(--ev-accent, #3b82f6) 20%, #111a2b) !important;
+    border-color: color-mix(in srgb, var(--ev-accent, #3b82f6) 45%, transparent) !important;
+    color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-card-title,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-card-sub,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-teacher,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-row-title {
+    color: #e2e8f0 !important;
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-type-pill,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sh-fc-row-badge {
+    background: rgba(11, 17, 30, 0.72);
+    border-color: rgba(148, 163, 184, 0.25);
+    color: #93c5fd;
+}
+
+/* Estudiante — Mensajería */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .messaging-layout,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chats-sidebar,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chat-header,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chat-input-area,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .no-chat-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .modal.contacts-modal-dialog {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .sidebar-search,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chat-area,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .no-chat-selected {
+    background: #0d1525;
+    border-color: var(--border-color-dark);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .search-input-wrapper,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .course-filter-select,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-chat-back,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-attach-file,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chat-input,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .modal-close-btn,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .modal-category-tabs,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .msg-received {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .convo-item:hover {
+    background: var(--bg-elevated);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .convo-item.active {
+    background: rgba(96, 165, 250, 0.16);
+    border-color: rgba(96, 165, 250, 0.35);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .convo-avatar,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .convo-role-tag.estudiante,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .chat-header-badge.estudiante,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .msg-date-divider span,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .msg-avatar-inline {
+    background: #1f2d45;
+    color: var(--text-secondary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .modal-tab.active {
+    background: var(--bg-surface);
+    color: var(--primary);
+}
+
+/* Estudiante — Mi Progreso & Configuración */
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .p-stat-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .p-panel,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .p-logro-item,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .settings-menu,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .settings-view,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .info-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .pref-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .account-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .toggle-row,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .action-row,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .settings-modal-card,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .photo-preview,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-secondary-settings,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .btn-ghost {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .racha-ring::before {
+    background: var(--bg-surface);
+}
+
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .pref-card select,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .settings-form input,
+html[data-theme="dark"][data-portal="ESTUDIANTE"] .settings-form select {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------------------------------------
+   4. PORTAL ADMINISTRADOR — Índigo Obsidiana (#0B0E17 / #111623 / #818CF8)
+   -------------------------------------------------------------------------- */
+:root[data-theme="dark"][data-portal="ADMIN"] {
+    --color-bg: #0b0e17;
+    --color-bg-elevated: #161d2f;
+    --color-bg-card: #111623;
+    --color-bg-input: #171f33;
+    --color-bg-hover: #1c253d;
+    --bg-secondary: #161d2f;
+    --color-bg-secondary: #161d2f;
+
+    --primary: #818cf8;
+    --color-primary: #818cf8;
+    --primary-light: rgba(129, 140, 248, 0.16);
+    --cyan-light: rgba(6, 182, 212, 0.16);
+    --green-light: rgba(16, 185, 129, 0.16);
+    --yellow-light: rgba(245, 158, 11, 0.16);
+    --red-light: rgba(239, 68, 68, 0.16);
+    --purple-light: rgba(139, 92, 246, 0.16);
+    --orange-light: rgba(249, 115, 22, 0.16);
+
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --border-color: rgba(148, 163, 184, 0.16);
+    --border-strong: rgba(148, 163, 184, 0.28);
+
+    --glass-bg: rgba(17, 22, 35, 0.88);
+    --glass-border: rgba(148, 163, 184, 0.16);
+
+    --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 10px 26px rgba(0, 0, 0, 0.45);
+    --shadow-lg: 0 20px 44px rgba(0, 0, 0, 0.60);
+
+    --bg-main: #0b0e17;
+    --bg-surface: #111623;
+    --border-color-dark: rgba(148, 163, 184, 0.22);
+
+    --np-accent: #818cf8;
+    --np-accent-ink: #0f0d2e;
+    --np-accent-soft: rgba(129, 140, 248, 0.18);
+    --np-unread-bg: rgba(129, 140, 248, 0.10);
+    --np-unread-hover: rgba(129, 140, 248, 0.16);
+    --st-topbar-glass: rgba(11, 14, 23, 0.92);
+    --st-bottom-nav: rgba(11, 14, 23, 0.96);
+}
+
+html[data-theme="dark"][data-portal="ADMIN"] body,
+html[data-theme="dark"][data-portal="ADMIN"] .app-shell,
+html[data-theme="dark"][data-portal="ADMIN"] .main-content {
+    background: var(--color-bg);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ADMIN"] .topbar.scrolled {
+    background: rgba(11, 14, 23, 0.94);
+    border-bottom-color: rgba(148, 163, 184, 0.18);
+}
+
+html[data-theme="dark"][data-portal="ADMIN"] .card,
+html[data-theme="dark"][data-portal="ADMIN"] .kpi-card,
+html[data-theme="dark"][data-portal="ADMIN"] .modal-box,
+html[data-theme="dark"][data-portal="ADMIN"] .modal,
+html[data-theme="dark"][data-portal="ADMIN"] .dropdown-menu {
+    background: var(--color-bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ADMIN"] .welcome-banner a[style*="background:white"] {
+    background: rgba(255, 255, 255, 0.94) !important;
+    color: #312e81 !important;
+}
+
+html[data-theme="dark"][data-portal="ADMIN"] .shidell-theme-btn.admin-theme-toggle {
+    background: var(--color-bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+html[data-theme="dark"][data-portal="ADMIN"] .shidell-theme-btn.admin-theme-toggle:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+html[data-theme="dark"][data-portal="ADMIN"] .toggle {
+    background: #27324a;
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+html[data-theme="dark"][data-portal="ADMIN"] .toggle.on {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+/* --------------------------------------------------------------------------
+   5. AUTH (LOGIN & REGISTER) — Cobalto Nocturno (#0B111E / #111827)
+   -------------------------------------------------------------------------- */
+:root[data-theme="dark"][data-portal="AUTH"] {
+    --primary: #60a5fa;
+    --primary-light: rgba(96, 165, 250, 0.16);
+    --primary-hover: #3b82f6;
+    --bg-main: #0b111e;
+    --bg-surface: #111827;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --border-color: rgba(148, 163, 184, 0.14);
+    --border-color-dark: rgba(148, 163, 184, 0.25);
+}
+
+html[data-theme="dark"][data-portal="AUTH"] body,
+html[data-theme="dark"][data-portal="AUTH"] .auth-page,
+html[data-theme="dark"][data-portal="AUTH"] .auth-left {
+    background: #0b111e !important;
+    color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .auth-card {
+    background-color: #111827 !important;
+    border-color: rgba(148, 163, 184, 0.22) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.58) !important;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .auth-card::before {
+    background: linear-gradient(
+        var(--beam-angle),
+        rgba(96, 165, 250, 0.35),
+        transparent 35%,
+        rgba(56, 189, 248, 0.35) 60%,
+        transparent 85%
+    );
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .auth-header h1 {
+    color: #f8fafc;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .auth-header p,
+html[data-theme="dark"][data-portal="AUTH"] .auth-footer p {
+    color: #94a3b8;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .auth-footer a {
+    color: #60a5fa;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .form-group label {
+    color: #cbd5e1;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .input-wrapper input,
+html[data-theme="dark"][data-portal="AUTH"] .input-wrapper select {
+    background-color: #162033 !important;
+    border-color: rgba(148, 163, 184, 0.24) !important;
+    color: #f1f5f9 !important;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .input-wrapper input:focus,
+html[data-theme="dark"][data-portal="AUTH"] .input-wrapper select:focus {
+    background-color: #1a263c !important;
+    border-color: #60a5fa !important;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .input-wrapper > i,
+html[data-theme="dark"][data-portal="AUTH"] .toggle-password-btn {
+    color: #94a3b8;
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .auth-logo .icon-img {
+    filter: brightness(0) invert(1);
+}
+
+html[data-theme="dark"][data-portal="AUTH"] .auth-right {
+    background: linear-gradient(145deg, #061325 0%, #0d2a4d 58%, #154073 100%);
+}
+
+@media (max-width: 900px) {
+    html[data-theme="dark"][data-portal="AUTH"] .auth-page {
+        background: linear-gradient(165deg, #07172e 0%, #10325e 38%, #0b111e 38%) !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   6. LANDING PAGE — Editorial Nocturno (#0B101B / #111826 / #3B82F6)
+   -------------------------------------------------------------------------- */
+:root[data-theme="dark"][data-portal="LANDING"] {
+    --surface-paper: #0b101b;
+    --surface-card: #111826;
+    --surface-subtle: #172133;
+    --surface-hover: #1e2940;
+    --text-ink: #f1f5f9;
+    --text-muted: #94a3b8;
+    --text-faint: #64748b;
+    --border-rule: rgba(148, 163, 184, 0.16);
+    --border-strong: rgba(148, 163, 184, 0.28);
+    --accent-cobalt: #3b82f6;
+    --accent-cobalt-light: rgba(59, 130, 246, 0.18);
+    --accent-cobalt-hover: #60a5fa;
+    --status-live-bg: rgba(16, 185, 129, 0.16);
+    --status-live-text: #34d399;
+    --status-alert-bg: rgba(239, 68, 68, 0.16);
+    --status-alert-text: #f87171;
+}
+
+html[data-theme="dark"][data-portal="LANDING"] .site-header {
+    background-color: rgba(11, 16, 27, 0.90) !important;
+}
+
+html[data-theme="dark"][data-portal="LANDING"] .hero-title em {
+    color: #93c5fd !important;
+}
+
+html[data-theme="dark"][data-portal="LANDING"] .schedule-table tr.in-progress {
+    background-color: rgba(59, 130, 246, 0.10) !important;
+}
+
+html[data-theme="dark"][data-portal="LANDING"] .attendance-compact-panel,
+html[data-theme="dark"][data-portal="LANDING"] .workflow-grid,
+html[data-theme="dark"][data-portal="LANDING"] .support-box,
+html[data-theme="dark"][data-portal="LANDING"] .matrix-table-wrap {
+    background-color: var(--surface-card) !important;
+    border-color: var(--border-rule) !important;
+}
+
+html[data-theme="dark"][data-portal="LANDING"] .permissions-table tr:hover td {
+    background-color: var(--surface-hover) !important;
+}
+
+html[data-theme="dark"][data-portal="LANDING"] .shidell-theme-btn.landing-theme-toggle {
+    background: var(--surface-card);
+    border-color: var(--border-rule);
+    color: var(--text-ink);
+}
+
+html[data-theme="dark"][data-portal="LANDING"] .shidell-theme-btn.landing-theme-toggle:hover {
+    background: var(--accent-cobalt-light);
+    border-color: var(--accent-cobalt);
+    color: #93c5fd;
+}
+
+/* Config theme choice cards (Estudiante / Padres) */
+.shidell-theme-choice-pills {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 12px;
+    background: var(--bg-main, #f1f5f9);
+    border: 1px solid var(--border-color-dark, #e2e8f0);
+}
+
+.shidell-theme-choice-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary, #64748b);
+    padding: 7px 14px;
+    border-radius: 9px;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.shidell-theme-choice-btn.active {
+    background: var(--bg-surface, #ffffff);
+    color: var(--primary, #144272);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+}
+
+html[data-theme="dark"] .shidell-theme-choice-pills {
+    background: #0d1525;
+    border-color: var(--border-color-dark, rgba(148, 163, 184, 0.22));
+}
+
+html[data-theme="dark"] .shidell-theme-choice-btn.active {
+    background: var(--bg-elevated, #172338);
+    color: var(--primary, #60a5fa);
+}

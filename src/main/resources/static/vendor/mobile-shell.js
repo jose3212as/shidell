@@ -27,7 +27,7 @@
         if (!document.querySelector('link[href*="mobile-shell.css"]')) {
             const link = document.createElement('link');
             link.rel = 'stylesheet';
-            link.href = '/vendor/mobile-shell.css?v=20261019';
+            link.href = '/vendor/mobile-shell.css?v=20261114m3';
             document.head.appendChild(link);
         }
         if (!document.querySelector('link[rel="manifest"]')) {

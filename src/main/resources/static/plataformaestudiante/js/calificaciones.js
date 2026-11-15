@@ -2,7 +2,10 @@
     let usuario = null;
     let payload = null;
     let calificaciones = [];
+    let evaluacionesProgramadas = [];
     let cursosResumen = [];
+    let bimestreSeleccionado = 'ALL';
+    let vistaActiva = 'resumen';
 
     document.addEventListener('DOMContentLoaded', iniciar);
 
@@ -21,6 +24,7 @@
             if (!res.ok) throw new Error('No se pudieron cargar las calificaciones');
             payload = await res.json();
             calificaciones = normalizarEvaluaciones(payload.evaluaciones || []);
+            evaluacionesProgramadas = normalizarProgramadas(payload.evaluacionesProgramadas || []);
             cursosResumen = normalizarCursos(payload.cursos || []);
             renderVistaEspecifica('resumen');
         } catch (error) {
@@ -86,6 +90,15 @@
                 window.print();
             });
         }
+
+        // Filtro por bimestre (I - IV Bimestre o Todos)
+        const bimFilter = document.getElementById('cal-bimestre-filter');
+        if (bimFilter) {
+            bimFilter.addEventListener('change', () => {
+                bimestreSeleccionado = bimFilter.value || 'ALL';
+                renderVistaEspecifica(vistaActiva);
+            });
+        }
     }
 
     function normalizarEvaluaciones(lista) {
@@ -94,11 +107,89 @@
             nota: Number(cal.nota || 0),
             notaMaxima: Number(cal.notaMaxima || 20),
             nota20: Number(cal.nota20 || 0),
+            bimestre: resolverBimestreDeItem(cal),
+            peso: Number(cal.peso || cal.evaluacion?.peso || 1),
+            calificada: true,
             estado: cal.estado || estadoNota(Number(cal.nota20 || 0)).texto,
             actividad: limpiarTexto(cal.actividad || 'Evaluación'),
             curso: normalizarCurso(cal.curso || {}),
             fechaOrden: cal.fecha ? new Date(`${cal.fecha}T00:00:00`) : new Date(0)
         }));
+    }
+
+    function normalizarProgramadas(lista) {
+        const cursoLookup = new Map();
+        (payload?.cursos || []).forEach(c => {
+            if (c?.nombre) cursoLookup.set(limpiarTexto(c.nombre).toLowerCase(), normalizarCurso(c));
+        });
+        return (Array.isArray(lista) ? lista : []).map(ev => {
+            const nombreCurso = limpiarTexto(ev.cursoNombre || 'Curso');
+            const infoCurso = cursoLookup.get(nombreCurso.toLowerCase()) || {
+                id: ev.cursoId ?? 'sin-curso',
+                nombre: nombreCurso,
+                color: colorValido(ev.cursoColor),
+                icono: ev.cursoIcono || 'ph-book-open',
+                profesor: limpiarTexto(ev.docenteNombre || 'Docente asignado')
+            };
+            const calificada = Boolean(ev.calificada && ev.nota20 != null);
+            const nota20Val = calificada ? Number(ev.nota20) : 0;
+            const notaVal = calificada && ev.nota != null ? Number(ev.nota) : 0;
+            return {
+                evaluacionId: ev.id,
+                actividad: limpiarTexto(ev.titulo || 'Evaluación'),
+                tipo: ev.tipo || 'EXAMEN',
+                bimestre: Number(ev.bimestre || resolverBimestreDeItem({ fecha: ev.fecha, actividad: ev.titulo })),
+                peso: Number(ev.peso || 1),
+                nota: notaVal,
+                notaMaxima: Number(ev.notaMaxima || 20),
+                nota20: nota20Val,
+                calificada,
+                fecha: ev.fecha || null,
+                curso: infoCurso,
+                fechaOrden: ev.fecha ? new Date(`${ev.fecha}T00:00:00`) : new Date(0)
+            };
+        });
+    }
+
+    function resolverBimestreDeItem(item) {
+        const b = Number(item?.bimestre || item?.evaluacion?.bimestre || 0);
+        if (b >= 1 && b <= 4) return b;
+        const titulo = String(item?.actividad || item?.titulo || '');
+        const romanMatch = titulo.match(/\b(IV|III|II|I)\b/);
+        if (romanMatch) {
+            return ({ I: 1, II: 2, III: 3, IV: 4 })[romanMatch[1]] || 1;
+        }
+        const f = String(item?.fecha || '');
+        const mes = f ? Number(f.slice(5, 7)) : 0;
+        if (mes >= 3 && mes <= 5) return 1;
+        if (mes >= 6 && mes <= 7) return 2;
+        if (mes >= 8 && mes <= 10) return 3;
+        return 4;
+    }
+
+    function etiquetaBimestre(b) {
+        const rom = { 1: 'I Bimestre', 2: 'II Bimestre', 3: 'III Bimestre', 4: 'IV Bimestre' };
+        return rom[Number(b)] || `Bimestre ${b}`;
+    }
+
+    function obtenerEvaluacionesUnificadas() {
+        const unificadas = [];
+        const vistos = new Set();
+
+        const agregarUnica = (item) => {
+            const key = `${item.curso.nombre.toLowerCase()}|${item.actividad.toLowerCase()}`;
+            if (vistos.has(key)) return;
+            vistos.add(key);
+            unificadas.push(item);
+        };
+
+        calificaciones.forEach(c => agregarUnica(c));
+        evaluacionesProgramadas.forEach(ev => agregarUnica(ev));
+
+        return unificadas.filter(item => {
+            if (bimestreSeleccionado === 'ALL') return true;
+            return Number(item.bimestre) === Number(bimestreSeleccionado);
+        });
     }
 
     function normalizarCursos(lista) {
@@ -128,6 +219,7 @@
     }
 
     function renderVistaEspecifica(vista) {
+        vistaActiva = vista || 'resumen';
         if (vista === 'resumen') {
             renderStats();
             renderDistribucion();
@@ -137,18 +229,34 @@
         } else if (vista === 'curso') {
             renderCursosTabList();
         } else if (vista === 'evaluacion') {
-            renderEvaluacionesTabList();
+            const searchVal = document.getElementById('eval-search-input')?.value || '';
+            renderEvaluacionesTabList(searchVal);
         } else if (vista === 'historial') {
             renderHistorialTab();
         }
     }
 
     function renderStats() {
-        const promedio = Number(payload?.promedioGeneral || 0);
-        const aprobados = Number(payload?.cursosAprobados || 0);
-        const totalCursos = Number(payload?.cursosTotales || 0);
+        const filtradas = obtenerEvaluacionesUnificadas().filter(item => item.calificada);
+        const usarFiltroBimestre = bimestreSeleccionado !== 'ALL';
+        const promedio = usarFiltroBimestre
+            ? (filtradas.length ? filtradas.reduce((sum, x) => sum + x.nota20, 0) / filtradas.length : 0)
+            : Number(payload?.promedioGeneral || 0);
+        const totalCursos = Number(payload?.cursosTotales || cursosResumen.length || 0);
+        let aprobados = Number(payload?.cursosAprobados || 0);
+        if (usarFiltroBimestre) {
+            const porCurso = new Map();
+            filtradas.forEach(item => {
+                const k = item.curso.nombre.toLowerCase();
+                if (!porCurso.has(k)) porCurso.set(k, []);
+                porCurso.get(k).push(item.nota20);
+            });
+            aprobados = Array.from(porCurso.values()).filter(arr => (arr.reduce((a, b) => a + b, 0) / arr.length) >= 11).length;
+        }
         const mejora = Number(payload?.mejoraPromedio || 0);
-        const totalEvaluaciones = Number(payload?.evaluacionesTotales || calificaciones.length || 0);
+        const totalEvaluaciones = usarFiltroBimestre
+            ? filtradas.length
+            : Number(payload?.evaluacionesTotales || calificaciones.length || 0);
         const estado = estadoNota(promedio);
 
         setValue('#stat-promedio', `${promedio.toFixed(1)} <span>/ 20</span>`, true);
@@ -212,9 +320,14 @@
         const titulo = document.querySelector('.widget-panel:nth-child(2) h3');
         if (!contenedor) return;
 
-        let lista = [...calificaciones].sort((a, b) => b.fechaOrden - a.fechaOrden);
+        let lista = obtenerEvaluacionesUnificadas()
+            .filter(item => item.calificada)
+            .sort((a, b) => b.fechaOrden - a.fechaOrden);
+        if (!lista.length && bimestreSeleccionado !== 'ALL') {
+            lista = obtenerEvaluacionesUnificadas().sort((a, b) => a.fechaOrden - b.fechaOrden);
+        }
         if (vista === 'curso' && cursoId !== null) lista = lista.filter(cal => String(cal.curso.id) === String(cursoId));
-        if (vista === 'resumen') lista = lista.slice(0, 5);
+        if (vista === 'resumen') lista = lista.slice(0, 6);
 
         if (titulo) titulo.textContent = vista === 'historial' ? 'Historial académico' : vista === 'curso' ? 'Evaluaciones del curso' : 'Evaluaciones recientes';
 
@@ -223,21 +336,25 @@
             return;
         }
 
-        contenedor.innerHTML = lista.map(cal => `
+        contenedor.innerHTML = lista.map(cal => {
+            const notaHtml = cal.calificada
+                ? `<div class="score">${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span></div>`
+                : `<div class="score" style="color:var(--text-secondary);">Prog.</div>`;
+            return `
             <div class="eval-item">
                 <div class="eval-icon bg-${escapeHtml(cal.curso.color)}-light" style="color: var(--${escapeHtml(cal.curso.color)}, var(--primary));">
                     ${iconImg(escapeHtml(cal.curso.icono), 'fill')}
                 </div>
                 <div class="eval-info">
                     <h4>${escapeHtml(cal.actividad)}</h4>
-                    <p>${escapeHtml(cal.curso.nombre)}</p>
+                    <p>${escapeHtml(cal.curso.nombre)} · ${escapeHtml(etiquetaBimestre(cal.bimestre))}</p>
                 </div>
                 <div class="eval-score-date">
-                    <div class="score">${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span></div>
+                    ${notaHtml}
                     <div class="date">${formatearFecha(cal.fecha)}</div>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
     }
 
     function renderDistribucion() {
@@ -347,26 +464,31 @@
             iconBox.innerHTML = `${iconImg(curso.icono, 'fill')}`;
         }
 
-        const evals = calificaciones
-            .filter(cal => String(cal.curso.id) === String(cursoId))
-            .sort((a, b) => b.fechaOrden - a.fechaOrden);
+        const cursoNombreNorm = curso.nombre.toLowerCase();
+        const evals = obtenerEvaluacionesUnificadas()
+            .filter(cal => String(cal.curso.id) === String(cursoId) || cal.curso.nombre.toLowerCase() === cursoNombreNorm)
+            .sort((a, b) => (a.bimestre - b.bimestre) || (a.fechaOrden - b.fechaOrden));
 
         if (!evals.length) {
-            listContainer.innerHTML = '<div class="cal-state">No hay evaluaciones registradas para este curso.</div>';
+            listContainer.innerHTML = '<div class="cal-state">No hay evaluaciones registradas para este curso en el bimestre seleccionado.</div>';
             return;
         }
 
         listContainer.innerHTML = evals.map(cal => {
-            const estado = estadoNota(cal.nota20);
+            const estado = cal.calificada ? estadoNota(cal.nota20) : { texto: 'Programado', clase: 'programado' };
+            const notaCell = cal.calificada
+                ? `${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span>`
+                : `— <span>/ ${cal.notaMaxima.toFixed(0)}</span>`;
+            const subMeta = `${etiquetaBimestre(cal.bimestre)} · Peso ×${Number(cal.peso || 1).toFixed(1)}`;
             return `
                 <div class="detail-row">
                     <div class="detail-eval">
                         <strong>${escapeHtml(cal.actividad)}</strong>
-                        <small>Evaluación registrada</small>
+                        <small>${escapeHtml(subMeta)}</small>
                     </div>
                     <div class="detail-teacher">${escapeHtml(cal.curso.profesor)}</div>
                     <div class="detail-date">${formatearFecha(cal.fecha)}</div>
-                    <div class="detail-grade">${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span></div>
+                    <div class="detail-grade">${notaCell}</div>
                     <div><span class="cal-status-tag ${estado.clase}">${estado.texto}</span></div>
                 </div>`;
         }).join('');
@@ -377,16 +499,19 @@
         const countEl = document.getElementById('eval-tab-count');
         if (!contenedor) return;
 
+        const baseUnificada = obtenerEvaluacionesUnificadas()
+            .sort((a, b) => (b.calificada - a.calificada) || (b.fechaOrden - a.fechaOrden));
         const cleanQuery = query.toLowerCase().trim();
-        const listaFiltrada = calificaciones.filter(cal => {
+        const listaFiltrada = baseUnificada.filter(cal => {
             if (!cleanQuery) return true;
             return cal.actividad.toLowerCase().includes(cleanQuery) || 
                    cal.curso.nombre.toLowerCase().includes(cleanQuery) || 
-                   cal.curso.profesor.toLowerCase().includes(cleanQuery);
+                   cal.curso.profesor.toLowerCase().includes(cleanQuery) ||
+                   etiquetaBimestre(cal.bimestre).toLowerCase().includes(cleanQuery);
         });
 
         if (countEl) {
-            countEl.textContent = `${listaFiltrada.length} de ${calificaciones.length} evaluaciones encontradas.`;
+            countEl.textContent = `${listaFiltrada.length} de ${baseUnificada.length} exámenes bimestrales / evaluaciones.`;
         }
 
         if (!listaFiltrada.length) {
@@ -395,7 +520,11 @@
         }
 
         contenedor.innerHTML = listaFiltrada.map(cal => {
-            const estado = estadoNota(cal.nota20);
+            const estado = cal.calificada ? estadoNota(cal.nota20) : { texto: 'Programado', clase: 'programado' };
+            const notaCell = cal.calificada
+                ? `${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span>`
+                : `— <span>/ ${cal.notaMaxima.toFixed(0)}</span>`;
+            const escalaTexto = cal.calificada ? `Escala 20: ${cal.nota20.toFixed(1)}` : 'Pendiente de rendir';
             return `
                 <div class="detail-row">
                     <div class="detail-main">
@@ -404,16 +533,16 @@
                         </div>
                         <div>
                             <strong>${escapeHtml(cal.curso.nombre)}</strong>
-                            <small>Escala 20: ${cal.nota20.toFixed(1)}</small>
+                            <small>${escapeHtml(escalaTexto)}</small>
                         </div>
                     </div>
                     <div class="detail-eval">
                         <strong>${escapeHtml(cal.actividad)}</strong>
-                        <small>Evaluación registrada</small>
+                        <small>${escapeHtml(etiquetaBimestre(cal.bimestre))} · Peso ×${Number(cal.peso || 1).toFixed(1)}</small>
                     </div>
                     <div class="detail-teacher">${escapeHtml(cal.curso.profesor)}</div>
                     <div class="detail-date">${formatearFecha(cal.fecha)}</div>
-                    <div class="detail-grade">${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span></div>
+                    <div class="detail-grade">${notaCell}</div>
                     <div><span class="cal-status-tag ${estado.clase}">${estado.texto}</span></div>
                 </div>`;
         }).join('');

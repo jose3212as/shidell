@@ -65,6 +65,9 @@ public class Curso {
     @Transient private String tempSeccion;
     @Transient private String tempTurno;
 
+    @Column(name = "turno")
+    private String estadoTurno;
+
     @Transient
     public String getNivel() { return aula != null ? aula.getNivel() : tempNivel; }
     public void setNivel(String nivel) { this.tempNivel = nivel; }
@@ -78,8 +81,21 @@ public class Curso {
     public void setSeccion(String seccion) { this.tempSeccion = seccion; }
 
     @Transient
-    public String getTurno() { return aula != null ? aula.getTurno() : tempTurno; }
-    public void setTurno(String turno) { this.tempTurno = turno; }
+    public String getTurno() {
+        if ("ARCHIVADO".equalsIgnoreCase(estadoTurno) || "ARCHIVADO".equalsIgnoreCase(tempTurno)) {
+            return "ARCHIVADO";
+        }
+        return aula != null ? aula.getTurno() : tempTurno;
+    }
+
+    public void setTurno(String turno) {
+        this.tempTurno = turno;
+        if ("ARCHIVADO".equalsIgnoreCase(turno)) {
+            this.estadoTurno = "ARCHIVADO";
+        } else if ("ARCHIVADO".equalsIgnoreCase(this.estadoTurno)) {
+            this.estadoTurno = null;
+        }
+    }
 
     @Transient
     public java.time.LocalTime getHoraInicioLocalTime() {

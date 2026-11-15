@@ -3,85 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261115c"></script>
     <title>Shidell - Iniciar Sesión</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="../plataformaestudiante/css/styles.css">
-    <style>
-        /* Splash Screen Animation */
-        .intro-splash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(135deg, #2563eb, #7c3aed);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.8s ease;
-        }
-        
-        .intro-splash.fade-out {
-            transform: translateY(-100%);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .intro-content {
-            text-align: center;
-            color: white;
-            animation: content-pop 1.2s ease-out forwards;
-        }
-
-        .intro-logo {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: bounce-scale 1.5s ease-out infinite;
-        }
-
-        .intro-title {
-            font-size: 42px;
-            font-weight: 800;
-            margin-bottom: 10px;
-            opacity: 0;
-            animation: fade-in-up 0.8s ease-out 0.3s forwards;
-            letter-spacing: 2px;
-        }
-
-        .intro-subtitle {
-            font-size: 18px;
-            font-weight: 400;
-            opacity: 0;
-            animation: fade-in-up 0.8s ease-out 0.6s forwards;
-        }
-
-        @keyframes content-pop {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes bounce-scale {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        @keyframes fade-in-up {
-            0% { transform: translateY(20px); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-        }
-    </style>
+    <link rel="stylesheet" href="/vendor/shidell-modern-system.css?v=20261114m3">
+    <link rel="stylesheet" href="../plataformaestudiante/css/styles.css?v=20261114m3">
+    <link rel="stylesheet" href="auth-modern.css?v=20261114m3">
 </head>
 <body>
-    <!-- Intro Animation Overlay -->
-    <div id="intro-splash" class="intro-splash">
+    <!-- Intro Animation Overlay (SVG + Iris Reveal en paleta cobalto Shidell) -->
+    <div id="intro-splash" class="intro-splash" aria-hidden="true">
+        <div class="intro-glow"></div>
         <div class="intro-content">
-            <div class="intro-logo">
-                <i class="ph-fill ph-graduation-cap"></i>
-            </div>
+            <svg class="intro-svg" viewBox="0 0 64 64">
+                <path class="intro-path" d="M32 10 L56 22 L32 34 L8 22 Z" />
+                <path class="intro-path" style="animation-delay: 110ms;" d="M16 28 V43 C16 48 23 52 32 52 C41 52 48 48 48 43 V28" />
+                <path class="intro-path" style="animation-delay: 200ms;" d="M54 24 V41" />
+            </svg>
             <h1 class="intro-title">Shidell</h1>
             <p class="intro-subtitle">Tu portal académico</p>
         </div>
@@ -104,7 +45,11 @@
                         <label for="email">Correo Electrónico</label>
                         <div class="input-wrapper">
                             <i class="ph ph-envelope"></i>
-                            <input type="email" id="email" placeholder="ejemplo@shidell.com" required>
+                            <input type="email" id="email" class="has-trailing-control" placeholder="ejemplo@shidell.com" required>
+                            <span id="email-valid-badge" class="input-valid-badge" aria-hidden="true">
+                                <i class="ph-fill ph-check-circle"></i>
+                            </span>
+                            <span class="input-focus-beam"></span>
                         </div>
                     </div>
 
@@ -112,13 +57,17 @@
                         <label for="password">Contraseña</label>
                         <div class="input-wrapper">
                             <i class="ph ph-lock"></i>
-                            <input type="password" id="password" placeholder="••••••••" required>
+                            <input type="password" id="password" class="has-trailing-control" placeholder="••••••••" required>
+                            <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Mostrar u ocultar contraseña" aria-pressed="false">
+                                <i class="ph ph-eye"></i>
+                            </button>
+                            <span class="input-focus-beam"></span>
                         </div>
                     </div>
 
                     <div class="form-options">
                         <label class="remember-me">
-                            <input type="checkbox"> Recordarme
+                            <input type="checkbox" id="remember-me"> Recordarme
                         </label>
                         <a href="#" class="forgot-pass">¿Olvidaste tu contraseña?</a>
                     </div>
@@ -132,15 +81,16 @@
             </div>
         </div>
 
-        <!-- Lado Derecho: Ilustración/Mensaje -->
+        <!-- Lado Derecho: Ilustración/Mensaje + Constelación interactiva Canvas -->
         <div class="auth-right">
             <div class="decor-circle circle-1"></div>
             <div class="decor-circle circle-2"></div>
-            
+            <canvas id="auth-right-canvas" aria-hidden="true"></canvas>
+
             <div class="auth-right-content">
                 <h2>Potencia tu futuro académico con Shidell</h2>
                 <p>Tu portal integral para gestionar cursos, tareas y seguir tu progreso en tiempo real. ¡Todo en un solo lugar!</p>
-                
+
                 <div class="auth-illustration">
                     <img src="https://img.icons8.com/color/240/learning.png" alt="learning illustration">
                 </div>
@@ -148,77 +98,12 @@
         </div>
     </div>
 
-    <script>
-        document.querySelector('.auth-form').addEventListener('submit', async function(e) {
-            e.preventDefault(); // Evita la recarga de página
-
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-
-            try {
-                // Usar URL absoluta para permitir pruebas abriendo el archivo directamente
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
-
-                if (response.ok) {
-                    const user = await response.json();
-                    localStorage.setItem('shidell_user', JSON.stringify(user));
-                    if (user.rol === 'ADMINISTRADOR' || user.rol === 'ADMIN') {
-                        localStorage.setItem('shidell_admin', JSON.stringify(user));
-                    } else {
-                        localStorage.removeItem('shidell_admin');
-                    }
-
-                    // Redirigir según el rol de la base de datos
-                    const rolUpper = user.rol ? user.rol.toUpperCase() : '';
-                    if (rolUpper === 'ESTUDIANTE') {
-                        window.location.href = '../plataformaestudiante/html/portalestudiante.html';
-                    } else if (rolUpper === 'DOCENTE') {
-                        window.location.href = '../plataformadocente/index.html';
-                    } else if (rolUpper === 'ADMINISTRADOR' || rolUpper === 'ADMIN') {
-                        window.location.href = '../plataformaadmin/html/dashboard.html';
-                    } else if (rolUpper === 'PADRE') {
-                        window.location.href = '../plataformapadres/html/portalpadres.html';
-                    } else {
-                        AppAlerts.mostrarError('Rol no reconocido', user.rol);
-                    }
-
-                } else {
-                    const errorMsg = await response.json().catch(() => ({}));
-                    AppAlerts.mostrarError(errorMsg.error || 'Correo o contraseña incorrectos', 'Verifica tus credenciales');
-                }
-            } catch (error) {
-                console.error("Error connecting to server:", error);
-                AppAlerts.mostrarError('Error al conectar con el servidor', '¿Está encendido el backend?');
-            }
-        });
-
-        // Intro Animation logic (ágil y solo la primera vez en la sesión)
-        document.addEventListener("DOMContentLoaded", () => {
-            const splash = document.getElementById("intro-splash");
-            if (splash) {
-                if (sessionStorage.getItem("shidell_splash_seen") === "1") {
-                    splash.remove();
-                    return;
-                }
-                sessionStorage.setItem("shidell_splash_seen", "1");
-                setTimeout(() => {
-                    splash.classList.add("fade-out");
-                    setTimeout(() => {
-                        splash.remove();
-                    }, 600);
-                }, 750);
-            }
-        });
-    </script>
-
     <!-- SweetAlert2 para Alertas Elegantes -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/vendor/alertas.js"></script>
-    <script src="/vendor/mobile-shell.js?v=20261018"></script>
+    <script src="/vendor/mobile-shell.js?v=20261114m3"></script>
+    <script src="/vendor/shidell-motion.js?v=20261114m3"></script>
+    <script src="auth-motion.js?v=20261114m4"></script>
 
 </body>
 </html>

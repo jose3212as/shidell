@@ -4,29 +4,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261115c"></script>
+    <meta name="theme-color" id="meta-theme-color" content="#0B0D11">
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('shidell_docente_theme');
+                var theme = saved === 'light' ? 'light' : 'dark';
+                document.documentElement.dataset.theme = theme;
+                var meta = document.getElementById('meta-theme-color');
+                if (meta) meta.content = theme === 'light' ? '#FFFFFF' : '#0B0D11';
+            } catch (e) {
+                document.documentElement.dataset.theme = 'dark';
+            }
+        })();
+    </script>
     <title>Shidell - Portal Docente</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=20261114w">
     <link rel="stylesheet" href="css/portaldocente.css">
     <link rel="stylesheet" href="css/spa.css">
     <!-- Vistas Modulares -->
-    <link rel="stylesheet" href="css/views/dashboard.css">
-    <link rel="stylesheet" href="css/views/mis-clases.css">
-    <link rel="stylesheet" href="css/views/calendario.css">
-    <link rel="stylesheet" href="css/views/tareas.css">
+    <link rel="stylesheet" href="css/views/dashboard.css?v=20261114w">
+    <link rel="stylesheet" href="css/views/mis-clases.css?v=20261114l">
+    <link rel="stylesheet" href="/vendor/fullcalendar/skeleton.css?v=7.1.5">
+    <link rel="stylesheet" href="/vendor/fullcalendar/breezy.theme.css?v=7.1.5">
+    <link rel="stylesheet" href="/vendor/fullcalendar/breezy.indigo.css?v=7.1.5">
+    <link rel="stylesheet" href="css/views/calendario.css?v=20261114g">
+    <link rel="stylesheet" href="css/views/tareas.css?v=20261114n">
+    <link rel="stylesheet" href="css/views/crear-tarea.css?v=20261114n">
+    <link rel="stylesheet" href="css/views/foros.css?v=20261114r">
     <link rel="stylesheet" href="css/views/estudiantes.css">
-    <link rel="stylesheet" href="css/views/calificaciones.css">
-    <link rel="stylesheet" href="css/views/mensajes.css">
+    <link rel="stylesheet" href="css/views/estudiante-perfil.css?v=20261114i">
+    <link rel="stylesheet" href="css/views/calificaciones.css?v=20261114j">
+    <link rel="stylesheet" href="css/views/crear-evaluacion.css?v=20261114z2">
+    <link rel="stylesheet" href="css/views/mensajes.css?v=20261115a">
     <link rel="stylesheet" href="css/views/reportes.css">
-    <link rel="stylesheet" href="css/views/configuracion.css">
+    <link rel="stylesheet" href="css/views/configuracion.css?v=20261114v">
     <link rel="stylesheet" href="/vendor/mobile-shell.css?v=20261018">
+    <link rel="stylesheet" href="css/theme-obsidian.css?v=20261114w">
+    <link rel="stylesheet" href="/vendor/shidell-modern-system.css?v=20261114m3">
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/vendor/alertas.js"></script>
-    <script src="/vendor/mobile-shell.js?v=20261018" defer></script>
+    <script src="/vendor/shidell-motion.js?v=20261114m3" defer></script>
+    <script src="/vendor/mobile-shell.js?v=20261114m3" defer></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -47,6 +72,7 @@
                 <a href="#/dashboard" class="nav-item active" data-route="/dashboard"><i class="ph ph-house"></i><span>Inicio</span></a>
                 <a href="#/mis-clases" class="nav-item" data-route="/mis-clases"><i class="ph ph-presentation-chart"></i><span>Mis Clases</span></a>
                 <a href="#/tareas" class="nav-item" data-route="/tareas"><i class="ph ph-notebook"></i><span>Tareas</span></a>
+                <a href="#/foros" class="nav-item" data-route="/foros"><i class="ph ph-chat-circle-dots"></i><span>Foros</span></a>
                 <a href="#/estudiantes" class="nav-item" data-route="/estudiantes"><i class="ph ph-users"></i><span>Estudiantes</span></a>
                 <a href="#/calificaciones" class="nav-item" data-route="/calificaciones"><i class="ph ph-check-square"></i><span>Calificaciones</span></a>
                 <a href="#/calendario" class="nav-item" data-route="/calendario"><i class="ph ph-calendar"></i><span>Calendario</span></a>
@@ -65,6 +91,12 @@
                 </div>
 
                 <div class="topbar-actions">
+                    <!-- Selector Tema Día / Noche -->
+                    <button class="theme-toggle-btn" id="btn-theme-toggle" type="button" title="Cambiar a modo día" aria-label="Cambiar a modo día">
+                        <i class="ph ph-sun" id="theme-toggle-icon"></i>
+                        <span class="theme-toggle-label" id="theme-toggle-label">Modo día</span>
+                    </button>
+
                     <!-- Botón Notificaciones -->
                     <div class="notif-wrapper" style="position:relative;">
                         <button class="notification-btn" id="btn-notificaciones" type="button">
@@ -96,20 +128,19 @@
             <div id="app-content" class="content-area docente-redesign">
                 <!-- Las vistas se cargarán aquí -->
             </div>
-
-            <!-- FOOTER FIJO -->
-            <footer class="teacher-footer">
-                <span>Shidell Portal Docente V2</span>
-                <span id="server-status">Conectando...</span>
-            </footer>
         </main>
     </div>
 
     <!-- Modales Globales (pueden ser usados por cualquier vista) -->
     <div id="global-modal-container"></div>
 
+    <!-- FullCalendar v7 -->
+    <script src="/vendor/fullcalendar/fullcalendar.all.global.js?v=7.1.5"></script>
+    <script src="/vendor/fullcalendar/breezy.global.js?v=7.1.5"></script>
+    <script src="/vendor/fullcalendar/es.global.js?v=7.1.5"></script>
     <!-- Archivos SPA Core -->
-    <script type="module" src="js/main.js"></script>
+    <script src="/vendor/shidell-presence.js?v=20261115a"></script>
+    <script type="module" src="js/main.js?v=20261115a"></script>
 </body>
 
 </html>

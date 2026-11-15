@@ -1,16 +1,569 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shidell - Portal Estudiante</title>
+    <script src="/vendor/shidell-theme.js?v=20261114d"></script>
+    <title>Shidell — Portal Estudiante</title>
+    
+    <!-- Google Fonts: Editorial & Modern Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
     <script src="../js/icon-helper.js"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
+    <link rel="stylesheet" href="../css/styles.css?v=20261114s">
+
+    <style>
+        /* ==========================================================================
+           REDISEÑO EDITORIAL & MINIMALISTA — SYLLABUS BY JOHN BARRIER WILSON STYLE
+           Zero-Cards / Tipografía Pura / Líneas de División Sutiles / Ritmo Vertical
+           ========================================================================== */
+        :root {
+            --ed-canvas: #FFFFFF;
+            --ed-surface-warm: #FFFFFF;
+            --ed-subtle: #F8FAFC;
+            --ed-ink: #111418;
+            --ed-ink-secondary: #4A4D57;
+            --ed-muted: #737682;
+            --ed-faint: #9EA1AD;
+            --ed-rule: #E2E8F0;
+            --ed-rule-soft: #F1F5F9;
+            --ed-cobalt: #0E3A75;
+            --ed-cobalt-hover: #082650;
+            --ed-cobalt-tint: #F0F4FA;
+            
+            --ed-status-done-bg: #ECFDF5;
+            --ed-status-done-text: #065F46;
+            --ed-status-pending-bg: #FFFBEB;
+            --ed-status-pending-text: #92400E;
+            --ed-status-late-bg: #FEF2F2;
+            --ed-status-late-text: #991B1B;
+
+            --font-editorial-title: "Bricolage Grotesque", "Plus Jakarta Sans", -apple-system, sans-serif;
+            --font-editorial-serif: "Bricolage Grotesque", "Plus Jakarta Sans", sans-serif;
+            --font-editorial-mono: "JetBrains Mono", Consolas, monospace;
+        }
+
+        .main-wrapper {
+            background-color: var(--ed-canvas) !important;
+        }
+
+        .content-area {
+            width: 100%;
+            max-width: 100% !important;
+            padding: 20px 44px 56px !important;
+            margin: 0;
+            gap: 0 !important;
+            box-sizing: border-box;
+        }
+
+        /* --------------------------------------------------------------------------
+           A. CABECERA EDITORIAL DE CONTEXTO
+           -------------------------------------------------------------------------- */
+        .portal-editorial-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 20px;
+            padding-bottom: 22px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid var(--ed-rule);
+        }
+
+        .portal-header-titles .kicker {
+            font-family: var(--font-editorial-mono);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ed-cobalt);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .portal-header-titles h1 {
+            font-family: var(--font-editorial-title);
+            font-size: 30px;
+            line-height: 1.2;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: var(--ed-ink);
+            margin: 0 0 6px 0;
+        }
+
+        .portal-header-titles p {
+            font-size: 14px;
+            color: var(--ed-muted);
+            margin: 0;
+        }
+
+        .portal-header-badge {
+            font-family: var(--font-editorial-mono);
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--ed-muted);
+            background-color: var(--ed-surface-warm);
+            border: 1px solid var(--ed-rule);
+            padding: 6px 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        /* --------------------------------------------------------------------------
+           B. CINTA MÉTRICA EDITORIAL (LEDGER TICKER EN VEZ DE TARJETAS FLOTANTES)
+           -------------------------------------------------------------------------- */
+        .editorial-metrics-ledger {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border: 1px solid var(--ed-rule);
+            border-radius: 6px;
+            background-color: #FFFFFF;
+            margin-bottom: 36px;
+        }
+
+        .metric-cell {
+            padding: 20px 24px;
+            border-right: 1px solid var(--ed-rule);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .metric-cell:last-child {
+            border-right: none;
+        }
+
+        .metric-cell-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 12px;
+        }
+
+        .metric-idx {
+            font-family: var(--font-editorial-mono);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--ed-muted);
+        }
+
+        .metric-val {
+            font-family: var(--font-editorial-mono);
+            font-size: 32px;
+            line-height: 1;
+            font-weight: 700;
+            color: var(--ed-ink);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ed-ink);
+            margin-bottom: 4px;
+        }
+
+        .metric-footer-link {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--ed-cobalt);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.15s ease;
+        }
+
+        .metric-footer-link:hover {
+            color: var(--ed-cobalt-hover);
+            text-decoration: underline;
+        }
+
+        /* --------------------------------------------------------------------------
+           C. ESTRUCTURA EDITORIAL EN DOS COLUMNAS
+           -------------------------------------------------------------------------- */
+        .editorial-portal-grid {
+            display: grid;
+            grid-template-columns: 1.35fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        .editorial-col-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+            min-width: 0;
+        }
+
+        .editorial-section-header {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--ed-rule);
+            margin-bottom: 16px;
+        }
+
+        .editorial-section-header .section-kicker {
+            font-family: var(--font-editorial-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ed-muted);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .editorial-section-header h2 {
+            font-family: var(--font-editorial-title);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.015em;
+            color: var(--ed-ink);
+            margin: 0;
+        }
+
+        .section-view-all {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: var(--ed-cobalt);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .section-view-all:hover {
+            text-decoration: underline;
+        }
+
+        /* --------------------------------------------------------------------------
+           D. LISTAS EDITORIALES DE TAREAS Y CLASES (SIN CAJAS TOSTADAS)
+           -------------------------------------------------------------------------- */
+        /* Tareas */
+        .task-list-editorial {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--ed-rule-soft);
+            transition: background-color 0.15s ease;
+            border-radius: 4px;
+        }
+
+        .task-item:hover {
+            background-color: var(--ed-surface-warm);
+        }
+
+        .task-item .check-circle {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1.5px solid var(--ed-muted);
+            flex-shrink: 0;
+        }
+
+        .task-item:hover .check-circle {
+            border-color: var(--ed-cobalt);
+        }
+
+        .task-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .task-main .item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--ed-ink);
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .task-main .item-subtitle {
+            font-size: 12px;
+            color: var(--ed-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .priority-tag {
+            font-family: var(--font-editorial-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .priority-tag.bg-red-light {
+            background-color: var(--ed-status-late-bg);
+            color: var(--ed-status-late-text);
+        }
+
+        .priority-tag.bg-yellow-light {
+            background-color: var(--ed-status-pending-bg);
+            color: var(--ed-status-pending-text);
+        }
+
+        .priority-tag.bg-green-light {
+            background-color: var(--ed-status-done-bg);
+            color: var(--ed-status-done-text);
+        }
+
+        /* Clases / Horario */
+        .classes-list-editorial {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--ed-rule-soft);
+            transition: background-color 0.15s ease;
+        }
+
+        .panel-item:hover {
+            background-color: var(--ed-surface-warm);
+        }
+
+        .panel-item .item-icon-box {
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            background-color: var(--ed-subtle);
+            color: var(--ed-ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .panel-item .item-icon-box .icon-img {
+            width: 16px;
+            height: 16px;
+        }
+
+        .panel-item .item-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .panel-item .item-title {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--ed-ink);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .panel-item .item-subtitle {
+            font-size: 12px;
+            color: var(--ed-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .panel-item .item-badge {
+            font-family: var(--font-editorial-mono);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background-color: var(--ed-subtle);
+            color: var(--ed-ink-secondary);
+            flex-shrink: 0;
+        }
+
+        /* Mensajes Recientes */
+        .messages-list-editorial {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--ed-rule-soft);
+            transition: background-color 0.15s ease;
+            border-radius: 4px;
+        }
+
+        .message-card:hover {
+            background-color: var(--ed-surface-warm);
+        }
+
+        .msg-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--ed-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .msg-avatar .icon-img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .msg-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .msg-header {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 2px;
+        }
+
+        .msg-author {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--ed-ink);
+        }
+
+        .msg-role {
+            font-family: var(--font-editorial-mono);
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--ed-muted);
+        }
+
+        .msg-snippet {
+            font-size: 12.5px;
+            color: var(--ed-ink-secondary);
+            line-height: 1.4;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .msg-meta .msg-time {
+            font-family: var(--font-editorial-mono);
+            font-size: 11px;
+            color: var(--ed-faint);
+            white-space: nowrap;
+        }
+
+        /* --------------------------------------------------------------------------
+           E. NOTA EDITORIAL DE AVANCE (EN REEMPLAZO DEL BANNER CARTOONISH)
+           -------------------------------------------------------------------------- */
+        .editorial-briefing-note {
+            padding: 20px 22px;
+            border: 1px solid var(--ed-rule);
+            border-radius: 6px;
+            background-color: var(--ed-surface-warm);
+            border-left: 3px solid var(--ed-cobalt);
+        }
+
+        .briefing-tag {
+            font-family: var(--font-editorial-mono);
+            font-size: 10.5px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--ed-cobalt);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .banner-quote {
+            font-size: 14.5px;
+            font-weight: 600;
+            color: var(--ed-ink);
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .banner-author {
+            font-size: 13px;
+            color: var(--ed-muted);
+            line-height: 1.5;
+            display: block;
+        }
+
+        /* Compatibilidad con clases utilitarias del script */
+        .home-banner {
+            display: none !important;
+        }
+
+        /* --------------------------------------------------------------------------
+           ADAPTABILIDAD RESPONSIVE
+           -------------------------------------------------------------------------- */
+        @media (max-width: 1024px) {
+            .editorial-metrics-ledger {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .metric-cell:nth-child(2) {
+                border-right: none;
+            }
+            .metric-cell:nth-child(1), .metric-cell:nth-child(2) {
+                border-bottom: 1px solid var(--ed-rule);
+            }
+            .editorial-portal-grid {
+                grid-template-columns: 1fr;
+                gap: 36px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 16px 20px 48px !important;
+            }
+            .editorial-metrics-ledger {
+                grid-template-columns: 1fr;
+            }
+            .metric-cell {
+                border-right: none;
+                border-bottom: 1px solid var(--ed-rule);
+            }
+            .metric-cell:last-child {
+                border-bottom: none;
+            }
+            .portal-editorial-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -59,7 +612,6 @@
                     <span>Configuración</span>
                 </a>
             </nav>
-
         </aside>
 
         <!-- Main Content -->
@@ -72,8 +624,7 @@
                 </div>
 
                 <div class="topbar-actions">
-
-                    <button class="notification-btn">
+                    <button class="notification-btn" aria-label="Notificaciones">
                         <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
                         <span class="badge"></span>
                     </button>
@@ -88,136 +639,160 @@
                 </div>
             </header>
 
-            <!-- Content Area -->
+            <!-- Content Area: Canvas Editorial Abierto (Zero-Cards) -->
             <div class="content-area">
 
-                <!-- Stats Row -->
-                <div class="stats-row">
-                    <div class="stat-item">
-                        <div class="stat-top">
-                            <div class="stat-icon-circle bg-blue-light">
-                                <img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open">
-                            </div>
-                            <span class="stat-val" id="dashboard-cursos">0</span>
+                <!-- A. Cabecera Editorial de Contexto -->
+                <div class="portal-editorial-header">
+                    <div class="portal-header-titles">
+                        <span class="kicker">
+                            <i class="ph ph-chalkboard-teacher"></i>
+                            SYLLABUS · CUADERNO PRINCIPAL
+                        </span>
+                        <h1>Panel General de Aprendizaje</h1>
+                        <p>Resumen consolidado de horarios, entregas pendientes y calificaciones del ciclo.</p>
+                    </div>
+                    <div class="portal-header-badge">
+                        BIMESTRE II · CICLO 2026
+                    </div>
+                </div>
+
+                <!-- B. Cinta Métrica Académica (Ledger Abierto sin Cuadros Flotantes) -->
+                <div class="editorial-metrics-ledger">
+                    <div class="metric-cell">
+                        <div class="metric-cell-top">
+                            <span class="metric-idx">01</span>
+                            <span class="metric-val" id="dashboard-cursos">0</span>
                         </div>
-                        <div class="stat-info">
-                            <p class="stat-label">Cursos inscritos</p>
-                            <a href="miscursos.html" class="stat-footer-link">Ver cursos <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
+                        <div>
+                            <div class="metric-label">Cursos Inscritos</div>
+                            <a href="miscursos.html" class="metric-footer-link">Ver lista de cursos →</a>
                         </div>
                     </div>
 
-                    <div class="stat-item">
-                        <div class="stat-top">
-                            <div class="stat-icon-circle bg-green-light">
-                                <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text">
-                            </div>
-                            <span class="stat-val" id="dashboard-tareas">0</span>
+                    <div class="metric-cell">
+                        <div class="metric-cell-top">
+                            <span class="metric-idx">02</span>
+                            <span class="metric-val" id="dashboard-tareas">0</span>
                         </div>
-                        <div class="stat-info">
-                            <p class="stat-label">Tareas pendientes</p>
-                            <a href="tareas.html" class="stat-footer-link">Ver tareas <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
+                        <div>
+                            <div class="metric-label">Tareas Pendientes</div>
+                            <a href="tareas.html" class="metric-footer-link">Ver mis tareas →</a>
                         </div>
                     </div>
 
-                    <div class="stat-item">
-                        <div class="stat-top">
-                            <div class="stat-icon-circle bg-purple-light">
-                                <img src="../icons/regular/clock.svg" class="icon-img" alt="clock">
-                            </div>
-                            <span class="stat-val" id="dashboard-horas">0</span>
+                    <div class="metric-cell">
+                        <div class="metric-cell-top">
+                            <span class="metric-idx">03</span>
+                            <span class="metric-val" id="dashboard-horas">0</span>
                         </div>
-                        <div class="stat-info">
-                            <p class="stat-label">Horas de estudio esta semana</p>
-                            <a href="miprogreso.html" class="stat-footer-link">Ver reporte <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
+                        <div>
+                            <div class="metric-label">Horas Semanales</div>
+                            <a href="miprogreso.html" class="metric-footer-link">Ver informe de horas →</a>
                         </div>
                     </div>
 
-                    <div class="stat-item">
-                        <div class="stat-top">
-                            <div class="stat-icon-circle bg-yellow-light">
-                                <img src="../icons/regular/star.svg" class="icon-img" alt="star">
-                            </div>
-                            <span class="stat-val" id="dashboard-promedio">0.0</span>
+                    <div class="metric-cell">
+                        <div class="metric-cell-top">
+                            <span class="metric-idx">04</span>
+                            <span class="metric-val" id="dashboard-promedio">0.0</span>
                         </div>
-                        <div class="stat-info">
-                            <p class="stat-label">Promedio general</p>
-                            <a href="calificaciones.html" class="stat-footer-link">Ver calificaciones <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
+                        <div>
+                            <div class="metric-label">Promedio General</div>
+                            <a href="calificaciones.html" class="metric-footer-link">Ver boleta de notas →</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Two-Panel Row -->
-                <div class="panels-row">
-                    <!-- Próximas Clases -->
-                    <div class="main-panel">
-                        <div class="panel-top">
-                            <h3 class="panel-title"><img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"> Próximas clases</h3>
-                            <a href="calendario.html" class="panel-link">Ver todas <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
-                        </div>
-                        <div class="panel-list" id="upcomingClassesList">
-                            <div class="panel-item">
-                                <div class="item-main">
-                                    <h4 class="item-title">Cargando clases...</h4>
+                <!-- C. Distribución Editorial en Dos Columnas -->
+                <div class="editorial-portal-grid">
+
+                    <!-- Columna Izquierda: Tareas y Mensajería -->
+                    <div class="editorial-col-flow">
+
+                        <!-- Bloque de Tareas Pendientes -->
+                        <section>
+                            <div class="editorial-section-header">
+                                <div>
+                                    <span class="section-kicker">Actividades y Plazos</span>
+                                    <h2>Tareas Pendientes de Entrega</h2>
+                                </div>
+                                <a href="tareas.html" class="section-view-all">Ver todas las tareas →</a>
+                            </div>
+
+                            <div class="task-list-editorial" id="taskList">
+                                <div class="task-item" style="border:none;">
+                                    <div class="task-main">
+                                        <p style="color:var(--ed-muted);font-size:13.5px;">Cargando tareas...</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
+
+                        <!-- Bloque de Mensajes Recientes -->
+                        <section>
+                            <div class="editorial-section-header">
+                                <div>
+                                    <span class="section-kicker">Comunicaciones Escolares</span>
+                                    <h2>Mensajes del Tutor y Profesores</h2>
+                                </div>
+                                <a href="mensajes.html" class="section-view-all">Ir a mensajería →</a>
+                            </div>
+
+                            <div class="messages-list-editorial" id="messageList">
+                                <p style="padding:12px;color:var(--ed-muted);font-size:13px;">Cargando mensajes recientes...</p>
+                            </div>
+                        </section>
+
                     </div>
 
-                    <!-- Tareas Pendientes -->
-                    <div class="main-panel">
-                        <div class="panel-top">
-                            <h3 class="panel-title"><img src="../icons/regular/check-square.svg" class="icon-img" alt="check-square"> Tareas pendientes</h3>
-                            <a href="tareas.html" class="panel-link">Ver todas <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
-                        </div>
-                        <div class="panel-list" id="taskList">
-                            <!-- Las tareas se cargarán dinámicamente -->
-                            <div class="task-item placeholder">
-                                <div class="task-main">
-                                    <h4 class="item-title">Cargando tareas...</h4>
+                    <!-- Columna Derecha: Clases y Nota de Avance -->
+                    <div class="editorial-col-flow">
+
+                        <!-- Bloque de Próximas Clases -->
+                        <section>
+                            <div class="editorial-section-header">
+                                <div>
+                                    <span class="section-kicker">Agenda Diaria</span>
+                                    <h2>Próximas Sesiones de Aula</h2>
+                                </div>
+                                <a href="calendario.html" class="section-view-all">Ver calendario →</a>
+                            </div>
+
+                            <div class="classes-list-editorial" id="upcomingClassesList">
+                                <div class="panel-item" style="border:none;">
+                                    <div class="item-main">
+                                        <p style="color:var(--ed-muted);font-size:13px;">Cargando clases programadas...</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </section>
+
+                        <!-- Bloque de Síntesis / Nota de Avance -->
+                        <section>
+                            <div class="editorial-briefing-note">
+                                <div class="briefing-tag">
+                                    <img src="../icons/regular/chart-line-up.svg" class="icon-img" alt="" style="width:14px;height:14px;">
+                                    Balance Académico en Curso
+                                </div>
+                                <h3 class="banner-quote" id="home-banner-title">Cargando avance...</h3>
+                                <p class="banner-author" id="home-banner-text">Tu resumen se actualiza automáticamente con tus notas y asistencias.</p>
+                            </div>
+                        </section>
+
                     </div>
+
                 </div>
 
-                <!-- Messages Section -->
-                <div class="messages-row">
-                    <div class="panel-top">
-                        <h3 class="panel-title"><img src="../icons/regular/chat-centered-text.svg" class="icon-img" alt="chat-centered-text"> Mensajes recientes</h3>
-                        <a href="mensajes.html" class="panel-link">Ver todos <img src="../icons/regular/arrow-right.svg" class="icon-img" alt="arrow-right"></a>
-                    </div>
-                    <div id="messageList">
-                        <!-- Los mensajes se cargarán dinámicamente -->
-                    </div>
-                </div>
-
-                <!-- Banner Inferior -->
-                <div class="home-banner">
-                    <div class="banner-left-img">
-                        <img src="https://img.icons8.com/color/144/books.png" alt="books">
-                    </div>
-                    <div class="banner-center">
-                        <p class="banner-quote" id="home-banner-title"><img src="../icons/fill/chart-line-up.svg" class="icon-img" alt="chart-line-up"> Cargando tu avance...</p>
-                        <span class="banner-author" id="home-banner-text">Tu resumen se actualiza con tus cursos, tareas y notas reales.</span>
-                    </div>
-                    <div class="banner-right-img">
-                        <img src="https://img.icons8.com/color/144/graduation-cap.png" alt="grad">
-                    </div>
-                </div>
             </div>
         </main>
     </div>
 
-<script src="../js/app.js?v=apiestudiante20260512i"></script>
-<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
-
-    <!-- SweetAlert2 para Alertas Elegantes -->
+    <!-- Scripts Esenciales Preservados -->
+    <script src="../js/app.js?v=apiestudiante20260512i"></script>
+    <script src="../js/notificaciones.js?v=20261114s"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/vendor/alertas.js?v=20261019d"></script>
-
 </body>
 
 </html>
-
-
-

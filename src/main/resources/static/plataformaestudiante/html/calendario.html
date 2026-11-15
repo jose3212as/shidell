@@ -1,320 +1,27 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shidell - Calendario</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/vendor/shidell-theme.js?v=20261114d"></script>
+    <title>Shidell - Calendario Académico</title>
+    <meta name="description" content="Calendario interactivo de clases, tareas, exámenes y horarios de Shidell.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="../js/session-api.js?v=apiestudiante20260512i"></script>
     <script src="../js/icon-helper.js"></script>
-    <link rel="stylesheet" href="../css/styles.css?v=20261019d">
-    <link rel="stylesheet" href="../css/calendario.css">
-    <style>
-        @keyframes spin {
-            from {
-                transform: rotate(0)
-            }
-
-            to {
-                transform: rotate(360deg)
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(20px)
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0)
-            }
-        }
-
-        /* Calendar cells */
-        .cal-cell {
-            cursor: pointer;
-            transition: background .15s;
-        }
-
-        .cal-cell:hover:not(.other-month) {
-            background: var(--primary-light, #eef2ff) !important;
-        }
-
-        .cal-cell.selected {
-            background: var(--primary-light, #eef2ff) !important;
-            outline: 2px solid var(--primary);
-        }
-
-        /* Event chips inside cell */
-        .chip {
-            font-size: 10px;
-            line-height: 1.2;
-            border-radius: 4px;
-            padding: 2px 5px;
-            margin-top: 2px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: block;
-        }
-
-        .chip-clase {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .chip-examen {
-            background: #ede9fe;
-            color: #5b21b6;
-        }
-
-        .chip-tarea {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        /* Day detail panel */
-        #dayPanel {
-            display: none;
-            animation: slideIn .2s ease;
-        }
-
-        #dayPanel.visible {
-            display: block;
-        }
-
-        .day-panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .day-panel-header h3 {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .day-panel-close {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 20px;
-            color: var(--text-muted);
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .day-panel-close:hover {
-            background: var(--bg-body);
-        }
-
-        .timeline {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .timeline-item {
-            display: flex;
-            gap: 12px;
-            align-items: flex-start;
-            padding: 10px 12px;
-            border-radius: 10px;
-            border-left: 3px solid;
-        }
-
-        .timeline-item.clase {
-            background: #eff6ff;
-            border-color: #3b82f6;
-        }
-
-        .timeline-item.examen {
-            background: #f5f3ff;
-            border-color: #7c3aed;
-        }
-
-        .timeline-item.tarea {
-            background: #fffbeb;
-            border-color: #f59e0b;
-        }
-
-        .tl-time {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-muted);
-            min-width: 48px;
-            margin-top: 2px;
-        }
-
-        .tl-body h4 {
-            font-size: 13px;
-            font-weight: 600;
-            margin: 0 0 2px;
-        }
-
-        .tl-body p {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin: 0;
-        }
-
-        .tl-badge {
-            font-size: 10px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 20px;
-            margin-top: 4px;
-            display: inline-block;
-            text-transform: uppercase;
-            letter-spacing: .5px;
-        }
-
-        .badge-clase {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .badge-examen {
-            background: #ede9fe;
-            color: #5b21b6;
-        }
-
-        .badge-tarea {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .no-events {
-            text-align: center;
-            padding: 30px 0;
-            color: var(--text-muted);
-        }
-
-        .no-events i {
-            font-size: 36px;
-            display: block;
-            margin-bottom: 8px;
-            opacity: .4;
-        }
-
-        /* Resumen widget */
-        .resumen-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .resumen-row:last-child {
-            border-bottom: none;
-        }
-
-        .resumen-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 8px;
-            flex-shrink: 0;
-        }
-
-        .course-strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 0 0 18px;
-        }
-
-        .course-pill {
-            border: 1px solid var(--border-color-dark, #e5e7eb);
-            background: #fff;
-            border-radius: 999px;
-            padding: 7px 11px;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-
-        .course-pill.active {
-            color: var(--primary);
-            border-color: rgba(79, 70, 229, .32);
-            background: var(--primary-light, #eef2ff);
-        }
-
-        .course-dot {
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--primary);
-            flex: 0 0 auto;
-        }
-
-        .course-card {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 11px 0;
-            border-bottom: 1px solid var(--border-color, #eef2f7);
-        }
-
-        .course-card:last-child {
-            border-bottom: 0;
-        }
-
-        .course-card-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 19px;
-        }
-
-        .course-card-body {
-            min-width: 0;
-            flex: 1;
-        }
-
-        .course-card-body h4 {
-            margin: 0 0 2px;
-            font-size: 13px;
-            color: var(--text-primary);
-        }
-
-        .course-card-body p {
-            margin: 0;
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        .course-card-count {
-            font-size: 12px;
-            font-weight: 800;
-            color: var(--text-primary);
-            background: var(--bg-main, #f8fafc);
-            border-radius: 999px;
-            padding: 4px 9px;
-        }
-    </style>
+    <link rel="stylesheet" href="/vendor/fullcalendar/skeleton.css?v=7.1.5">
+    <link rel="stylesheet" href="/vendor/fullcalendar/breezy.theme.css?v=7.1.5">
+    <link rel="stylesheet" href="/vendor/fullcalendar/breezy.indigo.css?v=7.1.5">
+    <link rel="stylesheet" href="../css/styles.css?v=20261114s">
+    <link rel="stylesheet" href="../css/calendario-agenda.css?v=20261113c">
 </head>
 
 <body>
     <div class="dashboard">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo-icon"><img src="../icons/fill/graduation-cap.svg" class="icon-img" alt="graduation-cap"></div>
@@ -324,560 +31,354 @@
                 </div>
             </div>
             <nav class="sidebar-nav">
-                <a href="portalestudiante.html" class="nav-item"><img src="../icons/regular/house.svg" class="icon-img" alt="house"><span>Inicio</span></a>
-                <a href="miscursos.html" class="nav-item"><img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open"><span>Mis cursos</span></a>
-                <a href="tareas.html" class="nav-item"><img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text"><span>Tareas</span></a>
-                <a href="calificaciones.html" class="nav-item"><img src="../icons/regular/star.svg" class="icon-img" alt="star"><span>Calificaciones</span></a>
-                <a href="calendario.html" class="nav-item active"><img
-                        src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"><span>Calendario</span></a>
-                <a href="mensajes.html" class="nav-item"><img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots"><span>Mensajes</span></a>
-                <a href="miprogreso.html" class="nav-item"><img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check"><span>Mi
-                        progreso</span></a>
-                <a href="configuracion.html" class="nav-item"><img src="../icons/regular/gear.svg" class="icon-img" alt="gear"><span>Configuración</span></a>
+                <a href="portalestudiante.html" class="nav-item">
+                    <img src="../icons/regular/house.svg" class="icon-img" alt="house"><span>Inicio</span>
+                </a>
+                <a href="miscursos.html" class="nav-item">
+                    <img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open"><span>Mis cursos</span>
+                </a>
+                <a href="tareas.html" class="nav-item">
+                    <img src="../icons/regular/clipboard-text.svg" class="icon-img" alt="clipboard-text"><span>Tareas</span>
+                </a>
+                <a href="calificaciones.html" class="nav-item">
+                    <img src="../icons/regular/star.svg" class="icon-img" alt="star"><span>Calificaciones</span>
+                </a>
+                <a href="calendario.html" class="nav-item active">
+                    <img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"><span>Calendario</span>
+                </a>
+                <a href="mensajes.html" class="nav-item">
+                    <img src="../icons/regular/chat-circle-dots.svg" class="icon-img" alt="chat-circle-dots"><span>Mensajes</span>
+                </a>
+                <a href="miprogreso.html" class="nav-item">
+                    <img src="../icons/regular/shield-check.svg" class="icon-img" alt="shield-check"><span>Mi progreso</span>
+                </a>
+                <a href="configuracion.html" class="nav-item">
+                    <img src="../icons/regular/gear.svg" class="icon-img" alt="gear"><span>Configuración</span>
+                </a>
             </nav>
         </aside>
 
+        <!-- Main Wrapper -->
         <main class="main-wrapper">
+            <!-- Topbar -->
             <header class="topbar">
                 <div class="greeting">
-                    <h1>¡Hola, Estudiante! 👋</h1>
-                    <p>Tus clases, tareas y exámenes en un solo lugar.</p>
+                    <h1>Calendario 📅</h1>
+                    <p>Revisa tu horario de clases, fechas de exámenes y entregas de tareas.</p>
                 </div>
                 <div class="topbar-actions">
-                    <button class="notification-btn"><img src="../icons/regular/bell.svg" class="icon-img" alt="bell"><span class="badge"></span></button>
+                    <button class="notification-btn" type="button">
+                        <img src="../icons/regular/bell.svg" class="icon-img" alt="bell">
+                        <span class="badge"></span>
+                    </button>
                     <div class="top-user-info">
                         <div class="user-details">
                             <span class="user-name">Estudiante</span>
-                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver
-                                    perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span></a>
+                            <a href="configuracion.html" style="text-decoration:none;"><span class="user-action">Ver perfil <img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></span></a>
                         </div>
-                        <div class="avatar"><img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width:24px;height:24px;">
+                        <div class="avatar">
+                            <img src="../icons/fill/user.svg" class="icon-img" alt="user" style="width:24px;height:24px;">
                         </div>
                     </div>
                 </div>
             </header>
 
+            <!-- Content Area -->
             <div class="content-area">
-                <div class="calendario-layout">
-
-                    <!-- Left: Calendar grid -->
-                    <div class="calendar-panel">
-                        <div class="calendar-title">
-                            <h2 id="calTitulo">Calendario</h2>
+                <div class="cal-shell">
+                    <!-- Toolbar Superior (Diseño idéntico a la referencia) -->
+                    <div class="cal-toolbar">
+                        <!-- Izquierda: Título (Mes Año), Botón Today, Flechas < > -->
+                        <div class="cal-toolbar-left">
+                            <h2 class="cal-title" id="calTitle">Cargando...</h2>
+                            <button type="button" class="cal-btn-today" id="btnToday">Hoy</button>
+                            <div class="cal-nav">
+                                <button type="button" class="cal-nav-btn" id="btnPrev" aria-label="Anterior">
+                                    <img src="../icons/regular/caret-left.svg" alt="prev">
+                                </button>
+                                <button type="button" class="cal-nav-btn" id="btnNext" aria-label="Siguiente">
+                                    <img src="../icons/regular/caret-right.svg" alt="next">
+                                </button>
+                            </div>
                         </div>
 
-                        <div class="calendar-header">
-                            <div class="calendar-controls">
-                                <button class="btn-hoy" id="btnHoy">Hoy</button>
-                                <div class="nav-arrows">
-                                    <button class="nav-arrow" id="btnPrev"><img src="../icons/regular/caret-left.svg" class="icon-img" alt="caret-left"></button>
-                                    <button class="nav-arrow" id="btnNext"><img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></button>
-                                </div>
-                                <button class="month-dropdown" id="mesLabel">Cargando... <img
-                                        src="../icons/regular/caret-down.svg" class="icon-img" alt="caret-down"></button>
-                            </div>
-                            <div class="calendar-controls">
-                                <div style="position:relative;">
-                                    <button class="btn-filter" id="btnFiltro"><img src="../icons/regular/faders.svg" class="icon-img" alt="faders"> Filtros <img
-                                            src="../icons/regular/caret-down.svg" class="icon-img" alt="caret-down"></button>
-                                    <div id="filtroMenu"
-                                        style="display:none;position:absolute;right:0;top:40px;background:white;border:1px solid var(--border);border-radius:10px;padding:10px;z-index:200;min-width:160px;box-shadow:0 8px 24px rgba(0,0,0,.12);">
-                                        <label
-                                            style="display:flex;align-items:center;gap:8px;padding:5px;cursor:pointer;font-size:13px;"><input
-                                                type="checkbox" value="CLASE" checked> 🔵 Clases</label>
-                                        <label
-                                            style="display:flex;align-items:center;gap:8px;padding:5px;cursor:pointer;font-size:13px;"><input
-                                                type="checkbox" value="EXAMEN" checked> 🔴 Exámenes</label>
-                                        <label
-                                            style="display:flex;align-items:center;gap:8px;padding:5px;cursor:pointer;font-size:13px;"><input
-                                                type="checkbox" value="TAREA" checked> 🟡 Tareas</label>
+                        <!-- Centro: Segmented Control (Día | Semana | Mes) -->
+                        <div class="cal-segmented" role="tablist" aria-label="Vistas del calendario">
+                            <button type="button" class="seg-btn" data-view="day">Día</button>
+                            <button type="button" class="seg-btn active" data-view="week">Semana</button>
+                            <button type="button" class="seg-btn" data-view="month">Mes</button>
+                        </div>
+
+                        <!-- Derecha: Filtros, Vista Lista/Grilla, + Agregar horario -->
+                        <div class="cal-toolbar-right">
+                            <div class="cal-filter-wrap">
+                                <button type="button" class="cal-filter-btn" id="btnFilter" aria-expanded="false">
+                                    <img src="../icons/regular/faders.svg" alt="filtro">
+                                    <span>Filtros</span>
+                                    <span class="cal-filter-count" id="filterCount">0</span>
+                                    <img src="../icons/regular/caret-down.svg" alt="caret" style="width:12px;height:12px;">
+                                </button>
+                                <div class="cal-dropdown" id="filterDropdown">
+                                    <h4>Tipo de evento</h4>
+                                    <label class="cal-check">
+                                        <input type="checkbox" value="CLASE" checked>
+                                        <span class="dot" style="background:#3b82f6;"></span>
+                                        <span class="lbl">Clases regulares</span>
+                                        <span class="cnt" id="cntClases">0</span>
+                                    </label>
+                                    <label class="cal-check">
+                                        <input type="checkbox" value="EXAMEN" checked>
+                                        <span class="dot" style="background:#8b5cf6;"></span>
+                                        <span class="lbl">Exámenes bimestrales</span>
+                                        <span class="cnt" id="cntExamenes">0</span>
+                                    </label>
+                                    <label class="cal-check">
+                                        <input type="checkbox" value="TAREA" checked>
+                                        <span class="dot" style="background:#f59e0b;"></span>
+                                        <span class="lbl">Tareas y entregas</span>
+                                        <span class="cnt" id="cntTareas">0</span>
+                                    </label>
+                                    <label class="cal-check">
+                                        <input type="checkbox" value="RECORDATORIO" checked>
+                                        <span class="dot" style="background:#ec4899;"></span>
+                                        <span class="lbl">Recordatorios personales</span>
+                                        <span class="cnt" id="cntRecordatorios">0</span>
+                                    </label>
+
+                                    <hr>
+                                    <h4>Materias y Cursos</h4>
+                                    <div id="courseFilterList" style="display:flex;flex-direction:column;gap:2px;">
+                                        <p style="font-size:12px;color:var(--cal-muted);margin:4px;">Cargando cursos...</p>
+                                    </div>
+
+                                    <hr>
+                                    <div class="cal-dropdown-actions">
+                                        <button type="button" class="cal-link-btn" id="btnFilterAll">Seleccionar todos</button>
+                                        <button type="button" class="cal-link-btn" id="btnFilterNone">Limpiar</button>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="course-strip" id="courseStrip"></div>
+                            <!-- Opciones flexibles de columna y altura -->
+                            <div class="cal-flex-controls" role="group" aria-label="Opciones de diseño del calendario">
+                                <button type="button" class="cal-chip-btn" id="btnToggleWeekends" title="Alternar entre semana completa (7 días) y solo Lun–Vie para columnas más anchas">
+                                    <span id="weekendsLabel">7 días</span>
+                                </button>
+                                <button type="button" class="cal-chip-btn" id="btnDensity" title="Cambiar altura de filas (Cómoda / Amplia / Compacta)">
+                                    <span id="densityLabel">Altura: Cómoda</span>
+                                </button>
+                            </div>
 
-                        <div class="calendar-grid">
-                            <div class="calendar-days-header">
-                                <div class="day-name">LUN</div>
-                                <div class="day-name">MAR</div>
-                                <div class="day-name">MIÉ</div>
-                                <div class="day-name">JUE</div>
-                                <div class="day-name">VIE</div>
-                                <div class="day-name">SÁB</div>
-                                <div class="day-name" style="color:var(--red);">DOM</div>
+                            <!-- Botones Lista / Cuadrícula -->
+                            <div class="cal-viewicons">
+                                <button type="button" class="cal-icon-btn" id="btnViewList" title="Vista Agenda / Lista">
+                                    <img src="../icons/regular/list.svg" alt="lista">
+                                </button>
+                                <button type="button" class="cal-icon-btn active" id="btnViewGrid" title="Vista Horario / Cuadrícula">
+                                    <img src="../icons/regular/squares-four.svg" alt="cuadrícula">
+                                </button>
                             </div>
-                            <div class="calendar-body" id="calendarBody">
-                                <div style="padding:40px;text-align:center;color:var(--text-muted);">
-                                    <img src="../icons/regular/spinner.svg" class="icon-img icon-spin" alt="spinner"
-                                        style="width:28px;height:28px;animation:spin 1s linear infinite;display:block;margin:0 auto 8px;">
-                                    Cargando eventos...
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="calendar-legend">
-                            <div class="legend-item">
-                                <div class="dot bg-blue"></div> Clases
-                            </div>
-                            <div class="legend-item">
-                                <div class="dot" style="background:var(--purple,#7c3aed);"></div> Exámenes
-                            </div>
-                            <div class="legend-item">
-                                <div class="dot bg-yellow"></div> Tareas
-                            </div>
+                            <!-- Botón + Agregar horario -->
+                            <button type="button" class="cal-add-btn" id="btnAddSchedule">
+                                <img src="../icons/regular/plus.svg" alt="plus">
+                                <span class="txt">Agregar horario</span>
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Right: Widgets -->
-                    <div class="calendar-widgets">
+                    <!-- Barra de coordinación lectiva -->
+                    <div class="cal-coord-bar" id="calCoordBar" style="display:none;"></div>
 
-                        <!-- Panel detalle del día (aparece al hacer clic) -->
-                        <div class="widget-panel" id="dayPanel">
-                            <div class="day-panel-header">
-                                <h3 id="dayPanelTitle">Selecciona un día</h3>
-                                <button class="day-panel-close" id="dayPanelClose"><img src="../icons/regular/x.svg" class="icon-img" alt="x"></button>
-                            </div>
-                            <div class="timeline" id="dayTimeline"></div>
+                    <!-- Contenedor del Calendario dinámico -->
+                    <div class="cal-body" id="calBody">
+                        <div class="cal-loading" id="calLoading">
+                            <img src="../icons/regular/spinner.svg" class="icon-spin" alt="cargando">
+                            <p>Cargando tu horario académico...</p>
                         </div>
+                        <div id="fcCalendar" class="sh-fc-mount"></div>
+                    </div>
 
-                        <div class="widget-panel">
-                            <div class="widget-header">
-                                <h3>Mis cursos en calendario</h3>
-                            </div>
-                            <div id="courseList">
-                                <p style="color:var(--text-muted);font-size:14px;">Cargando cursos...</p>
-                            </div>
+                    <!-- Leyenda y Resumen inferior -->
+                    <div class="cal-footer">
+                        <div class="item">
+                            <span class="sw" style="background:#3b82f6;"></span>
+                            <span>Clases</span>
                         </div>
-
-                        <!-- Próximos eventos -->
-                        <div class="widget-panel" id="proximosPanel">
-                            <div class="widget-header">
-                                <h3>Próximos eventos</h3>
-                            </div>
-                            <div class="events-list" id="proximosEventos">
-                                <p style="color:var(--text-muted);font-size:14px;">Cargando...</p>
-                            </div>
+                        <div class="item">
+                            <span class="sw" style="background:#8b5cf6;"></span>
+                            <span>Exámenes</span>
                         </div>
-
-                        <!-- Resumen del mes -->
-                        <div class="widget-panel">
-                            <div class="widget-header">
-                                <h3>Resumen del mes</h3>
-                            </div>
-                            <div class="summary-grid">
-                                <div class="summary-box"
-                                    style="background:var(--purple-light,#ede9fe);border-color:rgba(124,58,237,.2);">
-                                    <div class="summary-icon" style="color:var(--purple,#7c3aed);"><img
-                                            src="../icons/regular/exam.svg" class="icon-img" alt="exam"></div>
-                                    <div class="summary-val" id="sumExamenes">0</div>
-                                    <div class="summary-lbl">Exámenes</div>
-                                </div>
-                                <div class="summary-box"
-                                    style="background:var(--green-light);border-color:rgba(16,185,129,.2);">
-                                    <div class="summary-icon text-green"><img src="../icons/regular/check-square.svg" class="icon-img" alt="check-square"></div>
-                                    <div class="summary-val" id="sumTareas">0</div>
-                                    <div class="summary-lbl">Tareas</div>
-                                </div>
-                                <div class="summary-box"
-                                    style="background:var(--blue-light);border-color:rgba(59,130,246,.2);">
-                                    <div class="summary-icon text-blue"><img src="../icons/regular/book-open.svg" class="icon-img" alt="book-open"></div>
-                                    <div class="summary-val" id="sumClases">0</div>
-                                    <div class="summary-lbl">Clases</div>
-                                </div>
-                                <div class="summary-box"
-                                    style="background:var(--yellow-light);border-color:rgba(245,158,11,.2);">
-                                    <div class="summary-icon text-yellow"><img src="../icons/regular/flag.svg" class="icon-img" alt="flag"></div>
-                                    <div class="summary-val" id="sumTotal">0</div>
-                                    <div class="summary-lbl">Total</div>
-                                </div>
-                            </div>
+                        <div class="item">
+                            <span class="sw" style="background:#f59e0b;"></span>
+                            <span>Tareas</span>
                         </div>
-
+                        <div class="item">
+                            <span class="sw" style="background:#ec4899;"></span>
+                            <span>Recordatorios</span>
+                        </div>
+                        <div class="stats" id="calFooterStats">0 actividades visibles</div>
+                        <div class="shortcuts" style="margin-left:auto;">
+                            <span>Haz clic en un evento para ver detalles o en un horario vacío para agendar</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <script>
-        // ── Session ───────────────────────────────────────────────────────────────────
-        let user = {};
-
-        // ── State ─────────────────────────────────────────────────────────────────────
-        let allEventos = [];
-        let allCursos = [];
-        let calendarioData = null;
-        let viewYear, viewMonth;
-        let tiposFiltro = new Set(['CLASE', 'EXAMEN', 'TAREA']);
-        let cursosFiltro = new Set();
-        let selectedDate = null;
-
-        const MESES = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-        const DIAS_SEMANA = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
-
-        // ── Init ──────────────────────────────────────────────────────────────────────
-        window.addEventListener('DOMContentLoaded', async () => {
-            user = await window.shidellSession?.obtenerUsuario() || {};
-            document.querySelectorAll('.user-name').forEach(el => el.textContent = [user.nombres, user.apellidos].filter(Boolean).join(' ') || 'Estudiante');
-            document.querySelector('.greeting h1').textContent = `¡Hola, ${user.nombres || 'Estudiante'}!`;
-            const hoy = new Date();
-            viewYear = hoy.getFullYear();
-            viewMonth = hoy.getMonth();
-            await cargarCalendarioEstudiante();
-            renderCursos();
-            selectedDate = { y: viewYear, m: viewMonth, d: hoy.getDate() };
-            renderCalendario();
-            seleccionarDia(viewYear, viewMonth, hoy.getDate());
-            renderProximosEventos();
-            renderResumen();
-            configurarControles();
-        });
-
-        // ── API ───────────────────────────────────────────────────────────────────────
-        async function cargarCalendarioEstudiante() {
-            if (!user.id) {
-                calendarioData = { eventos: [], cursos: [] };
-                allEventos = [];
-                allCursos = [];
-                cursosFiltro = new Set();
-                return;
-            }
-
-            try {
-                const res = await fetch(`/api/calendario/estudiante/${user.id}`);
-                calendarioData = res.ok ? await res.json() : { eventos: [], cursos: [] };
-                if (calendarioData.estudiante) {
-                    Object.assign(user, calendarioData.estudiante);
-                }
-                allEventos = Array.isArray(calendarioData.eventos) ? calendarioData.eventos : [];
-                allCursos = Array.isArray(calendarioData.cursos) ? dedupeCursos(calendarioData.cursos) : [];
-                cursosFiltro = new Set(allCursos.map(c => getCursoKey(c)));
-            } catch (e) {
-                console.error(e);
-                allEventos = [];
-                allCursos = [];
-                cursosFiltro = new Set();
-            }
-        }
-
-        // ── Eventos del día ───────────────────────────────────────────────────────────
-        function eventosDelDia(year, month, day) {
-            const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            return allEventos.filter(ev => ev.fechaInicio === dateStr && tiposFiltro.has(ev.tipo) && cursoVisible(ev));
-        }
-
-        // ── Render grilla mes ─────────────────────────────────────────────────────────
-        function cursoVisible(ev) {
-            if (!ev.curso || cursosFiltro.size === 0) return true;
-            return cursosFiltro.has(getCursoKey({nombre: ev.curso}));
-        }
-
-        function colorCurso(color) {
-            const colors = {
-                purple: '#7c3aed',
-                green: '#10b981',
-                blue: '#3b82f6',
-                yellow: '#f59e0b',
-                red: '#ef4444',
-                teal: '#14b8a6'
-            };
-            return colors[color] || color || '#4f46e5';
-        }
-
-        function nombreCursoVisible(nombre) {
-            return (nombre || '')
-                .replaceAll('ÃƒÂ¡', 'Ã¡')
-                .replaceAll('ÃƒÂ­', 'Ã­')
-                .replaceAll('ÃƒÂ³', 'Ã³');
-        }
-
-        function getCursoKey(curso) {
-            return nombreCursoVisible(curso.nombre).toLowerCase();
-        }
-
-        function dedupeCursos(cursos) {
-            const vistos = new Set();
-            return cursos.filter(curso => {
-                const key = getCursoKey(curso);
-                if (vistos.has(key)) return false;
-                vistos.add(key);
-                curso.nombre = nombreCursoVisible(curso.nombre);
-                return true;
-            });
-        }
-
-        function renderCursos() {
-            const strip = document.getElementById('courseStrip');
-            const list = document.getElementById('courseList');
-
-            if (!allCursos.length) {
-                strip.innerHTML = '';
-                list.innerHTML = '<p style="color:var(--text-muted);font-size:14px;">No se encontraron cursos para el estudiante actual.</p>';
-                return;
-            }
-
-            strip.innerHTML = `
-                <button class="course-pill ${cursosFiltro.size === allCursos.length ? 'active' : ''}" onclick="toggleTodosCursos()">
-                    <span class="course-dot"></span>Todos los cursos
+    <!-- Modal Detalle del Evento -->
+    <div class="cal-modal-backdrop" id="modalDetailBackdrop">
+        <div class="cal-modal" id="modalDetail" role="dialog" aria-labelledby="modalDetailTitle">
+            <div class="cal-detail-band" id="detailBand"></div>
+            <div class="cal-modal-head">
+                <div>
+                    <span class="cal-detail-kicker" id="detailKicker">Clase regular</span>
+                    <h3 id="modalDetailTitle">Título del evento</h3>
+                </div>
+                <button type="button" class="cal-modal-close" id="btnDetailClose" aria-label="Cerrar">
+                    <img src="../icons/regular/x.svg" alt="cerrar">
                 </button>
-                ${allCursos.map(c => {
-                    const key = getCursoKey(c);
-                    return `
-                    <button class="course-pill ${cursosFiltro.has(key) ? 'active' : ''}" onclick="toggleCurso('${key}')">
-                        <span class="course-dot" style="background:${colorCurso(c.color)}"></span>${c.nombre}
-                    </button>
-                    `;
-                }).join('')}`;
-
-            list.innerHTML = allCursos.map(c => {
-                const key = getCursoKey(c);
-                const total = allEventos.filter(ev => {
-                    if (!ev.curso) return false;
-                    return getCursoKey({nombre: ev.curso}) === key;
-                }).length;
-                let docenteName = 'Docente por asignar';
-                if (c.profesor) {
-                    docenteName = typeof c.profesor === 'string' ? c.profesor : `${c.profesor.nombres} ${c.profesor.apellidos}`;
-                }
-                const docente = docenteName;
-                return `
-                    <div class="course-card">
-                        <div class="course-card-icon" style="background:${colorCurso(c.color)}">
-                            ${iconImg(c.icono || 'ph-book-open')}
-                        </div>
-                        <div class="course-card-body">
-                            <h4>${c.nombre}</h4>
-                            <p>${docente}</p>
-                        </div>
-                        <span class="course-card-count">${total}</span>
-                    </div>`;
-            }).join('');
-        }
-
-        window.toggleCurso = function (id) {
-            const key = String(id);
-            cursosFiltro.has(key) ? cursosFiltro.delete(key) : cursosFiltro.add(key);
-            renderCursos();
-            renderCalendario();
-            renderProximosEventos();
-            renderResumen();
-        };
-
-        window.toggleTodosCursos = function () {
-            cursosFiltro = cursosFiltro.size === allCursos.length
-                ? new Set()
-                : new Set(allCursos.map(c => String(c.id)));
-            renderCursos();
-            renderCalendario();
-            renderProximosEventos();
-            renderResumen();
-        };
-
-        function renderCalendario() {
-            document.getElementById('mesLabel').innerHTML = `${MESES[viewMonth]} ${viewYear} <img src="../icons/regular/caret-down.svg" class="icon-img" alt="caret-down">`;
-            document.getElementById('calTitulo').textContent = `${MESES[viewMonth]} ${viewYear}`;
-
-            const hoy = new Date();
-            const primerDia = new Date(viewYear, viewMonth, 1).getDay(); // 0=Dom
-            const diasMes = new Date(viewYear, viewMonth + 1, 0).getDate();
-            const diasMesAnt = new Date(viewYear, viewMonth, 0).getDate();
-            const offset = primerDia === 0 ? 6 : primerDia - 1;
-            const searchInput = document.getElementById('searchInput');
-            const q = searchInput ? searchInput.value.toLowerCase() : '';
-
-            let totalCells = offset + diasMes;
-            if (totalCells % 7) totalCells = Math.ceil(totalCells / 7) * 7;
-
-            let html = '';
-            for (let i = 0; i < totalCells; i++) {
-                const dayNum = i - offset + 1;
-                const isOther = dayNum < 1 || dayNum > diasMes;
-                const display = isOther ? (dayNum < 1 ? diasMesAnt + dayNum : dayNum - diasMes) : dayNum;
-                const dow = i % 7; // 0=Lun … 6=Dom
-                const isWeekend = dow >= 5;
-                const isToday = !isOther && dayNum === hoy.getDate() && viewMonth === hoy.getMonth() && viewYear === hoy.getFullYear();
-                const isSelected = !isOther && selectedDate &&
-                    selectedDate.d === dayNum && selectedDate.m === viewMonth && selectedDate.y === viewYear;
-
-                const cls = ['cal-cell', isOther ? 'other-month' : '', isWeekend ? 'weekend' : '',
-                    isToday ? 'today' : '', isSelected ? 'selected' : ''].filter(Boolean).join(' ');
-
-                let chips = '';
-                if (!isOther) {
-                    const evs = eventosDelDia(viewYear, viewMonth, dayNum)
-                        .filter(ev => !q || `${ev.titulo} ${ev.curso || ''}`.toLowerCase().includes(q));
-                    evs.slice(0, 4).forEach(ev => {
-                        const cls2 = ev.tipo === 'CLASE' ? 'chip-clase' : ev.tipo === 'EXAMEN' ? 'chip-examen' : 'chip-tarea';
-                        const curso = ev.curso && ev.curso !== ev.titulo ? `${ev.curso}: ` : '';
-                        chips += `<span class="chip ${cls2}" title="${ev.titulo}">${ev.hora ? ev.hora + ' ' : ''}${curso}${ev.titulo}</span>`;
-                    });
-                    if (evs.length > 4) chips += `<span style="font-size:11px;color:var(--text-muted);font-weight:600;">+${evs.length - 4} más</span>`;
-                }
-
-                const clickAttr = isOther ? '' : `onclick="seleccionarDia(${viewYear},${viewMonth},${dayNum})"`;
-                html += `<div class="${cls}" ${clickAttr}><span class="cal-date">${display}</span>${chips ? '<div class="cal-events">' + chips + '</div>' : ''}</div>`;
-            }
-            document.getElementById('calendarBody').innerHTML = html;
-        }
-
-        // ── Seleccionar día ───────────────────────────────────────────────────────────
-        window.seleccionarDia = function (y, m, d) {
-            selectedDate = { y, m, d };
-            renderCalendario(); // re-render para marcar el día seleccionado
-
-            const evs = eventosDelDia(y, m, d);
-            const panel = document.getElementById('dayPanel');
-            const title = document.getElementById('dayPanelTitle');
-            const timeline = document.getElementById('dayTimeline');
-            const proxPanel = document.getElementById('proximosPanel');
-
-            const fecha = new Date(y, m, d);
-            const dow = DIAS_SEMANA[(fecha.getDay() + 6) % 7];
-            title.textContent = `${dow.charAt(0).toUpperCase() + dow.slice(1)}, ${d} de ${MESES[m]}`;
-
-            panel.classList.add('visible');
-            proxPanel.style.display = 'none';
-
-            if (evs.length === 0) {
-                timeline.innerHTML = `<div class="no-events"><img src="../icons/regular/calendar-blank.svg" class="icon-img" alt="calendar-blank"><p>No hay eventos este día</p></div>`;
-                return;
-            }
-
-            // Ordenar por hora
-            const sorted = [...evs].sort((a, b) => {
-                if (!a.hora) return 1;
-                if (!b.hora) return -1;
-                return a.hora.localeCompare(b.hora);
-            });
-
-            timeline.innerHTML = sorted.map(ev => {
-                const tipoCls = ev.tipo === 'CLASE' ? 'clase' : ev.tipo === 'EXAMEN' ? 'examen' : 'tarea';
-                const badgeCls = `badge-${tipoCls}`;
-                const tipoLabel = ev.tipo === 'CLASE' ? 'Clase' : ev.tipo === 'EXAMEN' ? 'Examen' : 'Tarea';
-                const iconMap = { CLASE: 'ph-book-open', EXAMEN: 'ph-exam', TAREA: 'ph-clipboard-text' };
-                const horaStr = ev.hora ? ev.hora : '—';
-                const curso = ev.curso ? `<p>${ev.curso}</p>` : '';
-                const docente = ev.docente ? `<p>Docente: ${ev.docente}</p>` : '';
-
-                return `
-        <div class="timeline-item ${tipoCls}">
-            <div class="tl-time">${horaStr}</div>
-            <div class="tl-body">
-                <h4>${iconImg(iconMap[ev.tipo], 'regular', 'margin-right:4px;')}${ev.titulo}</h4>
-                ${curso}
-                ${docente}
-                <span class="tl-badge ${badgeCls}">${tipoLabel}</span>
             </div>
-        </div>`;
-            }).join('');
-        };
-
-        // ── Cerrar panel día ──────────────────────────────────────────────────────────
-        document.getElementById('dayPanelClose').onclick = () => {
-            document.getElementById('dayPanel').classList.remove('visible');
-            document.getElementById('proximosPanel').style.display = '';
-            selectedDate = null;
-            renderCalendario();
-        };
-
-        // ── Próximos eventos ──────────────────────────────────────────────────────────
-        function renderProximosEventos() {
-            const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-            const proximos = allEventos
-                .filter(ev => ev.fechaInicio && tiposFiltro.has(ev.tipo) && cursoVisible(ev) && new Date(ev.fechaInicio + 'T12:00:00') >= hoy)
-                .sort((a, b) => new Date(a.fechaInicio + 'T12:00:00') - new Date(b.fechaInicio + 'T12:00:00'))
-                .slice(0, 5);
-
-            const el = document.getElementById('proximosEventos');
-            if (!proximos.length) {
-                el.innerHTML = '<p style="color:var(--text-muted);font-size:14px;padding:8px 0;">No hay próximos eventos.</p>';
-                return;
-            }
-            const iconMap = { CLASE: 'ph-book-open', EXAMEN: 'ph-exam', TAREA: 'ph-clipboard-text' };
-            const colorMap = { CLASE: 'bg-blue-light text-blue', EXAMEN: 'bg-purple-light', TAREA: 'bg-yellow-light text-yellow' };
-
-            el.innerHTML = proximos.map(ev => {
-                const fecha = new Date(ev.fechaInicio + 'T12:00:00');
-                const str = fecha.toLocaleDateString('es-PE', { day: 'numeric', month: 'long' });
-                const icon = iconMap[ev.tipo] || 'ph-calendar-blank';
-                const color = colorMap[ev.tipo] || '';
-                const exColor = ev.tipo === 'EXAMEN' ? 'color:var(--purple,#7c3aed);' : '';
-                return `
-        <div class="event-row" style="cursor:pointer;" onclick="seleccionarDia(${fecha.getFullYear()},${fecha.getMonth()},${fecha.getDate()})">
-            <div class="event-icon ${color}" style="${exColor}">${iconImg(icon, 'fill')}</div>
-            <div class="event-info">
-                <h4>${ev.titulo}</h4>
-                <p>${ev.curso || ev.tipo}</p>
-                <div class="e-date">${str}${ev.hora ? ', ' + ev.hora : ''}</div>
+            <div class="cal-modal-body">
+                <div class="cal-detail-row">
+                    <img src="../icons/regular/calendar-blank.svg" alt="fecha">
+                    <div>
+                        <strong id="detailDate">Lunes, 26 de Octubre</strong>
+                        <small id="detailTime">13:30 - 15:00</small>
+                    </div>
+                </div>
+                <div class="cal-detail-row" id="rowDocente">
+                    <img src="../icons/regular/user.svg" alt="docente">
+                    <div>
+                        <strong id="detailDocente">Docente Asignado</strong>
+                        <small id="detailCurso">Materia</small>
+                    </div>
+                </div>
+                <div class="cal-detail-row" id="rowEstado" style="display:none;">
+                    <img src="../icons/regular/check-circle.svg" alt="estado">
+                    <div>
+                        <strong>Estado académico</strong>
+                        <small id="detailEstado">—</small>
+                    </div>
+                </div>
+                <div class="cal-detail-row" id="rowDesc">
+                    <img src="../icons/regular/clipboard-text.svg" alt="desc">
+                    <div>
+                        <strong>Descripción / Temas</strong>
+                        <small id="detailDesc">Sin descripción adicional.</small>
+                    </div>
+                </div>
             </div>
-        </div>`;
-            }).join('');
-        }
+            <div class="cal-modal-foot">
+                <button type="button" class="cal-btn danger" id="btnDeleteEvent" style="display:none;">
+                    <img src="../icons/regular/trash.svg" alt="trash" style="width:14px;height:14px;">
+                    <span>Eliminar</span>
+                </button>
+                <a href="#" class="cal-btn" id="btnLinkCurso" style="display:none;">
+                    <span>Ver curso</span>
+                    <img src="../icons/regular/arrow-right.svg" alt="arrow" style="width:14px;height:14px;">
+                </a>
+                <a href="#" class="cal-btn primary" id="btnLinkTarea" style="display:none;">
+                    <span>Ir a la tarea</span>
+                    <img src="../icons/regular/arrow-right.svg" alt="arrow" style="width:14px;height:14px;filter:brightness(0) invert(1);">
+                </a>
+                <button type="button" class="cal-btn" id="btnDetailOk">Cerrar</button>
+            </div>
+        </div>
+    </div>
 
-        // ── Resumen ───────────────────────────────────────────────────────────────────
-        function renderResumen() {
-            const mes = allEventos.filter(ev => {
-                if (!ev.fechaInicio) return false;
-                const d = new Date(ev.fechaInicio + 'T12:00:00');
-                return d.getFullYear() === viewYear && d.getMonth() === viewMonth && cursoVisible(ev);
-            });
-            document.getElementById('sumExamenes').textContent = mes.filter(e => e.tipo === 'EXAMEN').length;
-            document.getElementById('sumTareas').textContent = mes.filter(e => e.tipo === 'TAREA').length;
-            document.getElementById('sumClases').textContent = mes.filter(e => e.tipo === 'CLASE').length;
-            document.getElementById('sumTotal').textContent = mes.length;
-        }
+    <!-- Modal + Add Schedule -->
+    <div class="cal-modal-backdrop" id="modalAddBackdrop">
+        <div class="cal-modal" id="modalAdd" role="dialog" aria-labelledby="modalAddTitle">
+            <div class="cal-detail-band" style="background:#8b5cf6;"></div>
+            <div class="cal-modal-head">
+                <div>
+                    <span class="cal-detail-kicker" style="color:#6D28D9;">+ Nuevo Horario</span>
+                    <h3 id="modalAddTitle">Agregar Horario / Recordatorio</h3>
+                </div>
+                <button type="button" class="cal-modal-close" id="btnAddClose" aria-label="Cerrar">
+                    <img src="../icons/regular/x.svg" alt="cerrar">
+                </button>
+            </div>
+            <form id="formAddSchedule">
+                <div class="cal-modal-body">
+                    <div class="cal-form-error" id="formError"></div>
 
-        // ── Controles ─────────────────────────────────────────────────────────────────
-        function configurarControles() {
-            document.getElementById('btnPrev').onclick = () => {
-                if (viewMonth-->0) { } else { viewMonth = 11; viewYear--; }
-                renderCalendario(); renderResumen();
-            };
-            document.getElementById('btnNext').onclick = () => {
-                if (viewMonth++ < 11) { } else { viewMonth = 0; viewYear++; }
-                renderCalendario(); renderResumen();
-            };
-            document.getElementById('btnHoy').onclick = () => {
-                const h = new Date(); viewYear = h.getFullYear(); viewMonth = h.getMonth();
-                renderCalendario(); renderResumen();
-            };
+                    <div class="cal-field">
+                        <label for="schedTitle">Título de la actividad *</label>
+                        <input type="text" id="schedTitle" placeholder="Ej: Repaso con equipo, Estudio para examen..." required maxlength="120">
+                    </div>
 
-            // Filtro
-            const btnF = document.getElementById('btnFiltro');
-            const menuF = document.getElementById('filtroMenu');
-            btnF.onclick = e => { e.stopPropagation(); menuF.style.display = menuF.style.display === 'none' ? 'block' : 'none'; };
-            document.addEventListener('click', () => { menuF.style.display = 'none'; });
-            menuF.addEventListener('click', e => e.stopPropagation());
-            menuF.querySelectorAll('input[type=checkbox]').forEach(cb => {
-                cb.onchange = () => {
-                    cb.checked ? tiposFiltro.add(cb.value) : tiposFiltro.delete(cb.value);
-                    renderCalendario(); renderProximosEventos(); renderResumen();
-                };
-            });
+                    <div class="cal-field-row">
+                        <div class="cal-field">
+                            <label for="schedDate">Fecha *</label>
+                            <input type="date" id="schedDate" required>
+                        </div>
+                        <div class="cal-field">
+                            <label for="schedStart">Inicio *</label>
+                            <input type="time" id="schedStart" value="08:00" required>
+                        </div>
+                        <div class="cal-field">
+                            <label for="schedEnd">Fin *</label>
+                            <input type="time" id="schedEnd" value="09:00" required>
+                        </div>
+                    </div>
 
-            // Búsqueda
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.oninput = () => renderCalendario();
-            }
-        }
-    </script>
-<script src="../js/app.js?v=apiestudiante20260512i"></script>
-<script src="../js/notificaciones.js?v=apiestudiante20260512i"></script>
+                    <div class="cal-field">
+                        <label>Color pastel</label>
+                        <div class="cal-swatches">
+                            <label class="cal-swatch">
+                                <input type="radio" name="schedColor" value="purple" checked>
+                                <span style="background:#F1ECFD; border-color:#8b5cf6;" title="Lila pastel"></span>
+                            </label>
+                            <label class="cal-swatch">
+                                <input type="radio" name="schedColor" value="green">
+                                <span style="background:#E9F9EC; border-color:#10b981;" title="Verde menta"></span>
+                            </label>
+                            <label class="cal-swatch">
+                                <input type="radio" name="schedColor" value="orange">
+                                <span style="background:#FEEFD8; border-color:#f97316;" title="Melocotón pastel"></span>
+                            </label>
+                            <label class="cal-swatch">
+                                <input type="radio" name="schedColor" value="pink">
+                                <span style="background:#FCE4EC; border-color:#ec4899;" title="Rosa pastel"></span>
+                            </label>
+                            <label class="cal-swatch">
+                                <input type="radio" name="schedColor" value="blue">
+                                <span style="background:#E8F2FE; border-color:#3b82f6;" title="Celeste pastel"></span>
+                            </label>
+                            <label class="cal-swatch">
+                                <input type="radio" name="schedColor" value="yellow">
+                                <span style="background:#FEF8E2; border-color:#eab308;" title="Amarillo suave"></span>
+                            </label>
+                        </div>
+                    </div>
 
-    <!-- SweetAlert2 para Alertas Elegantes -->
+                    <div class="cal-field">
+                        <label for="schedDesc">Notas / Descripción (opcional)</label>
+                        <textarea id="schedDesc" rows="3" placeholder="Añade detalles, enlaces o temas a repasar..."></textarea>
+                    </div>
+                </div>
+                <div class="cal-modal-foot">
+                    <button type="button" class="cal-btn" id="btnCancelAdd">Cancelar</button>
+                    <button type="submit" class="cal-btn primary" id="btnSaveSchedule">Guardar horario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Logic del Calendario Interactivo (FullCalendar v7 + Shidell) -->
+    <script src="/vendor/fullcalendar/fullcalendar.all.global.js?v=7.1.5"></script>
+    <script src="/vendor/fullcalendar/breezy.global.js?v=7.1.5"></script>
+    <script src="/vendor/fullcalendar/es.global.js?v=7.1.5"></script>
+    <script src="../js/calendario.js?v=20261113c"></script>
+
+    <!-- Global App Scripts -->
+    <script src="../js/app.js?v=apiestudiante20260512i"></script>
+    <script src="../js/notificaciones.js?v=20261114s"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/vendor/alertas.js?v=20261019d"></script>
-
 </body>
 
 </html>
-
-
-
-
-
-

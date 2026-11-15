@@ -226,23 +226,36 @@
         const categories = dataset.map((d) => d.name);
         const values = dataset.map((d) => d.avg);
 
+        const isDark = document.documentElement.dataset.theme === 'dark';
+        const axisLabelColor = isDark ? '#94a3b8' : '#4a525d';
+        const gridColor = isDark ? 'rgba(148, 163, 184, 0.16)' : '#e2e8f0';
+        const seriesColor = isDark ? '#60a5fa' : '#144272';
+
         const options = {
             chart: {
                 type: type === 'radar' ? 'radar' : 'bar',
                 height: 270,
                 toolbar: { show: false },
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
-                background: 'transparent'
+                background: 'transparent',
+                foreColor: axisLabelColor
             },
-            colors: ['#144272'],
+            theme: {
+                mode: isDark ? 'dark' : 'light'
+            },
+            colors: [seriesColor],
             series: [
                 { name: 'Promedio Registrado', data: values }
             ],
+            grid: {
+                borderColor: gridColor,
+                strokeDashArray: 4
+            },
             xaxis: {
                 categories: categories,
                 labels: {
                     style: {
-                        colors: '#4a525d',
+                        colors: axisLabelColor,
                         fontSize: '13.5px',
                         fontWeight: 600
                     }
@@ -254,10 +267,14 @@
                 tickAmount: 4,
                 labels: {
                     style: {
+                        colors: axisLabelColor,
                         fontSize: '13px',
                         fontWeight: 600
                     }
                 }
+            },
+            tooltip: {
+                theme: isDark ? 'dark' : 'light'
             },
             plotOptions: {
                 bar: {
@@ -347,15 +364,25 @@
             return;
         }
 
+        const isDark = document.documentElement.dataset.theme === 'dark';
+
         tasksDonutChart = new window.ApexCharts(donutEl, {
             chart: {
                 type: 'donut',
                 height: 210,
-                fontFamily: "'Plus Jakarta Sans', sans-serif"
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                background: 'transparent'
+            },
+            theme: {
+                mode: isDark ? 'dark' : 'light'
             },
             series: [completadas, pendientes, vencidas],
             labels: ['Entregadas', 'Pendientes', 'Vencidas'],
-            colors: ['#157347', '#b45309', '#b91c1c'],
+            colors: isDark ? ['#34d399', '#fbbf24', '#f87171'] : ['#157347', '#b45309', '#b91c1c'],
+            stroke: {
+                colors: isDark ? ['#111a2b'] : ['#ffffff'],
+                width: 2
+            },
             dataLabels: { enabled: false },
             legend: { show: false },
             plotOptions: {
@@ -369,13 +396,13 @@
                                 label: 'Total',
                                 fontSize: '13.5px',
                                 fontWeight: 600,
-                                color: '#4a525d',
+                                color: isDark ? '#94a3b8' : '#4a525d',
                                 formatter: () => String(totalTareas)
                             },
                             value: {
                                 fontSize: '24px',
                                 fontWeight: 800,
-                                color: '#14171a'
+                                color: isDark ? '#eef2ff' : '#14171a'
                             }
                         }
                     }
@@ -399,6 +426,14 @@
         await ensureSuiteAssets();
         await fetchRealStudentApiData();
         injectApiAnalyticsSection();
+
+        if (!window.__shidellStudentChartThemeBound) {
+            window.__shidellStudentChartThemeBound = true;
+            window.addEventListener('shidell:theme-changed', () => {
+                renderDashboardChart(currentChartType);
+                renderTasksAndAttendanceSummary();
+            });
+        }
     }
 
     if (document.readyState === 'loading') {

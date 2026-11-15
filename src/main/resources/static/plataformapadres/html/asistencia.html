@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="/vendor/shidell-theme.js?v=20261114d"></script>
     <title>Shidell - Asistencia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css?v=20261114s">
 </head>
 <body>
 <div class="dashboard">
@@ -98,8 +99,13 @@
 
             <!-- Barra visual + tabla -->
             <div class="main-panel">
-                <div class="panel-top">
+                <div class="panel-top" style="flex-wrap:wrap; gap:10px;">
                     <h3 class="panel-title"><i class="ph ph-calendar-check"></i> Detalle por día</h3>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;" id="filtros-asistencia">
+                        <button type="button" onclick="filtrarAsistencia('todos')" id="fa-todos" class="item-badge bg-teal-light" style="cursor:pointer; border:1px solid #0d9488;">Todos</button>
+                        <button type="button" onclick="filtrarAsistencia('incidencias')" id="fa-incidencias" class="item-badge bg-red-light" style="cursor:pointer; border:1px solid transparent;">Faltas y tardanzas</button>
+                        <button type="button" onclick="filtrarAsistencia('presentes')" id="fa-presentes" class="item-badge bg-green-light" style="cursor:pointer; border:1px solid transparent;">Asistió</button>
+                    </div>
                 </div>
                 <div id="asist-resumen" style="margin-bottom:24px;"></div>
                 <div id="asistencia-tabla">
@@ -109,8 +115,10 @@
         </div>
     </main>
 </div>
-<script src="../js/app.js"></script>
+<script src="../js/app.js?v=20261114p"></script>
 <script>
+let asistenciaRegistros = [];
+
 document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('hijo-cargado', async (e) => {
         const hijo = e.detail;
@@ -118,10 +126,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const res  = await fetch(`/api/asistencia/estudiante/${hijo.id}`);
             if (!res.ok) { document.getElementById('asistencia-tabla').innerHTML = '<p style="color:#94a3b8; text-align:center;">Sin datos de asistencia.</p>'; return; }
             const data = await res.json();
+            asistenciaRegistros = (Array.isArray(data) ? data : []).sort((a, b) =>
+                String(b.fecha || '').localeCompare(String(a.fecha || ''))
+            );
 
-            const total = data.length;
-            const pres  = data.filter(a => a.asistio || ['PRESENTE', 'TARDE', 'JUSTIFICADO'].includes(normalizarEstado(a.estado))).length;
-            const aus   = data.filter(a => !a.asistio && !['PRESENTE', 'TARDE', 'JUSTIFICADO'].includes(normalizarEstado(a.estado))).length;
+            const total = asistenciaRegistros.length;
+            const pres  = asistenciaRegistros.filter(a => a.asistio || ['PRESENTE', 'TARDE', 'JUSTIFICADO'].includes(normalizarEstado(a.estado))).length;
+            const aus   = asistenciaRegistros.filter(a => !a.asistio && !['PRESENTE', 'TARDE', 'JUSTIFICADO'].includes(normalizarEstado(a.estado))).length;
+            const tard  = asistenciaRegistros.filter(a => normalizarEstado(a.estado) === 'TARDE').length;
+            const just  = asistenciaRegistros.filter(a => normalizarEstado(a.estado) === 'JUSTIFICADO').length;
             const pct   = total > 0 ? Math.round(pres/total*100) : 0;
 
             document.getElementById('dias-presente').textContent = pres;
@@ -132,30 +145,61 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="asist-bar-wrap" style="height:12px; margin-bottom:8px;">
                     <div class="asist-bar-fill" style="width:${pct}%;"></div>
                 </div>
-                <p style="font-size:13px; color:var(--text-secondary);">${pres} registros con asistencia de ${total} clases registradas</p>
+                <p style="font-size:13px; color:var(--text-secondary);">
+                    ${pres} registros con asistencia de ${total} clases registradas ·
+                    <strong>${tard}</strong> tardanza(s) ·
+                    <strong>${just}</strong> justificada(s) ·
+                    <strong>${aus}</strong> ausencia(s)
+                </p>
             `;
-
-            const tabla = document.getElementById('asistencia-tabla');
-            if (!data.length) {
-                tabla.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:20px;">Aún no hay asistencia registrada para este hijo.</p>';
-                return;
-            }
-            tabla.innerHTML = `
-                <table class="grades-table">
-                    <thead><tr><th>Fecha</th><th>Curso</th><th>Estado</th></tr></thead>
-                    <tbody>${data.map(a => `
-                        <tr>
-                            <td>${new Date(a.fecha).toLocaleDateString('es-PE', {weekday:'long', year:'numeric', month:'long', day:'numeric'})}</td>
-                            <td>${a.curso?.nombre || 'Clase registrada'}</td>
-                            <td>${estadoAsistencia(a)}</td>
-                        </tr>`).join('')}
-                    </tbody>
-                </table>`;
+            filtrarAsistencia('todos');
         } catch (e) {
             document.getElementById('asistencia-tabla').innerHTML = '<p style="color:#ef4444; text-align:center;">Error al cargar asistencia.</p>';
         }
     });
 });
+
+function filtrarAsistencia(filtro) {
+    ['todos', 'incidencias', 'presentes'].forEach(k => {
+        const b = document.getElementById(`fa-${k}`);
+        if (b) b.style.borderColor = k === filtro ? '#0d9488' : 'transparent';
+    });
+
+    const tabla = document.getElementById('asistencia-tabla');
+    const filtrados = asistenciaRegistros.filter(a => {
+        const st = normalizarEstado(a.estado);
+        if (filtro === 'incidencias') return ['AUSENTE', 'TARDE', 'JUSTIFICADO'].includes(st);
+        if (filtro === 'presentes') return st === 'PRESENTE';
+        return true;
+    });
+
+    if (!filtrados.length) {
+        tabla.innerHTML = '<p style="color:#94a3b8; text-align:center; padding:20px;">No hay registros en esta categoría.</p>';
+        return;
+    }
+
+    const visibles = filtrados.slice(0, 80);
+    tabla.innerHTML = `
+        <table class="grades-table">
+            <thead><tr><th>Fecha</th><th>Curso</th><th>Estado</th></tr></thead>
+            <tbody>${visibles.map(a => {
+                const rawFecha = String(a.fecha || '').trim();
+                const fechaObj = new Date(rawFecha.length === 10 ? `${rawFecha}T00:00:00` : rawFecha);
+                const fechaStr = Number.isNaN(fechaObj.getTime())
+                    ? rawFecha
+                    : fechaObj.toLocaleDateString('es-PE', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+                const nombreCurso = String(a.curso?.nombre || 'Clase registrada').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return `
+                    <tr>
+                        <td>${fechaStr}</td>
+                        <td>${nombreCurso}</td>
+                        <td>${estadoAsistencia(a)}</td>
+                    </tr>`;
+            }).join('')}
+            </tbody>
+        </table>
+        ${filtrados.length > visibles.length ? `<p style="font-size:12px; color:#64748b; text-align:center; margin-top:12px;">Mostrando las ${visibles.length} sesiones más recientes de ${filtrados.length}.</p>` : ''}`;
+}
 
 function normalizarEstado(estado) {
     return String(estado || 'AUSENTE').trim().toUpperCase();

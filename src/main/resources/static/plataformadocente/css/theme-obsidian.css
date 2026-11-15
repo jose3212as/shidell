@@ -1,0 +1,1369 @@
+/* ==========================================================================
+   SHIDELL PORTAL DOCENTE — TEMAS DUALES (MODO NOCHE & MODO DÍA)
+   - Modo Noche (data-theme="dark"): Obsidian Scholar (#0B0D11 + Oro #D8A24A)
+   - Modo Día (data-theme="light"): Alabaster & Ink (#FFFFFF / #F8F9FA + Negro #111318)
+   Tipografía editorial compartida: Source Serif 4 + Plus Jakarta Sans.
+   ========================================================================== */
+
+:root,
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Tipografía moderna unificada */
+    --font-display: 'Bricolage Grotesque', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-serif: var(--font-display);
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    /* Superficies tonales en negro/obsidiana */
+    --bg-main: #0B0D11;
+    --background-color: #10141A;
+    --bg-surface: #13171D;
+    --bg-elevated: #1A2029;
+    --bg-card-hover: #161B23;
+    --bg-input: #0D1116;
+
+    /* Fondos compuestos y overlays */
+    --bg-sidebar: linear-gradient(180deg, #12161C 0%, #0E1116 100%);
+    --bg-topbar: rgba(11, 13, 17, 0.88);
+    --bg-topbar-mobile: rgba(11, 13, 17, 0.94);
+    --bg-bottom-nav: rgba(15, 19, 25, 0.96);
+    --bg-chat-header: rgba(19, 23, 29, 0.92);
+    --bg-overlay: rgba(5, 7, 10, 0.78);
+    --bg-modal-header: linear-gradient(180deg, #181E27 0%, #13171D 100%);
+    --bg-hero: linear-gradient(135deg, #171C24 0%, #11151B 60%, #221B11 100%);
+    --bg-ep-hero: linear-gradient(135deg, #171C24 0%, #12161C 62%, #211A10 100%);
+    --bg-ep-hero-bar: linear-gradient(180deg, var(--primary), #A78BFA);
+    --bg-course-mine: linear-gradient(90deg, rgba(216, 162, 74, 0.1) 0%, #13171D 100%);
+    --bg-nav-active: linear-gradient(90deg, rgba(216, 162, 74, 0.18) 0%, rgba(216, 162, 74, 0.05) 100%);
+    --nav-active-color: #F3CA7A;
+    --nav-active-ring: rgba(216, 162, 74, 0.22);
+
+    /* Bordes sutiles */
+    --border-color: #202732;
+    --border-color-light: #1E2530;
+    --border-color-dark: #2B3442;
+    --accent-border-soft: rgba(216, 162, 74, 0.26);
+    --accent-border: rgba(216, 162, 74, 0.35);
+    --accent-border-strong: rgba(216, 162, 74, 0.48);
+    --accent-tint-subtle: rgba(216, 162, 74, 0.08);
+    --accent-tint-medium: rgba(216, 162, 74, 0.12);
+
+    /* Jerarquía de texto */
+    --text-primary: #EDF1F7;
+    --text-secondary: #9CA7B8;
+    --text-tertiary: #6C7788;
+
+    /* Acento académico principal */
+    --primary: #D8A24A;
+    --primary-hover: #E6B562;
+    --primary-light: rgba(216, 162, 74, 0.14);
+    --primary-ink: #0B0D11;
+    --primary-gradient: linear-gradient(135deg, #E2B05B 0%, #C89036 100%);
+    --primary-gradient-hover: linear-gradient(135deg, #ECC071 0%, #D8A24A 100%);
+    --logo-gradient: linear-gradient(135deg, #E5B45F 0%, #C48A2F 100%);
+    --msg-sent-bg: linear-gradient(135deg, #B57B24 0%, #D8A24A 100%);
+    --msg-sent-color: #0B0D11;
+
+    /* Detalles interactivos y scroll */
+    --table-stripe: rgba(255, 255, 255, 0.025);
+    --calendar-inactive-bg: #0F1318;
+    --scrollbar-thumb: #2A323F;
+    --scrollbar-thumb-hover: #3A4556;
+    --notif-scrollbar-thumb: #2C3544;
+    --toggle-off-bg: #2C3544;
+    --btn-cancel-hover-bg: #232B37;
+
+    /* Sombras */
+    --shadow-card: 0 12px 30px rgba(0, 0, 0, 0.28);
+    --shadow-card-hover: 0 16px 34px rgba(0, 0, 0, 0.42);
+    --shadow-hero: 0 20px 44px rgba(0, 0, 0, 0.45);
+    --shadow-modal: 0 28px 70px rgba(0, 0, 0, 0.72);
+    --shadow-dropdown: 0 18px 40px rgba(0, 0, 0, 0.55);
+    --shadow-notif-panel: 0 24px 55px rgba(0, 0, 0, 0.65);
+    --shadow-user-hover: 0 6px 18px rgba(0, 0, 0, 0.35);
+    --shadow-primary: 0 6px 18px rgba(216, 162, 74, 0.22);
+    --shadow-primary-hover: 0 10px 26px rgba(216, 162, 74, 0.34);
+    --shadow-bottom-nav: 0 -10px 28px rgba(0, 0, 0, 0.55);
+
+    /* Colores semánticos calibrados para fondo oscuro */
+    --blue: #60A5FA;
+    --blue-light: rgba(96, 165, 250, 0.14);
+    --green: #34D399;
+    --green-light: rgba(52, 211, 153, 0.14);
+    --green-dark: #6EE7B7;
+    --purple: #A78BFA;
+    --purple-light: rgba(167, 139, 250, 0.14);
+    --yellow: #FBBF24;
+    --yellow-light: rgba(251, 191, 36, 0.14);
+    --yellow-dark: #FDE68A;
+    --red: #F87171;
+    --red-light: rgba(248, 113, 113, 0.14);
+    --red-dark: #FCA5A5;
+    --orange: #FB923C;
+    --orange-light: rgba(251, 146, 60, 0.14);
+    --cyan: #22D3EE;
+    --cyan-light: rgba(34, 211, 238, 0.14);
+
+    /* Tarjetas insight perfil estudiante */
+    --insight-success-bg: rgba(52, 211, 153, 0.1);
+    --insight-success-border: rgba(52, 211, 153, 0.28);
+    --insight-success-fg: #A7F3D0;
+    --insight-info-bg: rgba(96, 165, 250, 0.1);
+    --insight-info-border: rgba(96, 165, 250, 0.28);
+    --insight-info-fg: #BFDBFE;
+    --insight-warning-bg: rgba(251, 191, 36, 0.1);
+    --insight-warning-border: rgba(251, 191, 36, 0.28);
+    --insight-warning-fg: #FDE68A;
+    --insight-danger-bg: rgba(248, 113, 113, 0.1);
+    --insight-danger-border: rgba(248, 113, 113, 0.28);
+    --insight-danger-fg: #FECACA;
+}
+
+:root[data-theme="light"] {
+    color-scheme: light;
+
+    /* Superficies blanco editorial + tinta negra */
+    --bg-main: #F8F9FA;
+    --background-color: #F2F4F7;
+    --bg-surface: #FFFFFF;
+    --bg-elevated: #ECEEF2;
+    --bg-card-hover: #FAFAFC;
+    --bg-input: #FFFFFF;
+
+    /* Fondos compuestos y overlays */
+    --bg-sidebar: linear-gradient(180deg, #FFFFFF 0%, #FAFAFB 100%);
+    --bg-topbar: rgba(255, 255, 255, 0.92);
+    --bg-topbar-mobile: rgba(255, 255, 255, 0.96);
+    --bg-bottom-nav: rgba(255, 255, 255, 0.98);
+    --bg-chat-header: rgba(255, 255, 255, 0.96);
+    --bg-overlay: rgba(11, 13, 17, 0.45);
+    --bg-modal-header: linear-gradient(180deg, #FAFAFB 0%, #FFFFFF 100%);
+    --bg-hero: linear-gradient(135deg, #FFFFFF 0%, #F7F8FA 70%, #ECEEF2 100%);
+    --bg-ep-hero: linear-gradient(135deg, #FFFFFF 0%, #F8F9FB 66%, #F0F2F5 100%);
+    --bg-ep-hero-bar: linear-gradient(180deg, #0B0D11 0%, #475467 100%);
+    --bg-course-mine: linear-gradient(90deg, rgba(17, 19, 24, 0.05) 0%, #FFFFFF 100%);
+    --bg-nav-active: linear-gradient(90deg, rgba(17, 19, 24, 0.09) 0%, rgba(17, 19, 24, 0.02) 100%);
+    --nav-active-color: #0B0D11;
+    --nav-active-ring: rgba(17, 19, 24, 0.14);
+
+    /* Bordes nítidos */
+    --border-color: #E4E7EC;
+    --border-color-light: #EEF0F4;
+    --border-color-dark: #CBD2DC;
+    --accent-border-soft: rgba(17, 19, 24, 0.16);
+    --accent-border: rgba(17, 19, 24, 0.24);
+    --accent-border-strong: rgba(17, 19, 24, 0.42);
+    --accent-tint-subtle: rgba(17, 19, 24, 0.045);
+    --accent-tint-medium: rgba(17, 19, 24, 0.075);
+
+    /* Jerarquía de texto en tinta negra */
+    --text-primary: #0B0D11;
+    --text-secondary: #475467;
+    --text-tertiary: #667085;
+
+    /* Acento principal negro editorial */
+    --primary: #111318;
+    --primary-hover: #272B35;
+    --primary-light: rgba(17, 19, 24, 0.075);
+    --primary-ink: #FFFFFF;
+    --primary-gradient: linear-gradient(135deg, #1E222A 0%, #0B0D11 100%);
+    --primary-gradient-hover: linear-gradient(135deg, #2E3440 0%, #151921 100%);
+    --logo-gradient: linear-gradient(135deg, #1E222A 0%, #0B0D11 100%);
+    --msg-sent-bg: linear-gradient(135deg, #1D2129 0%, #0B0D11 100%);
+    --msg-sent-color: #FFFFFF;
+
+    /* Detalles interactivos y scroll */
+    --table-stripe: rgba(17, 19, 24, 0.025);
+    --calendar-inactive-bg: #F3F4F6;
+    --scrollbar-thumb: #D0D5DD;
+    --scrollbar-thumb-hover: #98A2B3;
+    --notif-scrollbar-thumb: #D0D5DD;
+    --toggle-off-bg: #CBD2DC;
+    --btn-cancel-hover-bg: #E4E7EC;
+
+    /* Sombras limpias de día */
+    --shadow-card: 0 2px 10px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.06);
+    --shadow-card-hover: 0 10px 24px rgba(15, 23, 42, 0.09);
+    --shadow-hero: 0 8px 24px rgba(15, 23, 42, 0.07);
+    --shadow-modal: 0 24px 60px rgba(15, 23, 42, 0.18);
+    --shadow-dropdown: 0 14px 36px rgba(15, 23, 42, 0.12);
+    --shadow-notif-panel: 0 18px 42px rgba(15, 23, 42, 0.14);
+    --shadow-user-hover: 0 4px 12px rgba(15, 23, 42, 0.08);
+    --shadow-primary: 0 4px 12px rgba(11, 13, 17, 0.18);
+    --shadow-primary-hover: 0 8px 20px rgba(11, 13, 17, 0.25);
+    --shadow-bottom-nav: 0 -6px 20px rgba(15, 23, 42, 0.08);
+
+    /* Colores semánticos calibrados para fondo blanco */
+    --blue: #1D4ED8;
+    --blue-light: rgba(29, 78, 216, 0.1);
+    --green: #15803D;
+    --green-light: rgba(21, 128, 61, 0.1);
+    --green-dark: #166534;
+    --purple: #6D28D9;
+    --purple-light: rgba(109, 40, 217, 0.1);
+    --yellow: #B45309;
+    --yellow-light: rgba(217, 119, 6, 0.12);
+    --yellow-dark: #92400E;
+    --red: #B91C1C;
+    --red-light: rgba(185, 28, 28, 0.1);
+    --red-dark: #991B1B;
+    --orange: #C2410C;
+    --orange-light: rgba(194, 65, 12, 0.1);
+    --cyan: #0E7490;
+    --cyan-light: rgba(14, 116, 144, 0.1);
+
+    /* Tarjetas insight perfil estudiante */
+    --insight-success-bg: rgba(21, 128, 61, 0.08);
+    --insight-success-border: rgba(21, 128, 61, 0.25);
+    --insight-success-fg: #14532D;
+    --insight-info-bg: rgba(29, 78, 216, 0.08);
+    --insight-info-border: rgba(29, 78, 216, 0.25);
+    --insight-info-fg: #1E3A8A;
+    --insight-warning-bg: rgba(180, 83, 9, 0.09);
+    --insight-warning-border: rgba(180, 83, 9, 0.26);
+    --insight-warning-fg: #78350F;
+    --insight-danger-bg: rgba(185, 28, 28, 0.08);
+    --insight-danger-border: rgba(185, 28, 28, 0.25);
+    --insight-danger-fg: #7F1D1D;
+}
+
+/* ── Tipografía base y encabezados modernos ────────────────────────────── */
+html, body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+button, input, textarea, select {
+    font-family: inherit;
+}
+
+h1, h2, h3,
+.greeting h1,
+.logo-text h2,
+.docente-welcome h2,
+.content-header h2,
+.ep-name-row h2,
+.settings-header h2,
+.contacts-header h2,
+.calendar-month-title {
+    font-family: var(--font-display);
+    letter-spacing: -0.025em;
+}
+
+.content-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 6px 0;
+}
+
+.content-header p {
+    color: var(--text-secondary);
+    font-size: 14.5px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.stat-val,
+.docente-metrics strong,
+.kpi-info strong,
+.ep-kpi-value,
+.grade-badge,
+.grades-table td,
+.time-box .time,
+.schedule-item .time strong {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Scrollbar temático global */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* ── Shell principal: Sidebar, Topbar, Footer ──────────────────────────── */
+.sidebar {
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border-color);
+}
+
+.logo-icon {
+    background: var(--logo-gradient);
+    color: var(--primary-ink);
+    box-shadow: var(--shadow-primary);
+}
+
+.logo-text h2 {
+    color: var(--text-primary);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.logo-text p {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.nav-item {
+    color: var(--text-secondary);
+    border-left: 3px solid transparent;
+}
+
+.nav-item:hover {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+}
+
+.nav-item.active {
+    background: var(--bg-nav-active);
+    color: var(--nav-active-color);
+    border-left-color: var(--primary);
+    box-shadow: inset 0 0 0 1px var(--nav-active-ring);
+    font-weight: 600;
+}
+
+.nav-item.active i {
+    color: var(--primary);
+}
+
+.main-wrapper {
+    background-color: var(--bg-main);
+}
+
+.topbar {
+    background: var(--bg-topbar);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 24px;
+}
+
+.greeting h1 {
+    color: var(--text-primary);
+    font-size: 27px;
+    font-weight: 700;
+}
+
+.greeting p {
+    color: var(--text-secondary);
+}
+
+.search-box {
+    background-color: var(--bg-surface);
+    border-color: var(--border-color-dark);
+}
+
+.search-box:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.theme-toggle-btn {
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color-dark);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle-btn i {
+    font-size: 17px;
+    color: var(--primary);
+}
+
+.theme-toggle-btn:hover {
+    background: var(--bg-elevated);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.top-user-info {
+    border-left-color: var(--border-color-dark);
+}
+
+.user-dropdown:hover {
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-user-hover);
+}
+
+.top-user-info .avatar {
+    background-color: var(--primary-light);
+    border-color: var(--accent-border);
+    color: var(--primary);
+}
+
+.dropdown-menu {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color-dark);
+    box-shadow: var(--shadow-dropdown);
+}
+
+.dropdown-item {
+    color: var(--text-secondary);
+}
+
+.dropdown-item:hover {
+    background: var(--red-light);
+    color: var(--red);
+}
+
+.teacher-footer {
+    background: var(--bg-main);
+    border-top: 1px solid var(--border-color);
+    color: var(--text-tertiary);
+}
+
+/* ── Notificaciones ────────────────────────────────────────────────────── */
+.notification-btn {
+    background: var(--bg-surface);
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary);
+}
+
+.notification-btn:hover {
+    background: var(--bg-elevated);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.notification-btn .badge {
+    border-color: var(--bg-surface);
+}
+
+.notification-panel,
+.notificaciones-dropdown {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color-dark);
+    box-shadow: var(--shadow-notif-panel);
+}
+
+.notification-panel-header,
+.noti-header {
+    background: var(--bg-surface);
+    border-bottom-color: var(--border-color);
+}
+
+.notification-panel-header button {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+}
+
+.notification-panel-header button:hover {
+    background: var(--primary);
+    color: var(--primary-ink);
+}
+
+.notification-panel-list::-webkit-scrollbar-thumb {
+    background: var(--notif-scrollbar-thumb);
+}
+
+.notif-row,
+.noti-item.leida {
+    background: transparent;
+    border-color: transparent;
+}
+
+.notif-row:hover,
+.noti-item:hover {
+    background: var(--bg-elevated);
+    border-color: transparent;
+}
+
+.notif-row.unread,
+.noti-item {
+    background: transparent;
+    border-color: transparent;
+}
+
+.notif-icon {
+    background: transparent;
+    color: var(--text-tertiary);
+}
+
+.notif-row.unread .notif-icon {
+    background: transparent;
+    color: var(--primary);
+}
+
+.notif-empty,
+.notif-empty i {
+    color: var(--text-tertiary);
+}
+
+/* ── Tarjetas, Paneles, Botones y Controles Globales ───────────────────── */
+.stat-item,
+.main-panel,
+.course-card,
+.docente-metrics article,
+.docente-curso-card,
+.premium-card,
+.view-main-panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
+}
+
+.stat-item:hover,
+.course-card:hover,
+.docente-curso-card:hover,
+.premium-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-border-strong);
+    box-shadow: var(--shadow-card-hover);
+}
+
+.panel-title {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.panel-title i {
+    color: var(--primary);
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--primary-gradient);
+    color: var(--primary-ink);
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:hover {
+    background: var(--primary-gradient-hover);
+    box-shadow: var(--shadow-primary-hover);
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color-dark);
+    text-decoration: none;
+}
+
+.btn-secondary:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+/* Botón monocromático blanco y negro para acción rápida en tabla de cursos */
+.dash-course-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: 9px;
+    background: #0B0D11;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color 0.22s var(--ease-expo, ease),
+                color 0.22s var(--ease-expo, ease),
+                border-color 0.22s ease,
+                transform 0.22s var(--ease-expo, ease),
+                box-shadow 0.22s ease;
+}
+
+.dash-course-btn i {
+    font-size: 13px;
+    transition: transform 0.22s var(--ease-expo, ease);
+}
+
+.dash-course-btn:hover {
+    background: #FFFFFF;
+    color: #0B0D11;
+    border-color: #FFFFFF;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+    text-decoration: none;
+}
+
+.dash-course-btn:hover i {
+    transform: translate(2px, -2px);
+}
+
+:root[data-theme="light"] .dash-course-btn {
+    background: #0B0D11;
+    color: #FFFFFF;
+    border-color: #0B0D11;
+}
+
+:root[data-theme="light"] .dash-course-btn:hover {
+    background: #FFFFFF;
+    color: #0B0D11;
+    border-color: #0B0D11;
+    box-shadow: 0 6px 16px rgba(11, 13, 17, 0.14);
+}
+
+.link-action {
+    color: var(--primary);
+}
+
+.link-action:hover {
+    color: var(--primary-hover);
+}
+
+/* Inputs, selects, textareas */
+input,
+select,
+textarea,
+.form-input,
+.filter-select,
+.attendance-toolbar input,
+.attendance-select {
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-color-dark);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-tertiary);
+}
+
+select option {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.form-input:focus,
+.filter-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.filters-panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-card);
+}
+
+.filters-search-box {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color-dark);
+}
+
+/* Tablas */
+.data-table th {
+    background: var(--background-color);
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color-dark);
+}
+
+.data-table td {
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table tbody tr:hover td {
+    background: var(--table-stripe);
+}
+
+.grade-input {
+    background: var(--bg-input);
+    border-color: var(--border-color-dark);
+    color: var(--primary);
+}
+
+/* ── Modales y Overlays ────────────────────────────────────────────────── */
+.overlay,
+.modal-overlay,
+.settings-modal {
+    background: var(--bg-overlay);
+    backdrop-filter: blur(6px);
+}
+
+.modal,
+.modal-content,
+.premium-modal,
+.settings-modal-card {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color-dark);
+    box-shadow: var(--shadow-modal);
+}
+
+.modal-header,
+.premium-modal .modal-header {
+    background: var(--bg-modal-header);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-footer,
+.modal-footer-premium,
+.modal-form-actions {
+    border-top: 1px solid var(--border-color);
+}
+
+.modal-close {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+}
+
+.modal-close:hover {
+    color: var(--red);
+    background: var(--red-light);
+}
+
+.btn-cancelar {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color-dark);
+}
+
+.btn-cancelar:hover {
+    background: var(--btn-cancel-hover-bg);
+    color: var(--text-primary);
+}
+
+.btn-publicar {
+    background: var(--primary-gradient);
+    color: var(--primary-ink);
+    box-shadow: var(--shadow-primary);
+}
+
+.btn-publicar:hover {
+    background: var(--primary-gradient-hover);
+    box-shadow: var(--shadow-primary-hover);
+}
+
+/* ── Dashboard Vista ───────────────────────────────────────────────────── */
+.docente-welcome {
+    background: var(--bg-hero);
+    border: 1px solid var(--accent-border);
+    box-shadow: var(--shadow-hero);
+}
+
+.docente-welcome span {
+    color: var(--primary);
+    opacity: 1;
+}
+
+.docente-welcome h2 {
+    color: var(--text-primary);
+}
+
+.docente-welcome p {
+    color: var(--text-secondary);
+}
+
+.docente-main-actions .btn-primary {
+    background: var(--primary);
+    color: var(--primary-ink);
+}
+
+.docente-main-actions .btn-secondary {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color-dark);
+}
+
+.docente-metrics article i {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--accent-border-soft);
+}
+
+.docente-curso-badge {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color-dark);
+}
+
+.docente-curso-card.cyan .docente-curso-icon {
+    background: var(--cyan-light);
+    color: var(--cyan);
+}
+
+.docente-curso-meta span,
+.schedule-item {
+    background: var(--background-color);
+    border-color: var(--border-color);
+}
+
+.mini-action {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color-dark);
+}
+
+.mini-action.primary {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--accent-border-soft);
+}
+
+.mini-action:hover {
+    background: var(--primary);
+    color: var(--primary-ink);
+    border-color: var(--primary);
+}
+
+.docente-accesos a {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.docente-accesos a:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--accent-border);
+}
+
+.teacher-empty {
+    background: var(--background-color);
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary);
+}
+
+/* ── Mis Clases ────────────────────────────────────────────────────────── */
+.course-card-icon {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--accent-border-soft);
+    box-shadow: none;
+}
+
+.course-card-footer {
+    border-top-color: var(--border-color);
+}
+
+/* ── Tareas Kanban ─────────────────────────────────────────────────────── */
+.kanban-column {
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+}
+
+.kanban-column-header {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.kanban-column-count {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color-dark);
+}
+
+.kanban-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-color-dark);
+    box-shadow: var(--shadow-card);
+}
+
+.kanban-card:hover {
+    border-color: var(--accent-border-strong);
+    box-shadow: var(--shadow-card-hover);
+}
+
+.kanban-action-btn {
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+}
+
+.kanban-action-btn:hover {
+    background: var(--primary);
+    color: var(--primary-ink);
+}
+
+.input-with-icon input,
+.input-with-icon select,
+.input-with-icon textarea {
+    background: var(--bg-input);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+.priority-radio span {
+    background: var(--bg-input);
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary);
+}
+
+/* ── Directorio de Estudiantes ─────────────────────────────────────────── */
+.student-card-avatar {
+    background: var(--primary-gradient);
+    color: var(--primary-ink);
+    box-shadow: var(--shadow-primary);
+}
+
+/* ── Calificaciones ────────────────────────────────────────────────────── */
+.grades-main-container {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-card);
+}
+
+.grades-table-wrapper {
+    border-color: var(--border-color-dark);
+}
+
+.grades-table th,
+.grades-table th.col-student {
+    background: var(--background-color);
+    color: var(--text-secondary);
+    border-bottom-color: var(--border-color-dark);
+}
+
+.grades-table th.grade-task-col {
+    background: var(--accent-tint-medium);
+    color: var(--primary);
+}
+
+.grades-table td {
+    border-bottom-color: var(--border-color);
+}
+
+.grades-table td.col-student {
+    background: var(--bg-surface);
+    border-right-color: var(--border-color);
+}
+
+.grades-table tr:hover td,
+.grades-table tr:hover td.col-student {
+    background: var(--bg-elevated);
+}
+
+.student-mini-avatar {
+    background: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--accent-border-soft);
+}
+
+.grade-badge.pending {
+    background: var(--yellow-light);
+    color: var(--yellow-dark);
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+.grade-badge.empty {
+    background: var(--bg-elevated);
+    color: var(--text-tertiary);
+}
+
+.grade-manual-note {
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+
+.grade-quick-zero {
+    padding: 4px 10px;
+    font-size: 11px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color-dark);
+    cursor: pointer;
+    background: var(--bg-elevated);
+    color: var(--text-secondary);
+}
+
+.grade-quick-zero:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* ── Calendario ────────────────────────────────────────────────────────── */
+.calendar-main-container {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-card);
+}
+
+.calendar-nav-btn {
+    background: var(--bg-elevated);
+    border-color: var(--border-color-dark);
+    color: var(--text-secondary);
+}
+
+.calendar-nav-btn:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.calendar-month-grid {
+    background: var(--border-color);
+    border-color: var(--border-color);
+}
+
+.calendar-day-header {
+    background: var(--background-color);
+    color: var(--text-secondary);
+}
+
+.calendar-day-cell {
+    background: var(--bg-surface);
+}
+
+.calendar-day-cell:hover,
+.calendar-day-cell.inactive-month {
+    background: var(--calendar-inactive-bg);
+}
+
+.calendar-day-cell.today {
+    background: var(--accent-tint-medium);
+}
+
+.calendar-day-cell.today .calendar-day-number {
+    background: var(--primary);
+    color: var(--primary-ink);
+}
+
+/* ── Mensajes ──────────────────────────────────────────────────────────── */
+.messages-container {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-card);
+}
+
+.contacts-sidebar,
+.chat-input-area {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+.search-input-wrapper,
+.chat-input {
+    background: var(--bg-input);
+    border: 1px solid var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+.search-input-wrapper:focus-within,
+.chat-input:focus {
+    background: var(--bg-input);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.convo-item:hover {
+    background: var(--bg-elevated);
+}
+
+.convo-item.active {
+    background: var(--accent-tint-medium);
+    border-left-color: var(--primary);
+}
+
+.convo-avatar,
+.msg-avatar-inline {
+    background: var(--bg-elevated);
+    color: var(--primary);
+    border: 1px solid var(--border-color-dark);
+}
+
+.chat-area {
+    background: var(--bg-main);
+}
+
+.chat-header {
+    background: var(--bg-chat-header);
+    border-bottom-color: var(--border-color);
+}
+
+.msg-sent {
+    background: var(--msg-sent-bg);
+    color: var(--msg-sent-color);
+    font-weight: 500;
+}
+
+.msg-received {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color-dark);
+}
+
+.btn-send {
+    background: var(--primary);
+    color: var(--primary-ink);
+    box-shadow: var(--shadow-primary);
+}
+
+.btn-send:hover:not(:disabled) {
+    box-shadow: var(--shadow-primary-hover);
+}
+
+.btn-send:disabled {
+    background: var(--bg-elevated);
+    color: var(--text-tertiary);
+}
+
+/* ── Reportes ──────────────────────────────────────────────────────────── */
+.reports-container,
+.kpi-card,
+.chart-card,
+.reports-filter select {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+}
+
+.reports-filter {
+    background: var(--background-color);
+    border-color: var(--border-color);
+}
+
+.reports-filter select {
+    background: var(--bg-input);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+/* ── Configuración ─────────────────────────────────────────────────────── */
+.settings-menu,
+.settings-view,
+.info-card,
+.pref-card,
+.account-card,
+.toggle-row,
+.action-row,
+.btn-secondary-settings,
+.btn-ghost {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.settings-menu {
+    background: var(--bg-surface);
+}
+
+.settings-tab:hover {
+    background: var(--bg-elevated);
+    color: var(--primary);
+}
+
+.settings-tab.active,
+.btn-primary-settings {
+    background: var(--primary);
+    color: var(--primary-ink);
+    font-weight: 700;
+}
+
+.btn-primary-settings:hover {
+    background: var(--primary-hover);
+}
+
+.profile-summary,
+.photo-uploader,
+.settings-loading,
+.settings-empty,
+.security-card {
+    background: var(--background-color);
+    border-color: var(--border-color);
+}
+
+.profile-initials,
+.photo-preview {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--accent-border-soft);
+}
+
+.profile-badge.badge-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--primary-light);
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.pref-card select,
+.settings-form input,
+.settings-form select {
+    background: var(--bg-input);
+    border-color: var(--border-color-dark);
+    color: var(--text-primary);
+}
+
+.action-row:hover,
+.account-card:hover {
+    background: var(--bg-elevated);
+    border-color: var(--accent-border);
+}
+
+.toggle-switch.off {
+    background: var(--toggle-off-bg);
+}
+
+/* ── Densidad compacta global seleccionada por el docente ─────────────── */
+:root[data-density="compact"] .view-header {
+    margin-bottom: 14px;
+}
+
+:root[data-density="compact"] table th,
+:root[data-density="compact"] table td,
+:root[data-density="compact"] .grades-table th,
+:root[data-density="compact"] .grades-table td {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+:root[data-density="compact"] .cfg-row,
+:root[data-density="compact"] .cfg-course-row,
+:root[data-density="compact"] .cfg-pref-row {
+    padding-top: 11px;
+    padding-bottom: 11px;
+}
+
+:root[data-density="compact"] .cfg-nav-btn {
+    padding: 9px 12px;
+}
+
+/* ── SweetAlert2 temático ──────────────────────────────────────────────── */
+.swal2-popup {
+    background: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color-dark) !important;
+    border-radius: 18px !important;
+    box-shadow: var(--shadow-modal) !important;
+}
+
+.swal2-title {
+    font-family: var(--font-serif) !important;
+    color: var(--text-primary) !important;
+}
+
+.swal2-html-container {
+    color: var(--text-secondary) !important;
+}
+
+.swal2-input,
+.swal2-select,
+.swal2-textarea {
+    background: var(--bg-input) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color-dark) !important;
+}
+
+.swal2-footer {
+    border-top-color: var(--border-color) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* ── Mobile Shell Overrides (exclusivo Portal Docente) ───────────────────── */
+@media (max-width: 900px) {
+    .sidebar {
+        background: var(--bg-sidebar) !important;
+    }
+
+    .topbar {
+        background: var(--bg-topbar-mobile) !important;
+        border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .mobile-menu-btn,
+    .mobile-chat-back {
+        background: var(--bg-surface) !important;
+        border-color: var(--border-color-dark) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .mobile-menu-btn:active {
+        background: var(--primary-light) !important;
+        color: var(--primary) !important;
+    }
+
+    .mobile-drawer-close {
+        background: var(--bg-elevated) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .android-bottom-nav {
+        background: var(--bg-bottom-nav) !important;
+        border-top: 1px solid var(--border-color-dark) !important;
+        box-shadow: var(--shadow-bottom-nav) !important;
+    }
+
+    .android-nav-item {
+        color: var(--text-secondary) !important;
+    }
+
+    .android-nav-item.active {
+        color: var(--primary) !important;
+    }
+
+    .android-nav-item.active .android-nav-pill {
+        background: var(--primary-light) !important;
+        color: var(--primary) !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .theme-toggle-btn {
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .theme-toggle-label {
+        display: none;
+    }
+}
+
+/* ── Impresión limpia de ficha del estudiante ──────────────────────────── */
+@media print {
+    :root {
+        color-scheme: light;
+    }
+    html, body, .main-wrapper, .ep-hero, .ep-panel, .ep-kpi-card {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
+    }
+    .ep-name-row h2, .ep-panel-title, .ep-kpi-value, .ep-info-item span {
+        color: #0f172a !important;
+    }
+}

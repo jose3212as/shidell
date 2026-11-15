@@ -3,46 +3,669 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shidell - Configuración</title>
+    <script src="/vendor/shidell-theme.js?v=20261115c"></script>
+    <title>Shidell - Configuración Familiar</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <link rel="stylesheet" href="../css/styles.css?v=20261115a">
     <style>
-        .config-wrapper { display: flex; flex-direction: column; gap: 24px; }
-        .config-card { background: white; border-radius: 24px; padding: 40px; border: 1px solid var(--border-color-light); box-shadow: 0 10px 40px rgba(0,0,0,0.03); }
-        .config-section { margin-bottom: 40px; }
-        .config-section:last-child { margin-bottom: 0; }
-        .config-section h3 { font-size: 18px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; color: var(--text-primary); border-bottom: 1px solid var(--border-color-light); padding-bottom: 12px; }
-        .config-section h3 i { color: var(--primary); font-size: 22px; padding: 8px; background: var(--teal-light); border-radius: 10px; }
-        .config-field { margin-bottom: 20px; }
-        .config-field label { display: block; font-size: 14px; font-weight: 600; color: var(--text-secondary); margin-bottom: 10px; }
-        .config-field input { width: 100%; padding: 14px 18px; border: 1px solid var(--border-color-dark); border-radius: 14px; font-size: 15px; outline: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); background: var(--bg-main); color: var(--text-primary); }
-        .config-field input:focus { border-color: var(--primary); background: white; box-shadow: 0 4px 20px rgba(13,148,136,0.1); transform: translateY(-1px); }
-        .config-field input[readonly] { background: var(--bg-surface); color: var(--text-secondary); opacity: 0.8; cursor: not-allowed; border-color: transparent; }
-        
-        .btn-save { background: linear-gradient(135deg, var(--primary), #0f766e); color: white; border: none; padding: 14px 36px; border-radius: 14px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 20px rgba(13,148,136,0.25); display: inline-flex; align-items: center; gap: 8px; }
-        .btn-save:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(13,148,136,0.35); }
-        .btn-save i { font-size: 20px; }
-        
-        .btn-cancel { padding: 14px 32px; border: 1px solid var(--border-color-dark); border-radius: 14px; background: white; cursor: pointer; font-size: 15px; font-weight: 600; color: var(--text-secondary); transition: all 0.3s ease; }
-        .btn-cancel:hover { background: var(--bg-surface); color: var(--text-primary); transform: translateY(-1px); }
+        .pf-cfg-shell { display: flex; flex-direction: column; gap: 24px; min-width: 0; max-width: 100%; }
 
-        .profile-banner { position: relative; background: linear-gradient(135deg, #0d9488, #115e59); border-radius: 24px; padding: 40px; display: flex; align-items: center; gap: 32px; color: white; overflow: hidden; box-shadow: 0 15px 35px rgba(13,148,136,0.2); }
-        .profile-banner::before { content: ''; position: absolute; top: -50%; left: -10%; width: 50%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); transform: rotate(30deg); }
-        .profile-avatar-big { width: 100px; height: 100px; background: rgba(255,255,255,0.15); border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700; border: 4px solid rgba(255,255,255,0.3); backdrop-filter: blur(10px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); position: relative; z-index: 1; }
+        /* Banner superior en paleta Teal original */
+        .profile-banner {
+            position: relative;
+            background: linear-gradient(135deg, #0d9488, #115e59);
+            border-radius: 24px;
+            padding: 32px 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+            color: white;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(13, 148, 136, 0.2);
+        }
+        .profile-banner::before {
+            content: '';
+            position: absolute;
+            top: -55%;
+            right: -8%;
+            width: 340px;
+            height: 340px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.14) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .pf-banner-left {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            min-width: 0;
+        }
+        .profile-avatar-big {
+            width: 92px;
+            height: 92px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.16);
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            border: 3px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+        }
         .profile-avatar-big img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .profile-banner-content { position: relative; z-index: 1; }
-        
-        .photo-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
-        .btn-photo { border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1); color: white; border-radius: 12px; padding: 10px 18px; font-size: 14px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; backdrop-filter: blur(8px); transition: all 0.3s ease; }
-        .btn-photo:hover { background: rgba(255,255,255,0.25); transform: translateY(-1px); border-color: rgba(255,255,255,0.5); }
-        .btn-photo.danger { border-color: rgba(254,226,226,0.3); color: #fca5a5; }
-        .btn-photo.danger:hover { background: rgba(220,38,38,0.2); border-color: #ef4444; color: white; }
-        
-        .save-status { font-size: 14px; font-weight: 600; color: var(--text-secondary); align-self: center; opacity: 0; transition: 0.3s; }
-        .save-status.show { opacity: 1; }
+        .profile-banner-content { min-width: 0; }
+        .pf-banner-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.88);
+            margin-bottom: 6px;
+        }
+        .profile-banner-content h2 {
+            font-size: clamp(22px, 2.5vw, 28px);
+            font-weight: 800;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+        .pf-banner-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        .pf-chip-hijos {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+        .photo-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+        .btn-photo {
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            border-radius: 11px;
+            padding: 8px 15px;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: 0.2s;
+        }
+        .btn-photo:hover { background: rgba(255, 255, 255, 0.24); }
+        .btn-photo.danger { border-color: rgba(254, 202, 202, 0.4); color: #fee2e2; }
+        .btn-photo.danger:hover { background: rgba(220, 38, 38, 0.28); color: white; }
+
+        .pf-authority-badges {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-end;
+        }
+        .pf-auth-note {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 13px;
+            border-radius: 999px;
+            font-size: 12.5px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+        }
+
+        /* Layout de 2 columnas (rail de pestañas + contenido) */
+        .pf-layout {
+            display: grid;
+            grid-template-columns: 270px minmax(0, 1fr);
+            gap: 24px;
+            align-items: start;
+        }
+        .pf-rail {
+            background: #ffffff;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .pf-nav { display: flex; flex-direction: column; gap: 6px; }
+        .pf-nav-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 13px;
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-align: left;
+            transition: 0.2s ease;
+        }
+        .pf-nav-btn i { font-size: 21px; flex-shrink: 0; }
+        .pf-nav-btn:hover { background: #f8fafc; color: var(--text-primary); }
+        .pf-nav-btn.active {
+            background: var(--primary-light);
+            border-color: rgba(13, 148, 136, 0.25);
+            color: #0f766e;
+        }
+        .pf-nav-copy { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .pf-nav-title { font-size: 14px; font-weight: 700; color: inherit; }
+        .pf-nav-sub { font-size: 12px; color: var(--text-secondary); }
+        .pf-rail-note {
+            border-top: 1px solid var(--border-color-dark);
+            padding: 14px 6px 4px;
+            font-size: 12.5px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        .pf-rail-note a {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 8px;
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .pf-rail-note a:hover { text-decoration: underline; }
+
+        .pf-stage {
+            background: #ffffff;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 22px;
+            padding: 32px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.03);
+        }
+        .pf-section-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border-color-dark);
+            margin-bottom: 22px;
+        }
+        .pf-section-head h2 { font-size: 20px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px; }
+        .pf-section-head p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.45; }
+
+        .pf-pill-editable,
+        .pf-pill-locked {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .pf-pill-editable { background: var(--teal-light); color: #0f766e; border: 1px solid rgba(13, 148, 136, 0.25); }
+        .pf-pill-locked { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+        .pf-feedback {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .pf-feedback.is-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .pf-feedback.is-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .pf-feedback.is-info { background: var(--teal-light); color: #115e59; border: 1px solid #99f6e4; }
+
+        .pf-form { display: flex; flex-direction: column; gap: 18px; }
+        .pf-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .pf-field { display: flex; flex-direction: column; gap: 7px; }
+        .pf-field label { font-size: 13.5px; font-weight: 700; color: var(--text-primary); }
+        .pf-field label small { font-weight: 500; color: var(--text-secondary); margin-left: 6px; }
+        .pf-req { color: #dc2626; }
+        .pf-field input,
+        .pf-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 12px;
+            font-size: 14.5px;
+            background: #ffffff;
+            color: var(--text-primary);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .pf-field input:focus,
+        .pf-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+        }
+        .pf-field input[readonly] {
+            background: #f8fafc;
+            color: var(--text-secondary);
+            cursor: not-allowed;
+        }
+
+        .pf-readonly-box {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 18px;
+        }
+        .pf-readonly-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #475569;
+        }
+        .pf-link-inline { color: var(--primary); font-weight: 700; text-decoration: none; }
+        .pf-link-inline:hover { text-decoration: underline; }
+
+        .pf-form-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-color-dark);
+            margin-top: 6px;
+        }
+        .pf-dirty-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pf-dirty-text.is-dirty { color: #b45309; }
+        .pf-btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .pf-btn-primary {
+            background: linear-gradient(135deg, var(--primary), #0f766e);
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 6px 18px rgba(13, 148, 136, 0.22);
+            transition: 0.2s;
+        }
+        .pf-btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(13, 148, 136, 0.3); }
+        .pf-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .pf-btn-secondary {
+            background: #ffffff;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color-dark);
+            padding: 11px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: 0.2s;
+        }
+        .pf-btn-secondary:hover:not(:disabled) { background: #f8fafc; }
+        .pf-btn-secondary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        .pf-btn-danger-outline {
+            background: #ffffff;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 10px 16px;
+            border-radius: 11px;
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: 0.2s;
+        }
+        .pf-btn-danger-outline:hover { background: #fef2f2; }
+        .pf-btn-compact {
+            padding: 10px 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* Vista limpia de información personal (sin recuadros) */
+        .pf-info-blocks { display: flex; flex-direction: column; gap: 22px; }
+        .pf-info-group-title {
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--primary, #0f766e);
+            margin-bottom: 6px;
+        }
+        .pf-dl-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            column-gap: 28px;
+        }
+        .pf-dl-row {
+            padding: 12px 2px;
+            border-bottom: 1px solid var(--border-color-dark);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+        .pf-dl-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .pf-dl-val {
+            font-size: 14.5px;
+            font-weight: 700;
+            color: var(--text-primary);
+            overflow-wrap: anywhere;
+        }
+        .pf-dl-val.is-muted {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Ficha e Hijos */
+        .pf-info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .pf-info-tile {
+            background: #f8fafc;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 14px;
+            padding: 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+        .pf-info-label { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-secondary); }
+        .pf-info-val { font-size: 14px; font-weight: 700; color: var(--text-primary); overflow-wrap: anywhere; }
+
+        .pf-children-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .pf-children-head h3 { font-size: 16px; font-weight: 800; color: var(--text-primary); margin-bottom: 2px; }
+        .pf-children-head p { font-size: 13px; color: var(--text-secondary); }
+        .pf-search-mini {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #ffffff;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 11px;
+            padding: 8px 12px;
+            min-width: 240px;
+        }
+        .pf-search-mini input { border: none; outline: none; width: 100%; font-size: 13.5px; color: var(--text-primary); }
+
+        .pf-children-list { display: flex; flex-direction: column; gap: 12px; }
+        .pf-child-card {
+            border: 1px solid var(--border-color-dark);
+            border-radius: 16px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            background: #ffffff;
+        }
+        .pf-child-main { display: flex; align-items: center; gap: 14px; min-width: 0; }
+        .pf-child-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: var(--teal-light);
+            color: #0f766e;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .pf-child-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .pf-child-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .pf-child-name-row h4 { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+        .pf-badge-default {
+            background: var(--teal-light);
+            color: #0f766e;
+            border: 1px solid rgba(13, 148, 136, 0.25);
+            padding: 2px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .pf-child-scope { font-size: 13px; font-weight: 600; color: var(--primary); margin-top: 2px; }
+        .pf-child-meta { min-width: 0; flex: 1; }
+        .pf-child-email { font-size: 12.5px; color: var(--text-secondary); overflow-wrap: anywhere; }
+        .pf-child-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .pf-mini-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 7px 12px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            text-decoration: none;
+            background: #f1f5f9;
+            color: var(--text-primary);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .pf-mini-btn:hover { background: var(--teal-light); color: #0f766e; border-color: rgba(13, 148, 136, 0.25); }
+        .pf-mini-btn.is-outline { background: #ffffff; border-color: var(--border-color-dark); }
+
+        .pf-more-wrap { display: flex; justify-content: center; margin-top: 14px; }
+        .pf-empty-box {
+            text-align: center;
+            padding: 28px 18px;
+            border: 1px dashed var(--border-color-dark);
+            border-radius: 16px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .pf-empty-box i { font-size: 30px; color: var(--primary); }
+
+        /* Preferencias y switches */
+        .pf-pref-block { margin-bottom: 22px; }
+        .pf-pref-block h3 { font-size: 15px; font-weight: 800; color: var(--text-primary); margin-bottom: 10px; }
+        .pf-pref-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 14px 16px;
+            border: 1px solid var(--border-color-dark);
+            border-radius: 14px;
+            margin-bottom: 10px;
+        }
+        .pf-pref-copy { display: flex; flex-direction: column; gap: 3px; }
+        .pf-pref-copy strong { font-size: 14px; color: var(--text-primary); }
+        .pf-pref-copy span { font-size: 12.5px; color: var(--text-secondary); line-height: 1.4; }
+        .pf-pref-row .pf-select { max-width: 260px; }
+
+        .pf-segmented {
+            display: inline-flex;
+            padding: 4px;
+            background: #f1f5f9;
+            border-radius: 11px;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+        .pf-seg-btn {
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            padding: 7px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .pf-seg-btn.active { background: #ffffff; color: #0f766e; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08); }
+
+        .pf-switch {
+            width: 48px;
+            height: 28px;
+            border-radius: 999px;
+            border: none;
+            background: #cbd5e1;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: background-color 0.2s;
+        }
+        .pf-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.16);
+            transition: transform 0.2s;
+        }
+        .pf-switch[aria-checked="true"] { background: var(--primary); }
+        .pf-switch[aria-checked="true"]::after { transform: translateX(20px); }
+
+        /* Seguridad y contraseña */
+        .pf-input-wrap { position: relative; }
+        .pf-input-wrap input { padding-right: 44px; }
+        .pf-eye-btn {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pf-eye-btn:hover { background: #f1f5f9; color: var(--primary); }
+        .pf-strength { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+        .pf-strength-track { flex: 1; height: 6px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+        .pf-strength-fill { height: 100%; width: 0; transition: width 0.25s, background-color 0.25s; }
+        .pf-strength-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+        .pf-actions-left { display: flex; justify-content: flex-start; }
+
+        .pf-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #ecfdf5;
+            color: #065f46;
+            font-size: 12.5px;
+            font-weight: 700;
+        }
+        .pf-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; }
+
+        @media (max-width: 1020px) {
+            .pf-layout { grid-template-columns: minmax(0, 1fr); }
+            .pf-rail,
+            .pf-stage { min-width: 0; width: 100%; max-width: 100%; }
+            .pf-nav {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+                padding-bottom: 0;
+                overflow-x: visible;
+            }
+            .pf-nav-btn { min-width: 0; width: 100%; padding: 10px 12px; }
+            .pf-info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .pf-authority-badges { align-items: flex-start; }
+        }
+        @media (max-width: 700px) {
+            .profile-banner { padding: 22px 18px; width: 100%; max-width: 100%; }
+            .pf-banner-left { flex-direction: column; align-items: flex-start; }
+            .pf-rail { padding: 12px; }
+            .pf-nav-btn { padding: 10px; gap: 8px; }
+            .pf-nav-btn i { font-size: 18px; }
+            .pf-nav-title { font-size: 13px; line-height: 1.25; }
+            .pf-nav-sub { display: none; }
+            .pf-stage { padding: 18px 16px; }
+            .pf-section-head,
+            .pf-readonly-head { flex-wrap: wrap; }
+            .pf-grid-2,
+            .pf-dl-grid,
+            .pf-info-grid { grid-template-columns: 1fr; }
+            .pf-pref-row { flex-direction: column; align-items: flex-start; }
+            .pf-pref-row .pf-select { max-width: 100%; }
+            .pf-search-mini { min-width: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -68,12 +691,12 @@
     <main class="main-wrapper">
         <header class="topbar">
             <div class="greeting">
-                <h1>Configuración</h1>
-                <p>Administra tu perfil y preferencias</p>
+                <h1>Configuración Familiar</h1>
+                <p>Actualiza tus datos de contacto, revisa tus hijos vinculados y gestiona tu seguridad</p>
             </div>
             <div class="topbar-actions">
                 <button class="notification-btn"><i class="ph ph-bell"></i><span class="badge"></span></button>
-                                <div class="top-user-info" style="cursor:pointer;">
+                <div class="top-user-info" style="cursor:pointer;">
                     <div class="user-dropdown">
                         <div class="avatar" id="topbar-avatar"><i class="ph-fill ph-user-circle" style="font-size:32px;"></i></div>
                         <div class="user-info-text" style="display:flex; flex-direction:column; align-items:flex-start; margin-right:5px; text-align:left;">
@@ -92,226 +715,91 @@
                     </div>
                 </div>
             </div>
-
         </header>
 
         <div class="content-area">
-            <div class="config-wrapper">
-                <!-- Banner del perfil -->
+            <div class="pf-cfg-shell">
                 <div class="profile-banner">
-                    <div class="profile-avatar-big" id="perfil-avatar">??</div>
-                    <div class="profile-banner-content">
-                        <h2 class="padre-nombre" style="font-size:28px; font-weight:800; margin-bottom:6px;">Padre</h2>
-                        <p style="opacity:0.9; font-size:15px;" id="perfil-email">—</p>
-                        <p style="opacity:0.75; font-size:14px; margin-top:6px; font-weight:500;">Padre de Familia</p>
-                        <div class="photo-actions">
-                            <label class="btn-photo" for="cfg-foto">
-                                <i class="ph ph-camera"></i> Cambiar foto
-                            </label>
-                            <button type="button" class="btn-photo danger" id="btn-quitar-foto">
-                                <i class="ph ph-trash"></i> Quitar
-                            </button>
-                            <input type="file" id="cfg-foto" accept="image/png,image/jpeg,image/webp" hidden>
+                    <div class="pf-banner-left">
+                        <div class="profile-avatar-big" id="perfil-avatar">PF</div>
+                        <div class="profile-banner-content">
+                            <div class="pf-banner-kicker"><i class="ph-fill ph-shield-check"></i> APODERADO / PADRE DE FAMILIA</div>
+                            <h2 class="padre-nombre">Padre de Familia</h2>
+                            <div class="pf-banner-meta">
+                                <span id="perfil-email">—</span>
+                                <span id="banner-hijos-chip" class="pf-chip-hijos"><i class="ph ph-users-three"></i><span>Cargando hijos...</span></span>
+                            </div>
+                            <div class="photo-actions">
+                                <label class="btn-photo" for="cfg-foto">
+                                    <i class="ph ph-camera"></i> Cambiar foto
+                                </label>
+                                <button type="button" class="btn-photo danger" id="btn-quitar-foto" style="display:none;">
+                                    <i class="ph ph-trash"></i> Quitar
+                                </button>
+                                <input type="file" id="cfg-foto" accept="image/png,image/jpeg,image/webp" hidden>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="pf-authority-badges">
+                        <span class="pf-auth-note"><i class="ph ph-pencil-simple"></i> Contacto y clave: editables</span>
+                        <span class="pf-auth-note"><i class="ph ph-lock-simple"></i> Vínculo escolar: solo Secretaría</span>
                     </div>
                 </div>
 
-                <div class="config-card">
-                    <div class="config-section">
-                        <h3><i class="ph-fill ph-user-circle"></i> Información personal</h3>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                            <div class="config-field">
-                                <label>Nombres</label>
-                                <input type="text" id="cfg-nombres" placeholder="Nombres">
-                            </div>
-                            <div class="config-field">
-                                <label>Apellidos</label>
-                                <input type="text" id="cfg-apellidos" placeholder="Apellidos">
-                            </div>
-                        </div>
-                        <div class="config-field">
-                            <label>Correo electrónico</label>
-                            <input type="email" id="cfg-email" readonly>
-                        </div>
-                        <div class="config-field">
-                            <label>Teléfono</label>
-                            <input type="tel" id="cfg-telefono" placeholder="Ej: 987 654 321">
-                        </div>
-                    </div>
+                <div class="pf-layout">
+                    <aside class="pf-rail" aria-label="Opciones de configuración familiar">
+                        <nav class="pf-nav" role="tablist">
+                            <button type="button" role="tab" class="pf-nav-btn active" data-pf-tab="perfil" aria-selected="true">
+                                <i class="ph ph-user-circle"></i>
+                                <span class="pf-nav-copy">
+                                    <span class="pf-nav-title">Perfil y contacto</span>
+                                    <span class="pf-nav-sub">Nombre, celular y dirección</span>
+                                </span>
+                            </button>
+                            <button type="button" role="tab" class="pf-nav-btn" data-pf-tab="familia" aria-selected="false">
+                                <i class="ph ph-users-three"></i>
+                                <span class="pf-nav-copy">
+                                    <span class="pf-nav-title">Hijos y ficha escolar</span>
+                                    <span class="pf-nav-sub">Estudiantes vinculados y DNI</span>
+                                </span>
+                            </button>
+                            <button type="button" role="tab" class="pf-nav-btn" data-pf-tab="preferencias" aria-selected="false">
+                                <i class="ph ph-bell-ringing"></i>
+                                <span class="pf-nav-copy">
+                                    <span class="pf-nav-title">Seguimiento y avisos</span>
+                                    <span class="pf-nav-sub">Hijo principal y notificaciones</span>
+                                </span>
+                            </button>
+                            <button type="button" role="tab" class="pf-nav-btn" data-pf-tab="seguridad" aria-selected="false">
+                                <i class="ph ph-lock-key"></i>
+                                <span class="pf-nav-copy">
+                                    <span class="pf-nav-title">Seguridad y acceso</span>
+                                    <span class="pf-nav-sub">Contraseña y sesión activa</span>
+                                </span>
+                            </button>
+                        </nav>
 
-                    <div class="config-section">
-                        <h3><i class="ph-fill ph-lock-key"></i> Seguridad</h3>
-                        <div class="config-field">
-                            <label>Contraseña actual</label>
-                            <input type="password" id="cfg-pass-actual" placeholder="••••••••">
+                        <div class="pf-rail-note">
+                            <p>Por seguridad del menor, la matrícula o cambio de apoderado solo lo registra el colegio.</p>
+                            <a href="mensajes.html"><i class="ph ph-chat-circle-dots"></i> Contactar por mensajes</a>
                         </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-                            <div class="config-field">
-                                <label>Nueva contraseña</label>
-                                <input type="password" id="cfg-pass-nueva" placeholder="••••••••">
-                            </div>
-                            <div class="config-field">
-                                <label>Confirmar contraseña</label>
-                                <input type="password" id="cfg-pass-confirm" placeholder="••••••••">
-                            </div>
-                        </div>
-                    </div>
+                    </aside>
 
-                    <div style="display:flex; gap:16px; align-items:center; margin-top:24px;">
-                        <button class="btn-save" onclick="guardarCambios()">
-                            <i class="ph ph-floppy-disk"></i> Guardar cambios
-                        </button>
-                        <button class="btn-cancel" onclick="window.location.href='portalpadres.html'">
-                            Cancelar
-                        </button>
-                        <span class="save-status" id="save-status"></span>
-                    </div>
+                    <section class="pf-stage" id="pf-cfg-stage" aria-live="polite"></section>
                 </div>
             </div>
         </div>
     </main>
 </div>
-<script src="../js/app.js"></script>
-<script>
-let padreConfig = null;
-let fotoPerfilTemporal = '';
 
-document.addEventListener('DOMContentLoaded', () => {
-    padreConfig = JSON.parse(localStorage.getItem('shidell_user') || '{}');
-    fotoPerfilTemporal = primeraFotoValida(padreConfig.fotoPerfil, padreConfig.foto_perfil);
-    llenarFormulario(padreConfig);
-    configurarFotoPerfil();
-    refrescarDatosPerfil();
-});
-
-function llenarFormulario(padre) {
-    if (!padre?.id) return;
-    document.getElementById('cfg-nombres').value = padre.nombres || '';
-    document.getElementById('cfg-apellidos').value = padre.apellidos || '';
-    document.getElementById('cfg-email').value = padre.email || '';
-    document.getElementById('perfil-email').textContent = padre.email || '';
-    document.querySelectorAll('.padre-nombre').forEach(el => {
-        el.textContent = `${padre.nombres || ''} ${padre.apellidos || ''}`.trim() || 'Padre';
-    });
-    pintarPreviewFoto();
-}
-
-function configurarFotoPerfil() {
-    const input = document.getElementById('cfg-foto');
-    const quitar = document.getElementById('btn-quitar-foto');
-    input?.addEventListener('change', async () => {
-        const file = input.files?.[0];
-        if (!file) return;
-        try {
-            fotoPerfilTemporal = await procesarFotoPerfil(file);
-            pintarPreviewFoto();
-            setStatus('Foto lista. Guarda los cambios para publicarla.');
-        } catch (e) {
-            setStatus(e.message || 'No se pudo procesar la imagen.');
-        } finally {
-            input.value = '';
-        }
-    });
-    quitar?.addEventListener('click', () => {
-        fotoPerfilTemporal = '';
-        pintarPreviewFoto();
-        setStatus('La foto se quitará al guardar.');
-    });
-}
-
-async function refrescarDatosPerfil() {
-    if (!padreConfig?.id) return;
-    try {
-        const res = await fetch(`/api/users/${padreConfig.id}`);
-        if (!res.ok) return;
-        const fresh = await res.json();
-        padreConfig = { ...padreConfig, ...fresh, sessionToken: padreConfig.sessionToken };
-        fotoPerfilTemporal = primeraFotoValida(fresh.fotoPerfil, fresh.foto_perfil, fotoPerfilTemporal);
-        localStorage.setItem('shidell_user', JSON.stringify(padreConfig));
-        llenarFormulario(padreConfig);
-    } catch (e) {
-        console.warn('No se pudo refrescar configuración:', e);
-    }
-}
-
-async function guardarCambios() {
-    if (!padreConfig?.id) return;
-    const nombres = document.getElementById('cfg-nombres').value.trim();
-    const apellidos = document.getElementById('cfg-apellidos').value.trim();
-    if (!nombres || !apellidos) {
-        setStatus('Completa nombres y apellidos.');
-        return;
-    }
-    setStatus('Guardando...');
-    try {
-        const res = await fetch(`/api/users/${padreConfig.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                nombres,
-                apellidos,
-                fotoPerfil: fotoPerfilTemporal || ''
-            })
-        });
-        if (!res.ok) throw new Error('No se pudo guardar el perfil.');
-        const actualizado = await res.json();
-        padreConfig = { ...padreConfig, ...actualizado, sessionToken: padreConfig.sessionToken };
-        localStorage.setItem('shidell_user', JSON.stringify(padreConfig));
-        llenarFormulario(padreConfig);
-        if (typeof renderAvatarPadre === 'function') renderAvatarPadre(padreConfig);
-        setStatus('Perfil actualizado.');
-    } catch (e) {
-        setStatus(e.message || 'Error al guardar.');
-    }
-}
-
-function pintarPreviewFoto() {
-    const iniciales = (((padreConfig?.nombres || '?')[0] || '?') + ((padreConfig?.apellidos || '?')[0] || '?')).toUpperCase();
-    const persona = { ...padreConfig, fotoPerfil: fotoPerfilTemporal };
-    const avatar = document.getElementById('perfil-avatar');
-    if (typeof renderAvatarEnContenedor === 'function') {
-        renderAvatarEnContenedor(avatar, persona, iniciales);
-    } else {
-        avatar.textContent = iniciales;
-    }
-}
-
-function procesarFotoPerfil(file) {
-    if (!file.type.startsWith('image/')) throw new Error('Selecciona una imagen válida.');
-    if (file.size > 5 * 1024 * 1024) throw new Error('La imagen debe pesar menos de 5 MB.');
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error('No se pudo leer la imagen.'));
-        reader.onload = () => {
-            const img = new Image();
-            img.onerror = () => reject(new Error('No se pudo cargar la imagen.'));
-            img.onload = () => {
-                const size = 384;
-                const canvas = document.createElement('canvas');
-                canvas.width = size;
-                canvas.height = size;
-                const ctx = canvas.getContext('2d');
-                const side = Math.min(img.width, img.height);
-                const sx = (img.width - side) / 2;
-                const sy = (img.height - side) / 2;
-                ctx.drawImage(img, sx, sy, side, side, 0, 0, size, size);
-                resolve(canvas.toDataURL('image/jpeg', 0.84));
-            };
-            img.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-    });
-}
-
-function setStatus(texto) {
-    const el = document.getElementById('save-status');
-    if (el) el.textContent = texto || '';
-}
-</script>
-
-    <!-- SweetAlert2 para Alertas Elegantes -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/vendor/alertas.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/vendor/alertas.js"></script>
+<script src="/vendor/mobile-shell.js?v=20261114m3"></script>
+<script src="/vendor/shidell-motion.js?v=20261114m3"></script>
+<script src="/vendor/shidell-presence.js?v=20261115a"></script>
+<script src="../js/app.js?v=20261115a"></script>
+<script src="../js/configuracion.js?v=20261115a"></script>
 
 </body>
 </html>

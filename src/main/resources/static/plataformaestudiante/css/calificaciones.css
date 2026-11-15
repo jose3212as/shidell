@@ -1095,6 +1095,25 @@
     grid-template-columns: 2fr 2fr 1fr 1fr 1.2fr;
 }
 
+.detail-table-body .detail-row:last-child {
+    border-bottom: none;
+}
+
+.cal-status-tag.programado {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.cal-status-tag.sin-notas {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+select.semester-dropdown {
+    font-family: inherit;
+    min-width: 215px;
+}
+
 /* ---------- Impresión ---------- */
 @media print {
     body * {

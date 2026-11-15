@@ -34,7 +34,11 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addRedirectViewController("/", "/auth/login.html");
+        registry.addRedirectViewController("/", "/index.html");
+        registry.addRedirectViewController("/plataformaestudiante", "/plataformaestudiante/html/portalestudiante.html");
+        registry.addRedirectViewController("/plataformaestudiante/", "/plataformaestudiante/html/portalestudiante.html");
+        registry.addRedirectViewController("/plataformaestudiante/html", "/plataformaestudiante/html/portalestudiante.html");
+        registry.addRedirectViewController("/plataformaestudiante/html/", "/plataformaestudiante/html/portalestudiante.html");
         registry.addRedirectViewController("/plataformadocente", "/plataformadocente/index.html");
         registry.addRedirectViewController("/plataformadocente/", "/plataformadocente/index.html");
     }

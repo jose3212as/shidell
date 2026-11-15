@@ -44,6 +44,18 @@ function animateCount(id, target) {
   }, 1000 / fps);
 }
 
+function formatAcademico(u) {
+  if (!u.nivel || u.nivel === 'POR ASIGNAR') {
+    return '<span class="text-muted text-xs">—</span>';
+  }
+  if (u.grado === 'Múltiple' || u.seccion === 'Múltiple') {
+    const gradoTxt = u.grado && u.grado !== 'Múltiple' ? ` ${escapeHtml(u.grado)}°` : '';
+    const turnoTxt = u.turno && u.turno !== 'POR ASIGNAR' ? ` (${escapeHtml(u.turno)})` : '';
+    return `<span class="text-sm">${escapeHtml(u.nivel)}${gradoTxt} · Múltiples aulas${turnoTxt}</span>`;
+  }
+  return `<span class="text-sm">${escapeHtml(u.nivel)} ${escapeHtml(u.grado || '')}° ${escapeHtml(u.seccion || '')} ${escapeHtml(u.turno || '')}</span>`;
+}
+
 /* ── Usuarios recientes ─────────────────────────────────── */
 async function loadRecentUsers() {
   const tbody = document.getElementById('recent-users-body');
@@ -66,9 +78,7 @@ async function loadRecentUsers() {
         </td>
         <td>${rolBadge(u.rol)}</td>
         <td>
-          ${u.nivel
-            ? `<span class="text-sm">${u.nivel} ${u.grado}° ${u.seccion} ${u.turno || ''}</span>`
-            : '<span class="text-muted text-xs">—</span>'}
+          ${formatAcademico(u)}
         </td>
         <td>
           <a href="usuarios.html" class="btn btn-ghost btn-sm btn-icon">
