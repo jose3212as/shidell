@@ -368,17 +368,11 @@ public class DocenteService {
             Long estudianteId = Long.valueOf(rawEstId.toString());
 
             Object rawNota = item.get("nota");
-            Double nota = null;
-            if (rawNota != null && !rawNota.toString().trim().isEmpty()) {
-                try {
-                    nota = Double.valueOf(rawNota.toString().trim());
-                } catch (NumberFormatException e) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Valor de nota inválido: " + rawNota);
-                }
-                if (Double.isNaN(nota) || nota < 0.0 || nota > notaMaxima) {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                            "Cada nota debe estar entre 0 y " + notaMaxima + ".");
-                }
+            Double nota;
+            try {
+                nota = GradeCalculationHelper.parseNotaInput(rawNota, notaMaxima);
+            } catch (IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
             }
 
             final Long evIdFinal = evaluacion != null ? evaluacion.getId() : null;

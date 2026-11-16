@@ -52,7 +52,7 @@ public final class FileUploadUtil {
         try {
             return writeSanitizedFile(subDir, file, fallbackName);
         } catch (IOException e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo guardar el archivo en el servidor.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No pudimos guardar el archivo en este momento. Verifica el formato e intenta otra vez.", e);
         }
     }
 

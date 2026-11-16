@@ -1021,13 +1021,14 @@ export const MisClasesView = {
                         opt.textContent = opt.textContent.replace(/Pendiente.*$|✓.*$/, `✓ ${registros.length}/${registros.length}`);
                     }
                 }
+                if (window.ShidellFun?.celebrar) window.ShidellFun.celebrar();
                 this.setAttendanceFeedback(`Asistencia del ${formatFechaHumana(fecha)} guardada (${registros.length} registros).`, 'success');
             } else {
-                this.setAttendanceFeedback('No se pudo guardar la asistencia. Inténtalo de nuevo.', 'error');
+                this.setAttendanceFeedback('No pudimos guardar la asistencia. Inténtalo de nuevo.', 'error');
             }
         } catch (err) {
-            console.error('Error guardando asistencia:', err);
-            this.setAttendanceFeedback('Error de conexión al guardar la asistencia.', 'error');
+            console.warn('No se pudo guardar la asistencia:', err);
+            this.setAttendanceFeedback('Revisa tu conexión e intenta guardar nuevamente.', 'error');
         } finally {
             if (saveBtn) {
                 saveBtn.disabled = false;

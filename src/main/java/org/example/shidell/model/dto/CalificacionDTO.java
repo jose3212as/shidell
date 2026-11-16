@@ -8,6 +8,7 @@ public class CalificacionDTO {
     private Double nota;
     private Double notaMaxima;
     private Double nota20;
+    private String notaLiteral;
     private LocalDate fecha;
     private String estado;
     private CursoDTO curso;
@@ -27,6 +28,8 @@ public class CalificacionDTO {
     public void setNotaMaxima(Double notaMaxima) { this.notaMaxima = notaMaxima; }
     public Double getNota20() { return nota20; }
     public void setNota20(Double nota20) { this.nota20 = nota20; }
+    public String getNotaLiteral() { return notaLiteral; }
+    public void setNotaLiteral(String notaLiteral) { this.notaLiteral = notaLiteral; }
     public LocalDate getFecha() { return fecha; }
     public void setFecha(LocalDate fecha) { this.fecha = fecha; }
     public String getEstado() { return estado; }

@@ -117,4 +117,24 @@ class SystemConfigServiceTest {
         MockMultipartFile bigPng = new MockMultipartFile("file", "big.png", "image/png", oversize);
         assertThrows(BadRequestException.class, () -> systemConfigService.updateIcon(bigPng));
     }
+
+    @Test
+    @DisplayName("Expone escala NUMERICO por defecto y permite alternar a LITERAL validando la entrada")
+    void updateGradeScale_normalizaYValida() {
+        SystemConfig existing = new SystemConfig(SystemConfig.SINGLETON_ID, "Shidell", null, null);
+        when(systemConfigRepository.findById(SystemConfig.SINGLETON_ID)).thenReturn(Optional.of(existing));
+        when(systemConfigRepository.save(any(SystemConfig.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        assertEquals("NUMERICO", systemConfigService.toPublicConfigMap().get("gradeScale"));
+
+        SystemConfig saved = systemConfigService.updateGradeScale("literal");
+        assertEquals("LITERAL", saved.getGradeScale());
+        assertEquals("LITERAL", systemConfigService.toPublicConfigMap().get("gradeScale"));
+
+        SystemConfig reverted = systemConfigService.updateGradeScale("NUMERICO");
+        assertEquals("NUMERICO", reverted.getGradeScale());
+
+        assertThrows(BadRequestException.class, () -> systemConfigService.updateGradeScale("  "));
+        assertThrows(BadRequestException.class, () -> systemConfigService.updateGradeScale("CENTESIMAL"));
+    }
 }

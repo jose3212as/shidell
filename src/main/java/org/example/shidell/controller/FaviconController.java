@@ -7,6 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.TimeUnit;
+
 @RestController
 public class FaviconController {
 
@@ -17,7 +19,7 @@ public class FaviconController {
     public ResponseEntity<byte[]> getFavicon() {
         SystemConfigService.FaviconPayload payload = systemConfigService.resolveFavicon();
         return ResponseEntity.ok()
-                .cacheControl(CacheControl.noStore().mustRevalidate())
+                .cacheControl(CacheControl.maxAge(30, TimeUnit.SECONDS).cachePublic().mustRevalidate())
                 .contentType(payload.mediaType())
                 .body(payload.bytes());
     }

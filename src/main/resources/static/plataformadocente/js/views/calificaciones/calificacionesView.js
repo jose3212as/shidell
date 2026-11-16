@@ -101,10 +101,17 @@ export const CalificacionesView = {
                         </div>
                         
                         <div class="form-group-premium" style="margin-top:15px;">
-                            <label>Calificación (0 - 20) <span class="required">*</span></label>
+                            <label id="ce-nota-label">Calificación (0 - 20) <span class="required">*</span></label>
                             <div class="input-with-icon">
                                 <i class="ph ph-star"></i>
                                 <input type="number" id="ce-nota" min="0" max="20" step="0.5" placeholder="Asigna una nota..." required>
+                                <select id="ce-nota-literal" style="display:none; width:100%; padding:11px 14px 11px 42px; border:1px solid var(--border-color); border-radius:10px; background:var(--surface, #fff); color:var(--text-primary); font-size:14px; font-weight:600;">
+                                    <option value="">Selecciona nivel CNEB...</option>
+                                    <option value="AD">AD — Logro destacado (18 – 20)</option>
+                                    <option value="A">A — Logro esperado (14 – 17.9)</option>
+                                    <option value="B">B — En proceso (11 – 13.9)</option>
+                                    <option value="C">C — En inicio (0 – 10.9)</option>
+                                </select>
                             </div>
                         </div>
 
@@ -267,25 +274,28 @@ export const CalificacionesView = {
             }
         });
 
+        const handleInlineGradeUpdate = (input) => {
+            if (!input || !input.classList.contains('grade-inline-input')) return;
+            const estId = String(input.dataset.estudianteId);
+            this.draftNotas.set(estId, input.value);
+            const max = this.editingColumn?.notaMaxima ?? 20;
+            const valid = window.ShidellGrades
+                ? window.ShidellGrades.parseInput(input.value, max).valid
+                : (input.value.trim() === '' || (!isNaN(parseFloat(input.value)) && parseFloat(input.value) >= 0 && parseFloat(input.value) <= max));
+            input.classList.toggle('is-invalid', !valid);
+            this.actualizarContadorCambios();
+        };
+
         container.addEventListener('change', (e) => {
             if (e.target && e.target.id === 'grades-bimestre-select') {
                 this.bimestreFilter = e.target.value || 'ALL';
                 this.renderGradesTable();
+                return;
             }
+            handleInlineGradeUpdate(e.target);
         });
 
-        container.addEventListener('input', (e) => {
-            if (e.target && e.target.classList.contains('grade-inline-input')) {
-                const input = e.target;
-                const estId = String(input.dataset.estudianteId);
-                this.draftNotas.set(estId, input.value);
-                const max = this.editingColumn?.notaMaxima ?? 20;
-                const num = parseFloat(input.value);
-                const valid = input.value.trim() === '' || (!isNaN(num) && num >= 0 && num <= max);
-                input.classList.toggle('is-invalid', !valid);
-                this.actualizarContadorCambios();
-            }
-        });
+        container.addEventListener('input', (e) => handleInlineGradeUpdate(e.target));
 
         container.addEventListener('keydown', (e) => {
             if (!e.target || !e.target.classList.contains('grade-inline-input')) return;
@@ -297,12 +307,44 @@ export const CalificacionesView = {
                 const nextIdx = e.key === 'ArrowUp' ? idx - 1 : idx + 1;
                 if (nextIdx >= 0 && nextIdx < inputs.length) {
                     inputs[nextIdx].focus();
-                    inputs[nextIdx].select();
+                    if (typeof inputs[nextIdx].select === 'function') inputs[nextIdx].select();
                 } else if (e.key === 'Enter') {
                     document.getElementById('btn-save-col-edit')?.focus();
                 }
             }
         });
+
+        if (!this._scaleListenerBound) {
+            this._scaleListenerBound = true;
+            window.addEventListener('shidell:grade-scale-changed', () => {
+                if (!document.getElementById('grades-container')) return;
+                if (this.editingColumn) {
+                    const max = this.editingColumn.notaMaxima || 20;
+                    const convertMap = (map) => {
+                        for (const [k, raw] of map.entries()) {
+                            const s = String(raw ?? '').trim();
+                            if (!s) continue;
+                            if (this.isLiteralMode() && window.ShidellGrades) {
+                                const parsed = window.ShidellGrades.parseInput(s, max);
+                                if (parsed.valid && parsed.numeric !== null) {
+                                    map.set(k, window.ShidellGrades.toLiteral((parsed.numeric / max) * 20));
+                                }
+                            } else if (window.ShidellGrades) {
+                                const parsed = window.ShidellGrades.parseInput(s, max);
+                                if (parsed.valid && parsed.numeric !== null) {
+                                    map.set(k, String(parsed.numeric));
+                                }
+                            }
+                        }
+                    };
+                    convertMap(this.initialDraftNotas);
+                    convertMap(this.draftNotas);
+                }
+                if (this.currentEstudiantes?.length) {
+                    this.renderGradesTable();
+                }
+            });
+        }
     },
 
     irANuevaEvaluacion() {
@@ -344,8 +386,12 @@ export const CalificacionesView = {
             }
             await this.loadGradesForCourse();
         } catch (error) {
-            console.error(error);
-            Swal.fire('Error', error.message || 'No se pudo eliminar la evaluación.', 'error');
+            console.warn(error);
+            if (window.AppAlerts?.mostrarError) {
+                window.AppAlerts.mostrarError(error?.message || 'No pudimos quitar esa evaluación ahora.');
+            } else {
+                Swal.fire('¡Ups!', error?.message || 'No pudimos quitar esa evaluación ahora.', 'error');
+            }
         }
     },
 
@@ -500,9 +546,19 @@ export const CalificacionesView = {
         this.initialDraftNotas.clear();
         this.draftNotas.clear();
 
+        const max = col.notaMaxima || 20;
+        const literalMode = this.isLiteralMode();
         this.currentEstudiantes.forEach(est => {
             const existing = this.findCalificacionForStudent(est.id, col);
-            const val = existing && existing.nota !== null && existing.nota !== undefined ? String(existing.nota) : '';
+            let val = '';
+            if (existing && existing.nota !== null && existing.nota !== undefined) {
+                if (literalMode && window.ShidellGrades) {
+                    const n20 = existing.nota20 != null ? existing.nota20 : ((existing.nota / max) * 20);
+                    val = window.ShidellGrades.toLiteral(n20);
+                } else {
+                    val = String(existing.nota);
+                }
+            }
             this.initialDraftNotas.set(String(est.id), val);
             this.draftNotas.set(String(est.id), val);
         });
@@ -529,12 +585,19 @@ export const CalificacionesView = {
         for (const est of this.currentEstudiantes) {
             const raw = (this.draftNotas.get(String(est.id)) ?? '').trim();
             if (raw !== '') {
-                const parsed = parseFloat(raw);
-                if (isNaN(parsed) || parsed < 0 || parsed > max) {
-                    Swal.fire('Nota fuera de rango', `La nota para ${est.apellidos}, ${est.nombres} debe estar entre 0 y ${max}.`, 'warning');
+                const parsed = window.ShidellGrades
+                    ? window.ShidellGrades.parseInput(raw, max)
+                    : (() => {
+                        const n = parseFloat(raw);
+                        return !isNaN(n) && n >= 0 && n <= max
+                            ? { valid: true, numeric: n }
+                            : { valid: false, message: `La nota para ${est.apellidos}, ${est.nombres} debe estar entre 0 y ${max}.` };
+                    })();
+                if (!parsed.valid || parsed.numeric === null) {
+                    Swal.fire('Nota fuera de rango', parsed.message || `Valor inválido para ${est.apellidos}, ${est.nombres}.`, 'warning');
                     return;
                 }
-                notasPayload.push({ estudianteId: est.id, nota: parsed });
+                notasPayload.push({ estudianteId: est.id, nota: parsed.numeric });
             } else if ((this.initialDraftNotas.get(String(est.id)) ?? '') !== '') {
                 notasPayload.push({ estudianteId: est.id, nota: null });
             }
@@ -570,6 +633,7 @@ export const CalificacionesView = {
             if (res.guardadas) resumen.push(`${res.guardadas} registradas`);
             if (res.actualizadas) resumen.push(`${res.actualizadas} actualizadas`);
             if (res.eliminadas) resumen.push(`${res.eliminadas} borradas`);
+            if (window.ShidellFun?.celebrar) window.ShidellFun.celebrar();
             Swal.fire({
                 icon: 'success',
                 title: 'Planilla guardada',
@@ -578,8 +642,12 @@ export const CalificacionesView = {
                 showConfirmButton: false
             });
         } catch (error) {
-            console.error(error);
-            Swal.fire('Error', error.message || 'No se pudieron guardar las calificaciones.', 'error');
+            console.warn(error);
+            if (window.AppAlerts?.mostrarError) {
+                window.AppAlerts.mostrarError(error?.message || 'No pudimos guardar las calificaciones ahora.');
+            } else {
+                Swal.fire('¡Ups!', error?.message || 'No pudimos guardar las calificaciones ahora.', 'error');
+            }
         } finally {
             if (btn) {
                 btn.disabled = false;
@@ -589,7 +657,23 @@ export const CalificacionesView = {
     },
 
     async calificarTareaManualRapido(estudianteId, estudianteNombre, actividad) {
-        const result = await Swal.fire({
+        const literalMode = this.isLiteralMode();
+        const result = await Swal.fire(literalMode ? {
+            title: `Nota para ${actividad}`,
+            input: 'select',
+            inputLabel: `${estudianteNombre} (Escala literal CNEB)`,
+            inputOptions: {
+                AD: 'AD — Logro destacado (18 – 20)',
+                A: 'A — Logro esperado (14 – 17.9)',
+                B: 'B — En proceso (11 – 13.9)',
+                C: 'C — En inicio (0 – 10.9)'
+            },
+            inputPlaceholder: 'Selecciona una calificación...',
+            showCancelButton: true,
+            confirmButtonText: 'Guardar nota',
+            cancelButtonText: 'Cancelar',
+            inputValidator: (value) => (!value ? 'Selecciona una calificación válida' : undefined)
+        } : {
             title: `Nota para ${actividad}`,
             input: 'number',
             inputLabel: `${estudianteNombre} (0 - 20)`,
@@ -608,12 +692,16 @@ export const CalificacionesView = {
 
         if (!result.isConfirmed) return;
 
+        const notaPayload = window.ShidellGrades
+            ? window.ShidellGrades.parseInput(result.value, 20).numeric
+            : parseFloat(result.value);
+
         try {
             const res = await API.fetch(`/api/docente/curso/${this.selectedCursoId}/calificaciones/lote`, {
                 method: 'POST',
                 body: JSON.stringify({
                     actividad,
-                    notas: [{ estudianteId: Number(estudianteId), nota: parseFloat(result.value) }]
+                    notas: [{ estudianteId: Number(estudianteId), nota: notaPayload }]
                 })
             });
             if (Array.isArray(res.calificaciones)) {
@@ -624,9 +712,34 @@ export const CalificacionesView = {
             }
             this.renderGradesTable();
         } catch (error) {
-            console.error(error);
-            Swal.fire('Error', error.message || 'No se pudo guardar la nota.', 'error');
+            console.warn(error);
+            if (window.AppAlerts?.mostrarError) {
+                window.AppAlerts.mostrarError(error?.message || 'No pudimos guardar esa nota ahora.');
+            } else {
+                Swal.fire('¡Ups!', error?.message || 'No pudimos guardar esa nota ahora.', 'error');
+            }
         }
+    },
+
+    isLiteralMode() {
+        return Boolean(window.ShidellGrades && window.ShidellGrades.isLiteral());
+    },
+
+    formatNota(nota20, fallback = '—') {
+        if (nota20 === null || nota20 === undefined || Number.isNaN(Number(nota20))) return fallback;
+        if (this.isLiteralMode() && window.ShidellGrades) {
+            return window.ShidellGrades.toLiteral(nota20);
+        }
+        return String(nota20);
+    },
+
+    formatNotaWithMax(nota, max = 20, nota20 = null) {
+        if (nota === null || nota === undefined) return '—';
+        if (this.isLiteralMode() && window.ShidellGrades) {
+            const norm20 = nota20 != null ? Number(nota20) : ((Number(nota) / (Number(max) || 20)) * 20);
+            return window.ShidellGrades.toLiteral(norm20);
+        }
+        return String(nota);
     },
 
     computeStudentAverage(estId, allCols) {
@@ -656,7 +769,16 @@ export const CalificacionesView = {
             }
         });
 
-        return sumaPeso > 0 ? { value: (sumaPonderada / sumaPeso).toFixed(1), hasGrades: true } : { value: '0.0', hasGrades: false };
+        if (sumaPeso > 0) {
+            const numAvg = sumaPonderada / sumaPeso;
+            const fixed = numAvg.toFixed(1);
+            return {
+                value: fixed,
+                display: this.isLiteralMode() && window.ShidellGrades ? window.ShidellGrades.toLiteral(numAvg) : fixed,
+                hasGrades: true
+            };
+        }
+        return { value: '0.0', display: this.isLiteralMode() ? '—' : '0.0', hasGrades: false };
     },
 
     renderGradesTable() {
@@ -727,7 +849,7 @@ export const CalificacionesView = {
                         <i class="ph-fill ph-exam"></i>
                         <div>
                             Editando planilla: <strong>${escapeHtml(this.editingColumn.titulo)}</strong>
-                            <span class="grades-edit-hint">· Escala 0–${this.editingColumn.notaMaxima || 20} · Usa Enter o ↓ para bajar rápido</span>
+                            <span class="grades-edit-hint">· ${this.isLiteralMode() ? 'Escala literal CNEB (AD, A, B, C)' : `Escala 0–${this.editingColumn.notaMaxima || 20} · Usa Enter o ↓ para bajar rápido`}</span>
                         </div>
                     </div>
                     <div class="grades-edit-bar-actions">
@@ -778,8 +900,8 @@ export const CalificacionesView = {
             });
 
             const avg = this.computeStudentAverage(est.id, allCols);
-            const promClase = parseFloat(avg.value) >= 11 ? 'aprobado' : (avg.hasGrades ? 'desaprobado' : 'empty');
-            html += `<td><span class="grade-badge ${promClase}" style="font-size:15px; font-weight:800; padding:6px 14px;">${avg.value}</span></td>`;
+            const promClase = !avg.hasGrades ? 'empty' : (parseFloat(avg.value) >= 11 ? 'aprobado' : 'desaprobado');
+            html += `<td><span class="grade-badge ${promClase}" style="font-size:15px; font-weight:800; padding:6px 14px;">${avg.display}</span></td>`;
             html += `</tr>`;
         });
 
@@ -799,7 +921,7 @@ export const CalificacionesView = {
             const targetInput = container.querySelector(selector);
             if (targetInput) {
                 targetInput.focus();
-                targetInput.select();
+                if (typeof targetInput.select === 'function') targetInput.select();
             }
             this.pendingFocusEstId = null;
         }
@@ -856,7 +978,7 @@ export const CalificacionesView = {
                 const clase = val >= 11 ? 'aprobado' : 'desaprobado';
                 return `<td>
                     <div style="display:flex; flex-direction:column; align-items:center; gap:5px;">
-                        <span class="grade-badge ${clase}">${val}</span>
+                        <span class="grade-badge ${clase}">${this.formatNota(val)}</span>
                         <button type="button" class="btn-calificar-entrega" data-id="${entrega.id}" title="Ver/Editar Archivo" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:12px;text-decoration:underline;">Ver Archivo</button>
                     </div>
                 </td>`;
@@ -866,7 +988,7 @@ export const CalificacionesView = {
                 const clase = val >= 11 ? 'aprobado' : 'desaprobado';
                 return `<td>
                     <div style="display:flex; flex-direction:column; align-items:center; gap:5px;">
-                        <span class="grade-badge ${clase}">${val}</span>
+                        <span class="grade-badge ${clase}">${this.formatNota(val)}</span>
                         <span class="grade-manual-note">(Nota Manual)</span>
                     </div>
                 </td>`;
@@ -895,6 +1017,18 @@ export const CalificacionesView = {
         const isEditing = this.editingColumn && this.editingColumn.key === col.key;
         if (isEditing) {
             const draftVal = this.draftNotas.get(String(est.id)) ?? '';
+            if (this.isLiteralMode() && window.ShidellGrades) {
+                return `
+                    <td class="grade-edit-cell">
+                        <select class="grade-inline-input" data-estudiante-id="${est.id}">
+                            <option value="">—</option>
+                            ${window.ShidellGrades.BANDS.map(b =>
+                                `<option value="${b.letter}" ${String(draftVal).toUpperCase() === b.letter ? 'selected' : ''}>${b.letter}</option>`
+                            ).join('')}
+                        </select>
+                    </td>
+                `;
+            }
             return `
                 <td class="grade-edit-cell">
                     <input type="number"
@@ -911,12 +1045,13 @@ export const CalificacionesView = {
 
         const notaObj = this.findCalificacionForStudent(est.id, col);
         if (notaObj && notaObj.nota !== null && notaObj.nota !== undefined) {
-            const val = notaObj.nota;
-            const clase = val >= 11 ? 'aprobado' : 'desaprobado';
+            const max = col.notaMaxima || notaObj.notaMaxima || 20;
+            const n20 = notaObj.nota20 != null ? Number(notaObj.nota20) : ((Number(notaObj.nota) / max) * 20);
+            const clase = n20 >= 11 ? 'aprobado' : 'desaprobado';
             return `
                 <td>
                     <button type="button" class="grade-cell-btn" data-action="edit-cell" data-col-key="${escapeHtml(col.key)}" data-est-id="${est.id}" title="Clic para editar nota">
-                        <span class="grade-badge ${clase}">${val}</span>
+                        <span class="grade-badge ${clase}">${this.formatNotaWithMax(notaObj.nota, max, notaObj.nota20)}</span>
                     </button>
                 </td>
             `;
@@ -949,7 +1084,28 @@ export const CalificacionesView = {
             btnArchivo.style.display = 'none';
         }
 
-        document.getElementById('ce-nota').value = entrega.nota !== null ? entrega.nota : '';
+        const literalMode = this.isLiteralMode();
+        const labelEl = document.getElementById('ce-nota-label');
+        const numInput = document.getElementById('ce-nota');
+        const litSelect = document.getElementById('ce-nota-literal');
+
+        if (literalMode && litSelect) {
+            if (labelEl) labelEl.innerHTML = 'Calificación (Escala literal CNEB) <span class="required">*</span>';
+            numInput.style.display = 'none';
+            numInput.required = false;
+            litSelect.style.display = '';
+            litSelect.required = true;
+            litSelect.value = entrega.nota !== null && window.ShidellGrades ? window.ShidellGrades.toLiteral(entrega.nota) : '';
+        } else {
+            if (labelEl) labelEl.innerHTML = 'Calificación (0 - 20) <span class="required">*</span>';
+            if (litSelect) {
+                litSelect.style.display = 'none';
+                litSelect.required = false;
+            }
+            numInput.style.display = '';
+            numInput.required = true;
+            numInput.value = entrega.nota !== null ? entrega.nota : '';
+        }
         document.getElementById('ce-comentario').value = entrega.comentarios || '';
 
         document.getElementById('modal-calificar-entrega').classList.add('active');
@@ -958,12 +1114,23 @@ export const CalificacionesView = {
     async guardarNotaEntrega() {
         const btn = document.getElementById('btn-save-entrega');
         const entregaId = document.getElementById('ce-entrega-id').value;
-        const notaRaw = document.getElementById('ce-nota').value;
-        const notaNum = Number(notaRaw);
+        const literalMode = this.isLiteralMode();
+        const notaRaw = literalMode
+            ? document.getElementById('ce-nota-literal')?.value
+            : document.getElementById('ce-nota').value;
+        const parsed = window.ShidellGrades
+            ? window.ShidellGrades.parseInput(notaRaw, 20)
+            : (() => {
+                const n = Number(notaRaw);
+                return notaRaw !== '' && !Number.isNaN(n) && n >= 0 && n <= 20
+                    ? { valid: true, numeric: n }
+                    : { valid: false, message: 'Ingresa una calificación entre 0 y 20.' };
+            })();
+        const notaNum = parsed.numeric;
         const comentario = document.getElementById('ce-comentario').value;
 
-        if (notaRaw === '' || Number.isNaN(notaNum) || notaNum < 0 || notaNum > 20) {
-            Swal.fire('Nota inválida', 'Ingresa una calificación entre 0 y 20.', 'warning');
+        if (!parsed.valid || notaNum === null) {
+            Swal.fire('Nota inválida', literalMode ? 'Selecciona una calificación literal (AD, A, B o C).' : (parsed.message || 'Ingresa una calificación entre 0 y 20.'), 'warning');
             return;
         }
 
@@ -975,11 +1142,16 @@ export const CalificacionesView = {
             await API.fetch(url, { method: 'PUT' });
 
             document.getElementById('modal-calificar-entrega').classList.remove('active');
-            Swal.fire('¡Éxito!', 'Tarea calificada y sincronizada con el registro de notas.', 'success');
+            if (window.ShidellFun?.celebrar) window.ShidellFun.celebrar();
+            Swal.fire('¡Listo!', 'Tarea calificada y guardada en el registro.', 'success');
             await this.loadGradesForCourse();
         } catch (error) {
-            console.error(error);
-            Swal.fire('Error', error?.message || 'No se pudo guardar la calificación de la tarea.', 'error');
+            console.warn(error);
+            if (window.AppAlerts?.mostrarError) {
+                window.AppAlerts.mostrarError(error?.message || 'No pudimos guardar la calificación de la tarea.');
+            } else {
+                Swal.fire('¡Ups!', error?.message || 'No pudimos guardar la calificación de la tarea.', 'error');
+            }
         } finally {
             btn.disabled = false;
             btn.innerHTML = '<i class="ph ph-check-circle"></i> Calificar';

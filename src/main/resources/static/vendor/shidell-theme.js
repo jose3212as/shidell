@@ -8,6 +8,8 @@
     const THEME_KEY = 'shidell_theme';
     const DOCENTE_KEY = 'shidell_docente_theme';
     const BRANDING_KEY = 'shidell_branding';
+    const BRANDING_TS_KEY = 'shidell_branding_ts';
+    const BRANDING_TTL_MS = 30000;
     const DEFAULT_TAB_TITLE = 'Shidell';
     const DARK_CSS_ID = 'shidell-dark-themes-css';
     const DARK_CSS_HREF = '/vendor/shidell-dark-themes.css?v=20261115b';
@@ -25,6 +27,12 @@
         }
     } catch (_) {}
 
+    const DEFAULT_GRADE_SCALE = 'NUMERICO';
+
+    function normalizeGradeScale(rawScale) {
+        return String(rawScale || '').trim().toUpperCase() === 'LITERAL' ? 'LITERAL' : DEFAULT_GRADE_SCALE;
+    }
+
     function normalizeBranding(raw) {
         const src = raw && typeof raw === 'object' ? raw : {};
         const title = typeof src.tabTitle === 'string' && src.tabTitle.trim()
@@ -35,10 +43,12 @@
         const iconUrl = typeof src.iconUrl === 'string' && src.iconUrl.trim() ? src.iconUrl.trim() : null;
         const stamp = src.updatedAt ? String(src.updatedAt) : '';
         const effectiveIconUrl = iconUrl || (stamp ? ('/favicon.ico?v=' + encodeURIComponent(stamp)) : '/favicon.ico');
+        const gradeScale = normalizeGradeScale(src.gradeScale);
         return {
             tabTitle: title,
             iconUrl: iconUrl,
             effectiveIconUrl: effectiveIconUrl,
+            gradeScale: gradeScale,
             updatedAt: stamp
         };
     }
@@ -143,9 +153,15 @@
         titleObserver.observe(titleEl, { childList: true, characterData: true, subtree: true });
     }
 
-    async function refreshBrandingFromServer() {
+    async function refreshBrandingFromServer(force = false) {
         try {
-            const res = await fetch('/api/config', { cache: 'no-store' });
+            if (!force) {
+                const lastTs = Number(localStorage.getItem(BRANDING_TS_KEY) || '0');
+                if (lastTs && (Date.now() - lastTs) < BRANDING_TTL_MS && localStorage.getItem(BRANDING_KEY)) {
+                    return readCachedBranding();
+                }
+            }
+            const res = await fetch('/api/config');
             if (!res.ok) return readCachedBranding();
             const data = await res.json();
             const normalized = normalizeBranding(data);
@@ -154,6 +170,7 @@
             if (prevRaw !== nextRaw) {
                 writeCachedBranding(normalized);
             }
+            try { localStorage.setItem(BRANDING_TS_KEY, String(Date.now())); } catch (_) {}
             applyBranding(normalized);
             return normalized;
         } catch (_) {
@@ -164,6 +181,7 @@
     function broadcastBranding(rawCfg) {
         const normalized = normalizeBranding(rawCfg);
         writeCachedBranding(normalized);
+        try { localStorage.setItem(BRANDING_TS_KEY, String(Date.now())); } catch (_) {}
         applyBranding(normalized);
         try {
             if (brandingChannel) brandingChannel.postMessage(normalized);
@@ -187,9 +205,141 @@
         refreshBrandingFromServer();
     }
 
+    const GRADE_BANDS = [
+        { letter: 'AD', min: 18, numericValue: 19,   label: 'Logro destacado', tone: 'excelente',    parentClass: 'a', rango: '18 – 20' },
+        { letter: 'A',  min: 14, numericValue: 16,   label: 'Logro esperado',  tone: 'muy-bueno',    parentClass: 'b', rango: '14 – 17.9' },
+        { letter: 'B',  min: 11, numericValue: 12.5, label: 'En proceso',      tone: 'bueno',        parentClass: 'c', rango: '11 – 13.9' },
+        { letter: 'C',  min: 0,  numericValue: 9,    label: 'En inicio',       tone: 'insuficiente', parentClass: 'd', rango: '0 – 10.9' }
+    ];
+    const LITERAL_MAP = { AD: 19, A: 16, B: 12.5, C: 9 };
+
+    let lastKnownGradeScale = readCachedBranding().gradeScale || DEFAULT_GRADE_SCALE;
+    function notifyGradeScaleIfChanged(cfg) {
+        const nextScale = normalizeGradeScale(cfg && cfg.gradeScale);
+        if (lastKnownGradeScale !== nextScale) {
+            lastKnownGradeScale = nextScale;
+            try {
+                window.dispatchEvent(new CustomEvent('shidell:grade-scale-changed', {
+                    detail: { gradeScale: nextScale }
+                }));
+            } catch (_) {}
+        }
+        return nextScale;
+    }
+
+    function toLiteralGrade(nota20) {
+        if (nota20 === null || nota20 === undefined || nota20 === '') return '—';
+        const n = Number(nota20);
+        if (!Number.isFinite(n)) return '—';
+        if (n >= 18) return 'AD';
+        if (n >= 14) return 'A';
+        if (n >= 11) return 'B';
+        return 'C';
+    }
+
+    function literalToNumber(raw) {
+        if (raw === null || raw === undefined) return null;
+        const s = String(raw).trim().toUpperCase();
+        if (!s) return null;
+        if (Object.prototype.hasOwnProperty.call(LITERAL_MAP, s)) return LITERAL_MAP[s];
+        const parsed = Number(s.replace(',', '.'));
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function bandForGrade(nota20) {
+        const n = Number(nota20);
+        if (!Number.isFinite(n)) return GRADE_BANDS[3];
+        return GRADE_BANDS.find(b => n >= b.min) || GRADE_BANDS[3];
+    }
+
+    function optionValueForLiteral(nota20) {
+        if (nota20 === null || nota20 === undefined || nota20 === '') return '';
+        const n = Number(nota20);
+        if (!Number.isFinite(n)) return '';
+        return String(bandForGrade(n).numericValue);
+    }
+
+    function formatGradeValue(nota20, options) {
+        const opts = options || {};
+        const fallback = opts.fallback !== undefined ? opts.fallback : '—';
+        if (nota20 === null || nota20 === undefined || nota20 === '') return fallback;
+        const n = Number(nota20);
+        if (!Number.isFinite(n)) return fallback;
+        if (opts.emptyWhenZero && n === 0) return fallback;
+        const literal = opts.scaleOverride
+            ? normalizeGradeScale(opts.scaleOverride) === 'LITERAL'
+            : normalizeGradeScale(readCachedBranding().gradeScale) === 'LITERAL';
+        if (literal) {
+            return toLiteralGrade(n);
+        }
+        const decimals = opts.decimals !== undefined ? opts.decimals : 1;
+        const text = n.toFixed(decimals);
+        return opts.withDenominator ? (text + ' / 20') : text;
+    }
+
+    function formatGradePair(nota, notaMaxima, options) {
+        const opts = options || {};
+        const fallback = opts.fallback !== undefined ? opts.fallback : '—';
+        if (nota === null || nota === undefined || nota === '') return fallback;
+        const n = Number(nota);
+        if (!Number.isFinite(n)) return fallback;
+        const max = Number(notaMaxima) > 0 ? Number(notaMaxima) : 20;
+        const n20 = (n / max) * 20;
+        if (normalizeGradeScale(readCachedBranding().gradeScale) === 'LITERAL') {
+            return toLiteralGrade(n20);
+        }
+        const decimals = opts.decimals !== undefined ? opts.decimals : 1;
+        if (opts.withDenominator) {
+            return n.toFixed(decimals) + ' / ' + max.toFixed(0);
+        }
+        return n.toFixed(decimals);
+    }
+
+    function parseGradeInput(raw, max) {
+        const limit = Number(max) > 0 ? Number(max) : 20;
+        const s = raw === null || raw === undefined ? '' : String(raw).trim();
+        if (!s) return { valid: true, numeric: null, literal: '—' };
+        const upper = s.toUpperCase();
+        if (Object.prototype.hasOwnProperty.call(LITERAL_MAP, upper)) {
+            const val20 = LITERAL_MAP[upper];
+            const scaled = Math.round(((val20 / 20) * limit) * 100) / 100;
+            return { valid: true, numeric: scaled, literal: upper };
+        }
+        const parsed = Number(s.replace(',', '.'));
+        if (!Number.isFinite(parsed) || parsed < 0 || parsed > limit) {
+            return { valid: false, message: 'Cada nota debe estar entre 0 y ' + limit + '.' };
+        }
+        return { valid: true, numeric: parsed, literal: toLiteralGrade((parsed / limit) * 20) };
+    }
+
+    window.ShidellGrades = {
+        SCALES: { NUMERICO: 'NUMERICO', LITERAL: 'LITERAL' },
+        BANDS: GRADE_BANDS,
+        getScale: function () {
+            return normalizeGradeScale(readCachedBranding().gradeScale);
+        },
+        isLiteral: function () {
+            return this.getScale() === 'LITERAL';
+        },
+        toLiteral: toLiteralGrade,
+        literalToNumber: literalToNumber,
+        optionValueFor: optionValueForLiteral,
+        bandFor: bandForGrade,
+        format: formatGradeValue,
+        formatWithMax: formatGradePair,
+        parseInput: parseGradeInput,
+        denominatorLabel: function () {
+            return this.isLiteral() ? 'Escala AD–C' : 'Sobre 20';
+        }
+    };
+
     window.addEventListener('storage', function (ev) {
         if (ev.key === BRANDING_KEY && ev.newValue) {
-            try { applyBranding(JSON.parse(ev.newValue)); } catch (_) {}
+            try {
+                const parsed = JSON.parse(ev.newValue);
+                applyBranding(parsed);
+                notifyGradeScaleIfChanged(parsed);
+            } catch (_) {}
         }
     });
     if (brandingChannel) {
@@ -198,17 +348,32 @@
                 const normalized = normalizeBranding(ev.data);
                 writeCachedBranding(normalized);
                 applyBranding(normalized);
+                notifyGradeScaleIfChanged(normalized);
             }
         };
     }
+
+    try {
+        Promise.resolve(refreshBrandingFromServer(false)).then(function () {
+            notifyGradeScaleIfChanged(readCachedBranding());
+        });
+    } catch (_) {}
 
     window.ShidellBranding = {
         DEFAULT_TAB_TITLE: DEFAULT_TAB_TITLE,
         get: readCachedBranding,
         formatTitle: formatSystemTitle,
         apply: applyBranding,
-        refresh: refreshBrandingFromServer,
-        broadcast: broadcastBranding
+        refresh: function (force) {
+            return Promise.resolve(refreshBrandingFromServer(force)).then(function (res) {
+                notifyGradeScaleIfChanged(res || readCachedBranding());
+                return res;
+            });
+        },
+        broadcast: function (rawCfg) {
+            broadcastBranding(rawCfg);
+            notifyGradeScaleIfChanged(rawCfg);
+        }
     };
 
     const PORTAL_DARK_META = {

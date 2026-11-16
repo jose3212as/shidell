@@ -247,11 +247,19 @@ async function cargarResumenDashboard(user) {
         actualizarTexto('dashboard-cursos', progreso.cursosActivos ?? progreso.cursosTotales ?? 0);
         actualizarTexto('dashboard-tareas', resumenTareas.pendientes ?? 0);
         actualizarTexto('dashboard-horas', (progreso.horasEstudioSemana ?? 0) + 'h');
-        actualizarTexto('dashboard-promedio', numero(progreso.promedioGeneral, 1));
+        const promNum = Number(progreso.promedioGeneral || 0);
+        const literalMode = Boolean(window.ShidellGrades?.isLiteral());
+        const dashProm = literalMode
+            ? (promNum > 0 ? window.ShidellGrades.toLiteral(promNum) : '—')
+            : numero(progreso.promedioGeneral, 1);
+        actualizarTexto('dashboard-promedio', dashProm);
 
         const mensaje = progreso.mensajeMotivacional || {};
         actualizarTexto('home-banner-title', mensaje.titulo || 'Tu panel refleja tus cursos, tareas y notas actuales.');
-        actualizarTexto('home-banner-text', mensaje.texto || `Promedio ${numero(progreso.promedioGeneral, 1)} de 20 · ${resumenTareas.pendientes ?? 0} tareas pendientes`);
+        const avgLabel = literalMode
+            ? `Nivel ${promNum > 0 ? window.ShidellGrades.toLiteral(promNum) : 'Sin notas'}`
+            : `Promedio ${numero(progreso.promedioGeneral, 1)} de 20`;
+        actualizarTexto('home-banner-text', mensaje.texto || `${avgLabel} · ${resumenTareas.pendientes ?? 0} tareas pendientes`);
         actualizarMotivacionSidebar(mensaje);
     } catch (error) {
         console.warn('No se pudo cargar el resumen del estudiante.', error);
@@ -368,7 +376,11 @@ async function cargarProgreso(user) {
         if (!response.ok) return;
 
         const data = await response.json();
-        actualizarTexto('progreso-promedio', `${numero(data.promedioGeneral, 1)} <span>/ 20</span>`, true);
+        const progProm = Number(data.promedioGeneral || 0);
+        const progPromHtml = window.ShidellGrades?.isLiteral()
+            ? (progProm > 0 ? window.ShidellGrades.toLiteral(progProm) : '—')
+            : `${numero(data.promedioGeneral, 1)} <span>/ 20</span>`;
+        actualizarTexto('progreso-promedio', progPromHtml, true);
         actualizarTexto('progreso-cursos', `${data.cursosTotales || 0} <span>/ ${data.cursosTotales || 0}</span>`, true);
         actualizarProgresoTareas(data);
         actualizarBadgeProgreso(data.promedioGeneral || 0);

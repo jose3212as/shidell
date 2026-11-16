@@ -107,9 +107,22 @@ public class AdminController {
     }
 
     @PutMapping("/config")
-    public Map<String, Object> updateSystemConfig(@RequestBody Map<String, String> body) {
-        String tabTitle = body != null ? body.get("tabTitle") : null;
-        systemConfigService.updateTabTitle(tabTitle);
+    public Map<String, Object> updateSystemConfig(@RequestBody(required = false) Map<String, String> body) {
+        if (body == null || body.isEmpty()) {
+            systemConfigService.updateTabTitle(null);
+            return systemConfigService.toPublicConfigMap();
+        }
+        boolean hasTabTitle = body.containsKey("tabTitle");
+        boolean hasGradeScale = body.containsKey("gradeScale");
+        if (!hasTabTitle && !hasGradeScale) {
+            systemConfigService.updateTabTitle(null);
+        }
+        if (hasTabTitle) {
+            systemConfigService.updateTabTitle(body.get("tabTitle"));
+        }
+        if (hasGradeScale) {
+            systemConfigService.updateGradeScale(body.get("gradeScale"));
+        }
         return systemConfigService.toPublicConfigMap();
     }
 

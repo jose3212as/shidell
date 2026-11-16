@@ -17,15 +17,18 @@ const API = (() => {
 
     const res = await fetch(BASE + endpoint, opts);
     if (!res.ok) {
-      let msg = `Error ${res.status}`;
-      try { const d = await res.json(); msg = d.error || d.message || msg; } catch {}
-      
-      if (res.status === 401 || res.status === 403 || msg.toLowerCase().includes('sesión') || msg.toLowerCase().includes('expirad')) {
+      let msg = '';
+      try { const d = await res.json(); msg = d.error || d.message || ''; } catch {}
+      const friendly = window.ShidellErrors
+        ? window.ShidellErrors.humanizar(msg || `HTTP ${res.status}`, 'No pudimos completar esta operación. Intenta de nuevo.')
+        : (msg || 'No pudimos completar esta operación. Intenta de nuevo.');
+
+      if (res.status === 401 || res.status === 403 || friendly.toLowerCase().includes('sesión') || friendly.toLowerCase().includes('expirad')) {
         if (typeof Auth !== 'undefined') Auth.clearUser();
         window.location.href = '/login.html';
       }
-      
-      throw new Error(msg);
+
+      throw new Error(friendly);
     }
     const ct = res.headers.get('content-type') || '';
     if (ct.includes('application/json') && res.status !== 204) return res.json();

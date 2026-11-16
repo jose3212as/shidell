@@ -189,58 +189,76 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
+let _ultimoPayloadCalifPadres = null;
+function fmtPadreNota(nota, hasGrades = true) {
+    if (!hasGrades || nota === null || nota === undefined || Number.isNaN(Number(nota))) return '—';
+    return window.ShidellGrades ? window.ShidellGrades.format(nota, { decimals: 1 }) : Number(nota).toFixed(1);
+}
+
+window.addEventListener('shidell:grade-scale-changed', () => {
+    if (_ultimoPayloadCalifPadres) renderPayloadPadres(_ultimoPayloadCalifPadres);
+});
+
 async function cargarCalifCompletas(hijo) {
     const tbody = document.getElementById('calificaciones-full');
     const tbodyProg = document.getElementById('evaluaciones-programadas-body');
-    const gridCursos = document.getElementById('cursos-resumen-grid');
     try {
         const res  = await fetch(`/api/calificaciones/estudiante/${hijo.id}`);
         if (!res.ok) throw new Error('No se pudo cargar calificaciones');
         const payload = await res.json();
-        const cals = Array.isArray(payload) ? payload : (payload.evaluaciones || []);
-        evaluacionesProgramadasGlobal = Array.isArray(payload.evaluacionesProgramadas) ? payload.evaluacionesProgramadas : [];
-        const cursos = Array.isArray(payload.cursos) ? payload.cursos : [];
-
-        renderEvaluacionesProgramadas(tbodyProg, evaluacionesProgramadasGlobal);
-        renderResumenCursos(gridCursos, cursos);
-
-        if (cals.length === 0) {
-            document.getElementById('promedio-general').textContent = Number(payload.promedioGeneral || 0).toFixed(1);
-            document.getElementById('cursos-aprobados').textContent = payload.cursosAprobados || 0;
-            document.getElementById('cursos-riesgo').textContent = Math.max(0, (payload.cursosTotales || 0) - (payload.cursosAprobados || 0));
-            tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; color:#94a3b8; text-align:center;">Sin calificaciones registradas.</td></tr>';
-            return;
-        }
-
-        const promedio = Number(payload.promedioGeneral ?? (cals.reduce((s,c) => s + nota20(c), 0) / cals.length)).toFixed(1);
-        const aprobados = Number(payload.cursosAprobados ?? cursos.filter(c => Number(c.promedio || 0) >= 11).length);
-        const riesgo = cursos.length
-            ? cursos.filter(c => Number(c.promedio || 0) > 0 && Number(c.promedio || 0) < 11).length
-            : cals.filter(c => nota20(c) < 11).length;
-        document.getElementById('promedio-general').textContent  = promedio;
-        document.getElementById('cursos-aprobados').textContent = aprobados;
-        document.getElementById('cursos-riesgo').textContent    = riesgo;
-
-        tbody.innerHTML = '';
-        cals.forEach(c => {
-            const nota  = nota20(c);
-            const grade = nota >= 17 ? 'a' : nota >= 14 ? 'b' : nota >= 11 ? 'c' : 'd';
-            const estado = nota >= 11 ? '<span style="color:var(--green);font-weight:600;">Aprobado</span>' : '<span style="color:var(--red);font-weight:600;">En riesgo</span>';
-            const fecha  = c.fecha ? new Date(`${c.fecha}T00:00:00`).toLocaleDateString('es-PE') : '—';
-            const tipoTag = c.tipo ? ` <span style="font-size:11px; color:#0f766e; background:#f0fdfa; padding:2px 7px; border-radius:999px; font-weight:700; margin-left:6px;">${escCal(c.tipo)}</span>` : '';
-            tbody.innerHTML += `
-                <tr>
-                    <td>${escCal(c.tarea?.curso?.nombre || c.curso?.nombre || '—')}</td>
-                    <td>${escCal(c.tarea?.titulo || c.actividad || 'Evaluación')}${tipoTag}</td>
-                    <td><span class="grade-badge grade-${grade}">${nota.toFixed(1)}</span></td>
-                    <td>${estado}</td>
-                    <td style="color:var(--text-secondary); font-size:13px;">${fecha}</td>
-                </tr>`;
-        });
+        _ultimoPayloadCalifPadres = payload;
+        renderPayloadPadres(payload);
     } catch (e) {
         tbody.innerHTML = '<tr><td colspan="5" style="color:#ef4444; padding:16px;">Error al cargar.</td></tr>';
         if (tbodyProg) tbodyProg.innerHTML = '<tr><td colspan="5" style="color:#ef4444; padding:16px;">Error al cargar.</td></tr>';
     }
+}
+
+function renderPayloadPadres(payload) {
+    const tbody = document.getElementById('calificaciones-full');
+    const tbodyProg = document.getElementById('evaluaciones-programadas-body');
+    const gridCursos = document.getElementById('cursos-resumen-grid');
+    const cals = Array.isArray(payload) ? payload : (payload.evaluaciones || []);
+    evaluacionesProgramadasGlobal = Array.isArray(payload.evaluacionesProgramadas) ? payload.evaluacionesProgramadas : [];
+    const cursos = Array.isArray(payload.cursos) ? payload.cursos : [];
+
+    renderEvaluacionesProgramadas(tbodyProg, evaluacionesProgramadasGlobal);
+    renderResumenCursos(gridCursos, cursos);
+
+    if (cals.length === 0) {
+        const promCero = Number(payload.promedioGeneral || 0);
+        document.getElementById('promedio-general').textContent = fmtPadreNota(promCero, promCero > 0);
+        document.getElementById('cursos-aprobados').textContent = payload.cursosAprobados || 0;
+        document.getElementById('cursos-riesgo').textContent = Math.max(0, (payload.cursosTotales || 0) - (payload.cursosAprobados || 0));
+        tbody.innerHTML = '<tr><td colspan="5" style="padding:20px; color:#94a3b8; text-align:center;">Sin calificaciones registradas.</td></tr>';
+        return;
+    }
+
+    const promedioNum = Number(payload.promedioGeneral ?? (cals.reduce((s,c) => s + nota20(c), 0) / cals.length));
+    const aprobados = Number(payload.cursosAprobados ?? cursos.filter(c => Number(c.promedio || 0) >= 11).length);
+    const riesgo = cursos.length
+        ? cursos.filter(c => Number(c.promedio || 0) > 0 && Number(c.promedio || 0) < 11).length
+        : cals.filter(c => nota20(c) < 11).length;
+    document.getElementById('promedio-general').textContent  = fmtPadreNota(promedioNum, true);
+    document.getElementById('cursos-aprobados').textContent = aprobados;
+    document.getElementById('cursos-riesgo').textContent    = riesgo;
+
+    tbody.innerHTML = '';
+    cals.forEach(c => {
+        const nota  = nota20(c);
+        const grade = nota >= 17 ? 'a' : nota >= 14 ? 'b' : nota >= 11 ? 'c' : 'd';
+        const estado = nota >= 11 ? '<span style="color:var(--green);font-weight:600;">Aprobado</span>' : '<span style="color:var(--red);font-weight:600;">En riesgo</span>';
+        const fecha  = c.fecha ? new Date(`${c.fecha}T00:00:00`).toLocaleDateString('es-PE') : '—';
+        const tipoTag = c.tipo ? ` <span style="font-size:11px; color:#0f766e; background:#f0fdfa; padding:2px 7px; border-radius:999px; font-weight:700; margin-left:6px;">${escCal(c.tipo)}</span>` : '';
+        tbody.innerHTML += `
+            <tr>
+                <td>${escCal(c.tarea?.curso?.nombre || c.curso?.nombre || '—')}</td>
+                <td>${escCal(c.tarea?.titulo || c.actividad || 'Evaluación')}${tipoTag}</td>
+                <td><span class="grade-badge grade-${grade}">${fmtPadreNota(nota, true)}</span></td>
+                <td>${estado}</td>
+                <td style="color:var(--text-secondary); font-size:13px;">${fecha}</td>
+            </tr>`;
+    });
 }
 
 function renderEvaluacionesProgramadas(tbody, programadas) {
@@ -259,7 +277,8 @@ function renderEvaluacionesProgramadas(tbody, programadas) {
         if (ev.calificada && ev.nota20 != null) {
             const n = Number(ev.nota20);
             const g = n >= 17 ? 'a' : n >= 14 ? 'b' : n >= 11 ? 'c' : 'd';
-            resHtml = `<span class="grade-badge grade-${g}">${n.toFixed(1)} / 20</span>`;
+            const badgeText = window.ShidellGrades?.isLiteral() ? window.ShidellGrades.toLiteral(n) : `${n.toFixed(1)} / 20`;
+            resHtml = `<span class="grade-badge grade-${g}">${badgeText}</span>`;
         }
         return `
             <tr>
@@ -283,7 +302,7 @@ function renderResumenCursos(grid, cursos) {
         const evals = Number(c.evaluaciones || 0);
         const prom = Number(c.promedio || 0);
         const estadoColor = !evals ? '#64748b' : (prom >= 11 ? 'var(--green)' : 'var(--red)');
-        const estadoTxt = !evals ? 'Sin notas' : `${prom.toFixed(1)} · ${c.estado || 'Evaluado'}`;
+        const estadoTxt = !evals ? 'Sin notas' : `${fmtPadreNota(prom, true)} · ${c.estado || 'Evaluado'}`;
         return `
             <div style="border:1px solid #e2e8f0; border-radius:14px; padding:14px 16px; background:#f8fafc;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">

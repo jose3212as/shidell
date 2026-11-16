@@ -1106,7 +1106,10 @@
             await cargarDatosCalendario();
             if (state.calendar && fecha) state.calendar.gotoDate(fecha);
         } catch (err) {
-            showErr(err.message || 'Ocurrió un error al guardar.');
+            const msg = window.ShidellErrors
+                ? window.ShidellErrors.humanizar(err, 'No pudimos guardar tu recordatorio. Intenta de nuevo.')
+                : (err?.message || 'No pudimos guardar tu recordatorio.');
+            showErr(msg);
         } finally {
             if (el.btnSaveSchedule) el.btnSaveSchedule.disabled = false;
         }
@@ -1125,7 +1128,11 @@
             cerrarModalDetalle();
             await cargarDatosCalendario();
         } catch (err) {
-            alert(err.message || 'No se pudo eliminar el recordatorio.');
+            const msg = window.ShidellErrors
+                ? window.ShidellErrors.humanizar(err, 'No pudimos quitar ese recordatorio ahora.')
+                : (err?.message || 'No pudimos quitar ese recordatorio ahora.');
+            if (window.AppAlerts?.mostrarError) window.AppAlerts.mostrarError(msg);
+            else alert(msg);
         } finally {
             if (el.btnDeleteEvent) el.btnDeleteEvent.disabled = false;
         }
@@ -1261,10 +1268,20 @@
             inicializarFullCalendar();
             await cargarDatosCalendario();
         } catch (err) {
-            console.error('[Calendario]', err);
+            console.warn('[Calendario]', err);
             if (el.calLoading) {
                 el.calLoading.style.display = 'flex';
-                el.calLoading.innerHTML = `<p style="color:#dc2626;font-weight:700;">${err.message || 'No se pudo cargar el calendario.'}</p>`;
+                if (window.ShidellErrors?.renderCard) {
+                    window.ShidellErrors.renderCard(el.calLoading, {
+                        portal: 'ESTUDIANTE',
+                        compact: true,
+                        title: 'Tu calendario está tomando un respiro',
+                        message: err?.message || 'No pudimos actualizar las fechas ahora.',
+                        onRetry: () => cargarDatosCalendario()
+                    });
+                } else {
+                    el.calLoading.innerHTML = `<p style="color:#dc2626;font-weight:700;">No pudimos cargar el calendario en este momento.</p>`;
+                }
             }
         }
     });

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api")
@@ -25,7 +26,7 @@ public class MainController {
     @GetMapping("/config")
     public ResponseEntity<Map<String, Object>> getConfig() {
         return ResponseEntity.ok()
-                .cacheControl(CacheControl.noStore().mustRevalidate())
+                .cacheControl(CacheControl.maxAge(30, TimeUnit.SECONDS).cachePublic().mustRevalidate())
                 .body(systemConfigService.toPublicConfigMap());
     }
 }

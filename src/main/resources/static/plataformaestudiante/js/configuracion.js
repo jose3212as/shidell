@@ -531,8 +531,11 @@
             text(String(estudiante.id || usuario.id || '-'), pageWidth - margin - 6, y + 49, { size: 13, bold: true, align: 'right' });
 
             y += 76;
+            const promCard = window.ShidellGrades?.isLiteral()
+                ? (promedio > 0 ? window.ShidellGrades.toLiteral(promedio) : '—')
+                : `${promedio.toFixed(1)}/20`;
             metricCards([
-                ['Promedio general', `${promedio.toFixed(1)}/20`, estadoPromedio(promedio)],
+                ['Promedio general', promCard, estadoPromedio(promedio)],
                 ['Asistencia', `${Math.round(asistenciaPct)}%`, estadoAsistencia(asistenciaPct)],
                 ['Tareas', `${completadas}/${totalTareas}`, totalTareas ? `${Math.round((completadas / totalTareas) * 100)}% completado` : 'Sin tareas'],
                 ['Cursos activos', String(cursosActivos), 'Periodo vigente']
@@ -573,13 +576,19 @@
 
         function detalleCalificaciones() {
             section('Calificaciones recientes');
-            const rows = evaluaciones.slice(0, 12).map(ev => [
-                limpiarTexto(ev.curso?.nombre || ev.cursoNombre || 'Curso'),
-                limpiarTexto(ev.actividad || 'Evaluacion'),
-                String(ev.nota20 ?? ev.nota ?? '-'),
-                ev.fecha || '-',
-                limpiarTexto(ev.estado || evaluarNota(Number(ev.nota20 ?? ev.nota)))
-            ]);
+            const rows = evaluaciones.slice(0, 12).map(ev => {
+                const rawNota = ev.nota20 ?? ev.nota;
+                const notaStr = (rawNota !== null && rawNota !== undefined && window.ShidellGrades?.isLiteral())
+                    ? window.ShidellGrades.toLiteral(rawNota)
+                    : String(rawNota ?? '-');
+                return [
+                    limpiarTexto(ev.curso?.nombre || ev.cursoNombre || 'Curso'),
+                    limpiarTexto(ev.actividad || 'Evaluacion'),
+                    notaStr,
+                    ev.fecha || '-',
+                    limpiarTexto(ev.estado || evaluarNota(Number(ev.nota20 ?? ev.nota)))
+                ];
+            });
             tabla([['Curso', 'Actividad', 'Nota', 'Fecha', 'Estado'], ...rows], [42, 55, 18, 28, contentWidth - 143], 'No hay calificaciones registradas.');
         }
 

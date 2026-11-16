@@ -288,7 +288,10 @@
         const mejora = Number(data.mejoradoPuntos || 0);
         const horasSemana = Number(data.horasEstudioSemana || 0);
 
-        document.getElementById('progreso-promedio').innerHTML = `${promedio.toFixed(1)} <span>/ 20</span>`;
+        const isLit = Boolean(window.ShidellGrades?.isLiteral());
+        const promStr = isLit ? (promedio > 0 ? window.ShidellGrades.toLiteral(promedio) : '—') : `${promedio.toFixed(1)} <span>/ 20</span>`;
+        const promInline = isLit ? (promedio > 0 ? window.ShidellGrades.toLiteral(promedio) : '—') : `${promedio.toFixed(1)}/20`;
+        document.getElementById('progreso-promedio').innerHTML = promStr;
         actualizarBadge(promedio);
         document.getElementById('progreso-mejora-puntos').innerHTML = `${mejora >= 0 ? '+' : ''}${mejora.toFixed(1)} <img src="../icons/regular/arrow-up.svg" class="icon-img" alt="arrow-up">`;
         document.getElementById('progreso-cursos').innerHTML = `${cursosActivos} <span>/ ${cursosTotales}</span>`;
@@ -299,7 +302,7 @@
         document.getElementById('progreso-tareas-pct').textContent = tareasPct;
         document.getElementById('progreso-horas').innerHTML = `${horasSemana.toFixed(1)} <span>h</span>`;
         document.getElementById('progreso-horas-comparacion').innerHTML = `${asistenciaPct}% asistencia`;
-        document.getElementById('progreso-mejora-texto').innerHTML = `Datos calculados con el API del estudiante: promedio <strong>${promedio.toFixed(1)}/20</strong>, asistencia <strong>${asistenciaPct}%</strong> y <strong>${tareasCompletadas}/${totalTareas}</strong> tareas entregadas.`;
+        document.getElementById('progreso-mejora-texto').innerHTML = `Resumen actualizado: promedio <strong>${promInline}</strong>, asistencia <strong>${asistenciaPct}%</strong> y <strong>${tareasCompletadas}/${totalTareas}</strong> tareas entregadas.`;
     }
 
     function actualizarBadge(promedio) {

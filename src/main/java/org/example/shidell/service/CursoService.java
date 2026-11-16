@@ -14,6 +14,7 @@ import org.example.shidell.util.AccessControlHelper;
 import org.example.shidell.util.CourseProgressHelper;
 import org.example.shidell.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ public class CursoService {
     @Autowired
     private EntityMapper mapper;
 
+    @Cacheable(value = "cursosCatalogo", key = "'public'")
     public List<CursoDTO> getAllCursos() {
         return cursoRepository.findAll().stream()
                 .filter(c -> !"ARCHIVADO".equalsIgnoreCase(c.getTurno()))

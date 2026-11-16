@@ -266,6 +266,9 @@
                 max: 20,
                 tickAmount: 4,
                 labels: {
+                    formatter: (val) => window.ShidellGrades?.isLiteral()
+                        ? window.ShidellGrades.toLiteral(val)
+                        : Number(val).toFixed(0),
                     style: {
                         colors: axisLabelColor,
                         fontSize: '13px',
@@ -274,7 +277,12 @@
                 }
             },
             tooltip: {
-                theme: isDark ? 'dark' : 'light'
+                theme: isDark ? 'dark' : 'light',
+                y: {
+                    formatter: (val) => window.ShidellGrades?.isLiteral()
+                        ? `${window.ShidellGrades.toLiteral(val)} (${Number(val).toFixed(1)} / 20)`
+                        : `${Number(val).toFixed(1)} / 20`
+                }
             },
             plotOptions: {
                 bar: {
@@ -284,6 +292,9 @@
             },
             dataLabels: {
                 enabled: type !== 'radar',
+                formatter: (val) => window.ShidellGrades?.isLiteral()
+                    ? window.ShidellGrades.toLiteral(val)
+                    : Number(val).toFixed(1),
                 style: { fontSize: '13px', fontWeight: 700 }
             },
             stroke: {

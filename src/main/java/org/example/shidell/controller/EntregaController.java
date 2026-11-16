@@ -53,10 +53,11 @@ public class EntregaController {
 
     @PutMapping("/{entregaId}/calificar")
     public EntregaDTO calificarEntrega(@PathVariable Long entregaId,
-                                       @RequestParam Double nota,
+                                       @RequestParam String nota,
                                        @RequestParam(required = false) String comentario,
                                        HttpServletRequest request) {
+        double notaNumerica = org.example.shidell.util.GradeCalculationHelper.parseRequiredNota20(nota);
         return mapper.toDTO(entregaService.calificarEntrega(
-                entregaId, nota, comentario, AccessControlHelper.getAuthUser(request)));
+                entregaId, notaNumerica, comentario, AccessControlHelper.getAuthUser(request)));
     }
 }

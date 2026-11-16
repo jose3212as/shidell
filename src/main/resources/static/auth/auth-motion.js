@@ -657,15 +657,15 @@
                         setButtonState(submitBtn, 'idle');
                         shakeErrorCard();
                         AppAlerts.mostrarError(
-                            errorMsg.error || 'Correo o contraseña incorrectos',
-                            'Verifica tus credenciales'
+                            errorMsg.error || 'El correo o la contraseña no coinciden.',
+                            'Revisa tus datos e intenta de nuevo.'
                         );
                     }
                 } catch (error) {
-                    console.error('Error connecting to server:', error);
+                    console.error('Error en inicio de sesión:', error);
                     setButtonState(submitBtn, 'idle');
                     shakeErrorCard();
-                    AppAlerts.mostrarError('Error al conectar con el servidor', '¿Está encendido el backend?');
+                    AppAlerts.mostrarError('No pudimos conectarnos ahora mismo.', 'Revisa tu conexión a internet e intenta otra vez.');
                 }
             });
         }
@@ -712,7 +712,10 @@
                 } catch (error) {
                     setButtonState(submitBtn, 'idle');
                     shakeErrorCard();
-                    AppAlerts.mostrarError('Error en el registro', error.message);
+                    AppAlerts.mostrarError(
+                        'No pudimos crear tu cuenta en este momento.',
+                        error?.message || 'Revisa tus datos e intenta nuevamente.'
+                    );
                 }
             });
         }

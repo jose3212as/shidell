@@ -4,6 +4,7 @@ import org.example.shidell.model.entity.*;
 import org.example.shidell.model.dto.*;
 import org.example.shidell.repository.MatriculaRepository;
 import org.example.shidell.util.AcademicGroupHelper;
+import org.example.shidell.util.GradeCalculationHelper;
 import org.example.shidell.util.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -142,7 +143,9 @@ public class EntityMapper {
         double nota = entity.getNota() == null ? 0.0 : entity.getNota();
         double maxima = dto.getNotaMaxima();
         double nota20 = nota / maxima * 20.0;
-        dto.setNota20(Math.round(nota20 * 10.0) / 10.0);
+        double nota20Redondeada = Math.round(nota20 * 10.0) / 10.0;
+        dto.setNota20(nota20Redondeada);
+        dto.setNotaLiteral(entity.getNota() != null ? GradeCalculationHelper.toLiteral(nota20Redondeada) : null);
         
         dto.setFecha(entity.getFecha());
         dto.setEstado(nota20 >= 11 ? "Aprobado" : "Desaprobado");

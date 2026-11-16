@@ -237,39 +237,50 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── 5. Calificaciones del hijo ─────────────────────────
-    // FIXED: usa campo nota20 (no nota)
+    let _lastCalifHijoPayload = null;
+    function renderCalificacionesPadres(payload) {
+        const container = document.getElementById('calificaciones-list');
+        if (!container) return;
+        const cals = Array.isArray(payload) ? payload : (payload?.evaluaciones || []);
+        const fmtNota = (n) => window.ShidellGrades ? window.ShidellGrades.format(n, { decimals: 1 }) : Number(n).toFixed(1);
+
+        if (cals.length > 0) {
+            const promedioNum = Number(payload.promedioGeneral ?? (cals.reduce((s, c) => s + Number(c.nota20 || c.nota || 0), 0) / cals.length));
+            const elProm = document.getElementById('stat-promedio');
+            if (elProm) elProm.textContent = fmtNota(promedioNum);
+        }
+
+        container.innerHTML = '';
+        if (cals.length === 0) {
+            container.innerHTML = '<p style="padding:16px; color:#94a3b8; text-align:center;">Sin calificaciones.</p>';
+            return;
+        }
+        cals.slice(0, 6).forEach(c => {
+            const nota  = Number(c.nota20 || c.nota || 0);
+            const grade = nota >= 17 ? 'a' : nota >= 14 ? 'b' : nota >= 11 ? 'c' : 'd';
+            const curso = c.tarea?.curso?.nombre || c.curso?.nombre || 'Curso';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${curso}</td>
+                <td><span class="grade-badge grade-${grade}">${fmtNota(nota)}</span></td>
+                <td style="color:var(--text-secondary); font-size:13px;">${c.tarea?.titulo || c.actividad || '—'}</td>
+            `;
+            container.appendChild(tr);
+        });
+    }
+
+    window.addEventListener('shidell:grade-scale-changed', () => {
+        if (_lastCalifHijoPayload) renderCalificacionesPadres(_lastCalifHijoPayload);
+    });
+
     async function cargarCalificaciones() {
         const container = document.getElementById('calificaciones-list');
         if (!container) return;
         try {
-            const res  = await fetch(`/api/calificaciones/estudiante/${hijoActivo.id}`);
+            const res = await fetch(`/api/calificaciones/estudiante/${hijoActivo.id}`);
             const payload = res.ok ? await res.json() : {};
-            const cals = Array.isArray(payload) ? payload : (payload.evaluaciones || []);
-
-            if (cals.length > 0) {
-                // FIXED: campo correcto es nota20
-                const promedio = Number(payload.promedioGeneral ?? (cals.reduce((s, c) => s + Number(c.nota20 || c.nota || 0), 0) / cals.length)).toFixed(1);
-                const elProm = document.getElementById('stat-promedio');
-                if (elProm) elProm.textContent = promedio;
-            }
-
-            container.innerHTML = '';
-            if (cals.length === 0) {
-                container.innerHTML = '<p style="padding:16px; color:#94a3b8; text-align:center;">Sin calificaciones.</p>';
-                return;
-            }
-            cals.slice(0, 6).forEach(c => {
-                const nota  = Number(c.nota20 || c.nota || 0); // FIXED: nota20
-                const grade = nota >= 17 ? 'a' : nota >= 14 ? 'b' : nota >= 11 ? 'c' : 'd';
-                const curso = c.tarea?.curso?.nombre || c.curso?.nombre || 'Curso';
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${curso}</td>
-                    <td><span class="grade-badge grade-${grade}">${nota.toFixed(1)}</span></td>
-                    <td style="color:var(--text-secondary); font-size:13px;">${c.tarea?.titulo || c.actividad || '—'}</td>
-                `;
-                container.appendChild(tr);
-            });
+            _lastCalifHijoPayload = payload;
+            renderCalificacionesPadres(payload);
         } catch (e) { console.error('Error calificaciones:', e); }
     }
 
@@ -425,7 +436,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const prefs = window.PadresPrefs ? window.PadresPrefs.get(padre.id) : { notifPollMs: 30000 };
         const ms = Number(prefs.notifPollMs);
         if (ms > 0) {
-            notifPollTimer = setInterval(cargarNotificaciones, ms);
+            notifPollTimer = setInterval(() => {
+                if (!document.hidden) cargarNotificaciones();
+            }, ms);
         }
     }
 

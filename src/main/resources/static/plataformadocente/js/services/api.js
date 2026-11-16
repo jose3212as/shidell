@@ -19,7 +19,7 @@ export const API = {
 
         try {
             const statusEl = document.getElementById('server-status');
-            if (statusEl) statusEl.textContent = 'Estado: Conectando...';
+            if (statusEl) statusEl.textContent = 'Sincronizando...';
 
             const response = await fetch(`${API_BASE}${endpoint}`, {
                 ...options,
@@ -29,21 +29,31 @@ export const API = {
             if (!response.ok) {
                 if (response.status === 401 || response.status === 403) {
                     Auth.logout();
-                    throw new Error('Sesión expirada');
+                    throw new Error('Tu sesión se cerró por seguridad. Inicia sesión otra vez.');
                 }
-                throw new Error(`HTTP error! status: ${response.status}`);
+                let msg = '';
+                try {
+                    const errBody = await response.json();
+                    msg = errBody?.error || errBody?.message || '';
+                } catch {}
+                const friendly = window.ShidellErrors
+                    ? window.ShidellErrors.humanizar(msg || `HTTP ${response.status}`, 'No pudimos completar esta operación. Intenta nuevamente.')
+                    : (msg || 'No pudimos completar esta operación. Intenta nuevamente.');
+                throw new Error(friendly);
             }
 
-            if (statusEl) statusEl.textContent = 'Estado: Conectado';
-            
-            // Check if response has content before parsing JSON
+            if (statusEl) statusEl.textContent = 'En línea';
+
             const text = await response.text();
             return text ? JSON.parse(text) : null;
-            
+
         } catch (error) {
             const statusEl = document.getElementById('server-status');
-            if (statusEl) statusEl.textContent = 'Estado: Error de conexión';
-            console.error('API Error:', error);
+            if (statusEl) statusEl.textContent = 'Sin conexión momentánea';
+            console.warn('Aviso de conexión:', error);
+            if (window.ShidellErrors && error instanceof Error) {
+                throw new Error(window.ShidellErrors.humanizar(error.message));
+            }
             throw error;
         }
     }

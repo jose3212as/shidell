@@ -204,10 +204,11 @@ export const EstudiantePerfilView = {
             };
         }
 
+        const fmtScore = (val) => window.ShidellGrades ? window.ShidellGrades.format(val) : `${Number(val).toFixed(1)}/20`;
         const evalPhrase = r.tieneEvaluacionesMias
-            ? `mantiene <strong>${Number(r.promedioEnMisCursos).toFixed(1)}/20</strong> en ${esc(cursoNombre)}`
+            ? `mantiene <strong>${window.ShidellGrades?.isLiteral() ? fmtScore(r.promedioEnMisCursos) : `${Number(r.promedioEnMisCursos).toFixed(1)}/20`}</strong> en ${esc(cursoNombre)}`
             : (r.tieneEvaluaciones
-                ? `mantiene promedio general de <strong>${Number(r.promedioGeneral).toFixed(1)}/20</strong>`
+                ? `mantiene promedio general de <strong>${window.ShidellGrades?.isLiteral() ? fmtScore(r.promedioGeneral) : `${Number(r.promedioGeneral).toFixed(1)}/20`}</strong>`
                 : 'aún no registra evaluaciones calificadas en este bloque');
 
         return {
@@ -243,7 +244,10 @@ export const EstudiantePerfilView = {
         const misAtrasadasCount = tareas.filter(t => t.esMiCurso && t.estadoEntrega === 'ATRASADA').length;
         const misPendientesCount = tareas.filter(t => t.esMiCurso && t.estadoEntrega === 'PENDIENTE').length;
 
-        const promDisplay = r.tieneEvaluaciones ? Number(r.promedioGeneral || 0).toFixed(1) : '—';
+        const literalMode = Boolean(window.ShidellGrades?.isLiteral());
+        const promDisplay = r.tieneEvaluaciones
+            ? (literalMode ? window.ShidellGrades.toLiteral(r.promedioGeneral || 0) : Number(r.promedioGeneral || 0).toFixed(1))
+            : '—';
         const asistPct = Number(r.asistenciaPorcentaje ?? 100);
         const asistTone = asistPct >= 90 ? 'ep-sig-ok' : (asistPct >= 80 ? 'ep-sig-warn' : 'ep-sig-danger');
         const promTone = !r.tieneEvaluaciones ? '' : (Number(r.promedioGeneral) >= 14 ? 'ep-sig-ok' : (Number(r.promedioGeneral) >= 11 ? '' : 'ep-sig-danger'));
@@ -262,8 +266,8 @@ export const EstudiantePerfilView = {
 
         if (r.tieneEvaluacionesMias) {
             const mia = Number(r.promedioEnMisCursos || 0);
-            col1Figure = mia.toFixed(1);
-            col1Unit = '/ 20';
+            col1Figure = literalMode ? window.ShidellGrades.toLiteral(mia) : mia.toFixed(1);
+            col1Unit = literalMode ? 'CNEB' : '/ 20';
             col1Note = miCursoPrincipal
                 ? `${miCursoPrincipal.evaluacionesCount || 0} ${plural(miCursoPrincipal.evaluacionesCount || 0, 'evaluación', 'evaluaciones')} · Avance ${miCursoPrincipal.porcentajeAvance || 0}%`
                 : 'Promedio en tus asignaturas';
@@ -712,12 +716,18 @@ export const EstudiantePerfilView = {
                                 <th>Fecha</th>
                                 <th>Área</th>
                                 <th>Actividad</th>
-                                <th>Nota (0–20)</th>
+                                <th>${window.ShidellGrades?.isLiteral() ? 'Nota (CNEB)' : 'Nota (0–20)'}</th>
                                 <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${filtradas.map(ev => `
+                            ${filtradas.map(ev => {
+                                const isLit = Boolean(window.ShidellGrades?.isLiteral());
+                                const scoreText = isLit ? window.ShidellGrades.toLiteral(ev.nota20) : esc(ev.nota20);
+                                const rawSub = (!isLit || (ev.notaMaxima && Number(ev.notaMaxima) !== 20))
+                                    ? `<span class="ep-mono-date" style="margin-left:6px;">(${esc(ev.nota)}/${esc(ev.notaMaxima)})</span>`
+                                    : '';
+                                return `
                                 <tr>
                                     <td class="ep-mono-date">${esc(formatFecha(ev.fecha))}</td>
                                     <td>
@@ -726,12 +736,12 @@ export const EstudiantePerfilView = {
                                     </td>
                                     <td>${esc(ev.actividad || 'Evaluación')}</td>
                                     <td>
-                                        <span class="ep-score-num ${Number(ev.nota20) >= 11 ? 'is-ok' : 'is-risk'}" style="font-size:17px;">${esc(ev.nota20)}</span>
-                                        <span class="ep-mono-date" style="margin-left:6px;">(${esc(ev.nota)}/${esc(ev.notaMaxima)})</span>
+                                        <span class="ep-score-num ${Number(ev.nota20) >= 11 ? 'is-ok' : 'is-risk'}" style="font-size:17px;">${scoreText}</span>
+                                        ${rawSub}
                                     </td>
                                     <td><span class="ep-dot-state ${esc(ev.estado)}">${esc(ev.estado)}</span></td>
-                                </tr>
-                            `).join('')}
+                                </tr>`;
+                            }).join('')}
                         </tbody>
                     </table>
                 </div>

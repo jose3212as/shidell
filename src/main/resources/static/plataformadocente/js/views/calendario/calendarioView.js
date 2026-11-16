@@ -526,10 +526,20 @@ export const CalendarioView = {
             this.inicializarFullCalendar();
             await this.cargarDatosCalendario();
         } catch (err) {
-            console.error('[Calendario Docente]', err);
+            console.warn('[Calendario Docente]', err);
             if (this.el.calLoading) {
                 this.el.calLoading.style.display = 'flex';
-                this.el.calLoading.innerHTML = `<p style="color:var(--red);font-weight:700;">${err.message || 'Error al sincronizar el calendario docente.'}</p>`;
+                if (window.ShidellErrors?.renderCard) {
+                    window.ShidellErrors.renderCard(this.el.calLoading, {
+                        portal: 'DOCENTE',
+                        compact: true,
+                        title: 'No pudimos actualizar tu agenda docente',
+                        message: err?.message || 'Revisa tu conexión e intenta cargar de nuevo.',
+                        onRetry: () => this.cargarDatosCalendario()
+                    });
+                } else {
+                    this.el.calLoading.innerHTML = `<p style="color:var(--red);font-weight:700;">No pudimos actualizar tu agenda docente en este momento.</p>`;
+                }
             }
         }
     },

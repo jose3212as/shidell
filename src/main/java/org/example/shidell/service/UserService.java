@@ -185,7 +185,7 @@ public class UserService {
         UserEntity user = userRepository.findById(id).orElseThrow();
         String fotoUrl = FileUploadUtil.saveFile("perfiles", file);
         if (fotoUrl == null) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo guardar la imagen en el servidor.");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No pudimos guardar tu foto en este momento. Intenta con otra imagen más liviana.");
         }
         user.setFotoPerfil(fotoUrl);
         return mapper.toDTO(userRepository.save(user));

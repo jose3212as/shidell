@@ -42,13 +42,20 @@
             actualizarResumen();
 
         } catch (err) {
-            console.error('Error cargando datos:', err);
-            container.innerHTML = `
-                <div style="padding: 40px; text-align: center; color: var(--red);">
-                    <img src="../icons/regular/warning.svg" class="icon-img" alt="warning" style="width: 40px; height: 40px; display:block; margin-bottom:10px;">
-                    <p>Error al conectar con el servidor.</p>
-                    <small>${err.message}</small>
-                </div>`;
+            console.warn('No pudimos cargar las tareas:', err);
+            if (window.ShidellErrors?.renderCard) {
+                window.ShidellErrors.renderCard(container, {
+                    portal: 'ESTUDIANTE',
+                    title: 'No pudimos abrir tus tareas ahora',
+                    message: err?.message,
+                    onRetry: () => cargarDatos()
+                });
+            } else {
+                container.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: var(--red);">
+                        <p>No pudimos cargar tus tareas en este momento. Intenta recargar la página.</p>
+                    </div>`;
+            }
         }
     }
 

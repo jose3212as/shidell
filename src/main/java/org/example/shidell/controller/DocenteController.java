@@ -164,10 +164,11 @@ public class DocenteController {
     public CalificacionDTO registrarCalificacion(@RequestParam Long cursoId,
                                                  @RequestParam Long estudianteId,
                                                  @RequestParam String actividad,
-                                                 @RequestParam Double nota,
+                                                 @RequestParam String nota,
                                                  HttpServletRequest request) {
         verificarPropietarioCurso(cursoId, request);
-        return mapper.toDTO(docenteService.guardarCalificacion(cursoId, estudianteId, actividad, nota));
+        double notaNumerica = org.example.shidell.util.GradeCalculationHelper.parseRequiredNota20(nota);
+        return mapper.toDTO(docenteService.guardarCalificacion(cursoId, estudianteId, actividad, notaNumerica));
     }
 
     @GetMapping("/curso/{cursoId}/calificaciones")

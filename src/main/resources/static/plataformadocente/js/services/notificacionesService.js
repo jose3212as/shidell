@@ -48,7 +48,9 @@ export const NotificacionesService = {
         }
         const pollMs = Number(DocentePrefs.get().notifPollMs);
         if (pollMs > 0 && userId) {
-            this._pollTimer = setInterval(() => this.cargarNotificaciones(userId), pollMs);
+            this._pollTimer = setInterval(() => {
+                if (!document.hidden) this.cargarNotificaciones(userId);
+            }, pollMs);
         }
     },
 

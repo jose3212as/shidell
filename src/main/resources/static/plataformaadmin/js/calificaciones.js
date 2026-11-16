@@ -3,12 +3,22 @@
    ========================================================= */
 
 let estudiantesList = [];
+let lastCalifData = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   initShared('Calificaciones', 'Admin / Calificaciones');
   await loadEstudiantes();
   setupCalifEvents();
+  window.addEventListener('shidell:grade-scale-changed', () => {
+    if (lastCalifData) renderCalificaciones(lastCalifData);
+  });
 });
+
+function formatAdminNota(nota20, hasValue = true) {
+  if (!hasValue || nota20 === null || nota20 === undefined) return '—';
+  if (window.ShidellGrades) return window.ShidellGrades.format(nota20, { decimals: 1 });
+  return String(nota20);
+}
 
 /* ── Helpers de color / logro ───────────────────────────── */
 function colorPorNota(n) {
@@ -100,10 +110,13 @@ async function loadCalificaciones(id) {
 
 /* ── Render principal ────────────────────────────────────── */
 function renderCalificaciones(data) {
+  lastCalifData = data;
   const promedio = parseFloat(data.promedioGeneral) || 0;
+  const tieneNotas = (data.evaluacionesTotales || 0) > 0 || promedio > 0;
   const logro    = nivelLogro(promedio);
   const color    = colorPorNota(promedio);
   const circ     = 2 * Math.PI * 46; // r = 46
+  const promedioDisplay = formatAdminNota(promedio, tieneNotas);
 
   // ─ Anillo en el hero
   const ring = document.getElementById('hero-ring');
@@ -115,14 +128,18 @@ function renderCalificaciones(data) {
       fill.style.strokeDashoffset = circ * (1 - Math.min(promedio / 20, 1));
     }
     const num = document.getElementById('ring-number');
-    if (num) { num.textContent = promedio || '—'; num.style.color = color; }
+    if (num) { num.textContent = promedioDisplay; num.style.color = color; }
+    const denom = ring.querySelector('.ring-denom');
+    if (denom) denom.textContent = window.ShidellGrades?.isLiteral() ? 'CNEB' : '/ 20';
     const badge = document.getElementById('ring-badge');
     if (badge) badge.innerHTML = `<span class="hero-pill" style="background:${logro.bg};border-color:${logro.color}40;color:${logro.color}">${logro.label}</span>`;
   }
 
   // ─ KPIs
   const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  set('calif-promedio',  promedio || '—');
+  set('calif-promedio',  promedioDisplay);
+  const kpiPromLbl = document.querySelector('#calif-promedio + .kpi-strip-lbl');
+  if (kpiPromLbl) kpiPromLbl.textContent = window.ShidellGrades?.isLiteral() ? 'Promedio CNEB' : 'Promedio / 20';
   set('calif-aprobados', data.cursosAprobados    || 0);
   set('calif-total-ev',  data.evaluacionesTotales || 0);
   set('calif-cursos',    data.cursosTotales       || 0);
@@ -178,7 +195,7 @@ function renderTabla(evs) {
       </td>
       <td>
         <div style="display:flex;align-items:center;gap:10px">
-          <div class="nota-chip" style="background:${logro.bg};color:${color}">${nota}</div>
+          <div class="nota-chip" style="background:${logro.bg};color:${color}">${formatAdminNota(ev.nota20 ?? nota, true)}</div>
           <div style="flex:1;display:flex;align-items:center;gap:7px">
             <div class="mini-bar-track">
               <div class="mini-bar-fill" style="width:${pct}%;background:${color}"></div>
@@ -205,6 +222,7 @@ function renderCursos(cursos) {
   const sorted = [...cursos].sort((a, b) => (b.promedio||0) - (a.promedio||0));
   el.innerHTML = sorted.map((c, i) => {
     const prom  = parseFloat(c.promedio) || 0;
+    const hasEv = Number(c.evaluaciones || 0) > 0 || prom > 0;
     const pct   = Math.round(prom / 20 * 100);
     const color = colorPorNota(prom);
     const letra = (c.nombre || 'C')[0].toUpperCase();
@@ -215,7 +233,7 @@ function renderCursos(cursos) {
           <div class="course-bar-letter" style="background:${color}20;color:${color}">${letra}</div>
           <span>${escapeHtml(c.nombre||'')}</span>
         </div>
-        <span class="course-bar-score" style="color:${color}">${prom}</span>
+        <span class="course-bar-score" style="color:${color}">${formatAdminNota(prom, hasEv)}</span>
       </div>
       <div class="course-bar-track">
         <div class="course-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${color}bb,${color})"></div>

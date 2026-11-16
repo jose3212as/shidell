@@ -117,4 +117,29 @@ class AdminConfigControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.effectiveIconUrl").value("/favicon.ico"));
     }
+
+    @Test
+    @DisplayName("PUT /api/admin/config permite cambiar solo gradeScale sin exigir tabTitle")
+    void adminActualizaSoloGradeScale() throws Exception {
+        UserEntity admin = new UserEntity();
+        admin.setId(1L);
+        admin.setRol("ADMIN");
+        when(authSessionService.authenticate("admin-tok")).thenReturn(Optional.of(admin));
+        when(systemConfigService.toPublicConfigMap()).thenReturn(Map.of(
+                "tabTitle", "Shidell",
+                "gradeScale", "LITERAL",
+                "effectiveIconUrl", "/favicon.ico"
+        ));
+
+        mockMvc.perform(put("/api/admin/config")
+                        .header("Authorization", "Bearer admin-tok")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"gradeScale\":\"LITERAL\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gradeScale").value("LITERAL"))
+                .andExpect(jsonPath("$.tabTitle").value("Shidell"));
+
+        org.mockito.Mockito.verify(systemConfigService).updateGradeScale("LITERAL");
+        org.mockito.Mockito.verify(systemConfigService, org.mockito.Mockito.never()).updateTabTitle(any());
+    }
 }

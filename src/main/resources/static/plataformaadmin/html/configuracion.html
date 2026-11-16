@@ -193,12 +193,29 @@
                 <span class="badge badge-cyan badge-no-dot">Secundaria</span>
               </div>
             </div>
-            <div class="config-row">
-              <div class="config-row-info">
-                <h4>Escala de calificación</h4>
-                <p>Sistema vigesimal (0 – 20)</p>
+            <div class="config-row" style="align-items:flex-start;flex-direction:column;gap:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;flex-wrap:wrap;">
+                <div class="config-row-info">
+                  <h4>Escala de calificación global</h4>
+                  <p id="cfg-grade-scale-desc">Sistema vigesimal (0 – 20 puntos)</p>
+                </div>
+                <span class="badge badge-green badge-no-dot" id="cfg-grade-scale-badge">0 – 20 puntos</span>
               </div>
-              <span class="badge badge-green badge-no-dot">0 – 20 puntos</span>
+              <div class="d-flex gap-8 flex-wrap" id="grade-scale-selector" role="group" aria-label="Elegir escala de calificación del sistema">
+                <button type="button" class="btn btn-primary" id="btn-scale-numerico" data-scale="NUMERICO">
+                  <i class="ph ph-hash"></i>Numérico (0 – 20)
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-scale-literal" data-scale="LITERAL">
+                  <i class="ph ph-text-aa"></i>Literal CNEB (AD, A, B, C)
+                </button>
+              </div>
+              <div class="branding-hint" style="margin-top:2px;">
+                Equivalencia CNEB automática (las notas se conservan íntegras y puedes cambiar en cualquier momento):
+                <strong>AD</strong> (18–20 · Logro destacado) ·
+                <strong>A</strong> (14–17.9 · Logro esperado) ·
+                <strong>B</strong> (11–13.9 · En proceso) ·
+                <strong>C</strong> (0–10.9 · En inicio).
+              </div>
             </div>
             <div class="config-row">
               <div class="config-row-info">
@@ -341,13 +358,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-let _brandingConfig = { tabTitle: 'Shidell', iconUrl: null, effectiveIconUrl: '/favicon.ico' };
+let _brandingConfig = { tabTitle: 'Shidell', gradeScale: 'NUMERICO', iconUrl: null, effectiveIconUrl: '/favicon.ico' };
+
+function renderGradeScaleAdminState(scale) {
+  const isLiteral = String(scale || '').toUpperCase() === 'LITERAL';
+  const descEl = document.getElementById('cfg-grade-scale-desc');
+  const badgeEl = document.getElementById('cfg-grade-scale-badge');
+  const btnNum = document.getElementById('btn-scale-numerico');
+  const btnLit = document.getElementById('btn-scale-literal');
+  if (descEl) {
+    descEl.textContent = isLiteral
+      ? 'Sistema literal CNEB (AD, A, B, C) activo en todas las plataformas'
+      : 'Sistema vigesimal (0 – 20) activo en todas las plataformas';
+  }
+  if (badgeEl) {
+    badgeEl.textContent = isLiteral ? 'Literal (AD, A, B, C)' : '0 – 20 puntos';
+    badgeEl.className = `badge ${isLiteral ? 'badge-blue' : 'badge-green'} badge-no-dot`;
+  }
+  if (btnNum && btnLit) {
+    btnNum.className = isLiteral ? 'btn btn-secondary' : 'btn btn-primary';
+    btnLit.className = isLiteral ? 'btn btn-primary' : 'btn btn-secondary';
+    btnNum.setAttribute('aria-pressed', String(!isLiteral));
+    btnLit.setAttribute('aria-pressed', String(isLiteral));
+  }
+}
 
 function renderBrandingAdminState(cfg) {
   _brandingConfig = cfg || _brandingConfig;
   const tabTitle = (_brandingConfig.tabTitle || 'Shidell').trim() || 'Shidell';
   const iconSrc = _brandingConfig.effectiveIconUrl || '/favicon.ico';
   const hasCustomIcon = Boolean(_brandingConfig.iconUrl);
+  renderGradeScaleAdminState(_brandingConfig.gradeScale);
 
   const titleInput = document.getElementById('cfg-tab-title');
   const previewText = document.getElementById('branding-preview-tab-text');
@@ -438,6 +479,31 @@ async function initBrandingAdmin() {
     await saveTabTitle('Shidell', 'Nombre de pestaña restablecido a "Shidell".');
   });
 
+  async function saveGradeScale(targetScale) {
+    const btnNum = document.getElementById('btn-scale-numerico');
+    const btnLit = document.getElementById('btn-scale-literal');
+    if (btnNum) btnNum.disabled = true;
+    if (btnLit) btnLit.disabled = true;
+    try {
+      const updated = await API.admin.updateConfig({ gradeScale: targetScale });
+      renderBrandingAdminState(updated);
+      if (window.ShidellBranding) window.ShidellBranding.broadcast(updated);
+      const label = targetScale === 'LITERAL' ? 'Literal CNEB (AD, A, B, C)' : 'Numérico vigesimal (0 – 20)';
+      const okMsg = `Escala global cambiada a ${label}.`;
+      showBrandingFeedback(true, okMsg);
+      Toast.success('Escala actualizada', okMsg);
+    } catch (err) {
+      showBrandingFeedback(false, err.message || 'No se pudo cambiar la escala de calificación.');
+      Toast.error('Error al cambiar escala', err.message);
+    } finally {
+      if (btnNum) btnNum.disabled = false;
+      if (btnLit) btnLit.disabled = false;
+    }
+  }
+
+  document.getElementById('btn-scale-numerico')?.addEventListener('click', () => saveGradeScale('NUMERICO'));
+  document.getElementById('btn-scale-literal')?.addEventListener('click', () => saveGradeScale('LITERAL'));
+
   const openFilePicker = () => fileInput?.click();
   uploadBtn?.addEventListener('click', openFilePicker);
   iconThumb?.addEventListener('click', openFilePicker);
@@ -489,9 +555,9 @@ async function initBrandingAdmin() {
 async function testApi() {
   try {
     const stats = await API.admin.stats();
-    Toast.success('API conectada', `${stats.totalUsuarios} usuarios · ${stats.totalCursos} cursos`);
+    Toast.success('Sistema conectado', `${stats.totalUsuarios} usuarios · ${stats.totalCursos} cursos activos`);
   } catch (e) {
-    Toast.error('Error de conexión', e.message);
+    Toast.error('No pudimos verificar la conexión', e?.message || 'Intenta nuevamente en unos segundos.');
   }
 }
 </script>

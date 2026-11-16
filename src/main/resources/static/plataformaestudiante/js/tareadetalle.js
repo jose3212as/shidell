@@ -95,12 +95,23 @@
             mainEl.style.display = 'block';
 
         } catch (err) {
-            console.error('Error cargando la tarea:', err);
-            loadingEl.innerHTML = `
-                <img src="../icons/regular/warning.svg" class="icon-img" alt="warning" style="width:36px;height:36px;margin-bottom:10px;opacity:0.8;">
-                <p style="color:var(--ed-status-late-text);font-weight:600;font-size:14px;">${escapeHtml(err.message || 'Error al cargar la tarea.')}</p>
-                <div style="margin-top:16px;"><a href="tareas.html" class="td-back-link">Volver a Mis Tareas</a></div>
-            `;
+            console.warn('No pudimos cargar la tarea:', err);
+            if (window.ShidellErrors?.renderCard) {
+                window.ShidellErrors.renderCard(loadingEl, {
+                    portal: 'ESTUDIANTE',
+                    title: 'No encontramos esta actividad',
+                    message: err?.message || 'Tal vez fue movida o necesita recargarse.',
+                    homeHref: 'tareas.html',
+                    homeLabel: 'Volver a Mis Tareas',
+                    onRetry: () => cargarDetalleTarea()
+                });
+            } else {
+                loadingEl.innerHTML = `
+                    <img src="../icons/regular/warning.svg" class="icon-img" alt="warning" style="width:36px;height:36px;margin-bottom:10px;opacity:0.8;">
+                    <p style="color:var(--ed-status-late-text);font-weight:600;font-size:14px;">No pudimos abrir esta actividad en este momento.</p>
+                    <div style="margin-top:16px;"><a href="tareas.html" class="td-back-link">Volver a Mis Tareas</a></div>
+                `;
+            }
         }
     }
 
@@ -326,15 +337,16 @@
                     actualizarArchivoSeleccionado();
                     document.getElementById('comentarioContador').textContent = '0/500';
 
+                    if (window.ShidellFun?.celebrar) window.ShidellFun.celebrar();
                     await cargarDetalleTarea();
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     abrirComprobante(savedEntrega, tareaActual);
                 } else {
                     const detalle = await leerErrorEntrega(res);
-                    mostrarFeedbackEntrega(detalle || 'No se pudo registrar la entrega. Intenta nuevamente.', 'error');
+                    mostrarFeedbackEntrega(detalle || 'No se pudo registrar tu entrega. Intenta nuevamente.', 'error');
                 }
             } catch (err) {
-                mostrarFeedbackEntrega('Error de conexión con el servidor.', 'error');
+                mostrarFeedbackEntrega('No pudimos conectarnos en este momento. Revisa tu internet e intenta otra vez.', 'error');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<span>Entregar tarea ahora</span><img src="../icons/regular/paper-plane-tilt.svg" class="icon-img" alt="enviar" style="filter: brightness(0) invert(1); width: 15px; height: 15px;">';

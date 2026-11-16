@@ -13,6 +13,7 @@ public class SystemConfig {
 
     public static final Long SINGLETON_ID = 1L;
     public static final String DEFAULT_TAB_TITLE = "Shidell";
+    public static final String DEFAULT_GRADE_SCALE = "NUMERICO";
 
     @Id
     private Long id = SINGLETON_ID;
@@ -22,6 +23,9 @@ public class SystemConfig {
 
     @Column(name = "icon_url", length = 512)
     private String iconUrl;
+
+    @Column(name = "grade_scale", length = 20)
+    private String gradeScale = DEFAULT_GRADE_SCALE;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
@@ -57,6 +61,14 @@ public class SystemConfig {
 
     public void setIconUrl(String iconUrl) {
         this.iconUrl = iconUrl;
+    }
+
+    public String getGradeScale() {
+        return gradeScale;
+    }
+
+    public void setGradeScale(String gradeScale) {
+        this.gradeScale = gradeScale;
     }
 
     public LocalDateTime getUpdatedAt() {

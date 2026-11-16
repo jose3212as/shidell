@@ -94,6 +94,7 @@
                 const res = await fetch('/api/entregas', { method: 'POST', body: formData });
                 if (res.ok) {
                     closeModal();
+                    if (window.ShidellFun?.celebrar) window.ShidellFun.celebrar();
                     if (window.Swal) {
                         Swal.fire({ icon: 'success', title: '¡Tarea entregada!', text: 'Tu trabajo fue enviado exitosamente.' });
                     } else {
@@ -106,10 +107,15 @@
                     throw new Error(err.error || 'No se pudo subir la entrega');
                 }
             } catch (err) {
-                if (window.Swal) {
-                    Swal.fire({ icon: 'error', title: 'Error', text: err.message || 'Error al entregar tarea' });
+                const msg = window.ShidellErrors
+                    ? window.ShidellErrors.humanizar(err, 'No pudimos enviar tu tarea ahora. Intenta otra vez.')
+                    : (err?.message || 'No pudimos enviar tu tarea ahora.');
+                if (window.AppAlerts?.mostrarError) {
+                    window.AppAlerts.mostrarError(msg);
+                } else if (window.Swal) {
+                    Swal.fire({ icon: 'error', title: '¡Ups!', text: msg });
                 } else {
-                    alert(err.message || 'Error al entregar tarea');
+                    alert(msg);
                 }
             } finally {
                 submitBtn.disabled = false;
@@ -817,17 +823,23 @@
                     .filter(item => item.bimestre === b)
                     .sort((x, y) => String(x.fecha || '').localeCompare(String(y.fecha || '')));
                 const calificadasBim = listaBim.filter(item => item.calificada && item.nota20 != null);
-                const promBim = calificadasBim.length
-                    ? (calificadasBim.reduce((acc, item) => acc + item.nota20, 0) / calificadasBim.length).toFixed(1)
+                const promBimNum = calificadasBim.length
+                    ? (calificadasBim.reduce((acc, item) => acc + item.nota20, 0) / calificadasBim.length)
                     : null;
-                const statusBadge = promBim !== null
-                    ? `<span class="cd-week-tag-status done">Promedio: ${promBim} / 20</span>`
+                const promBimTxt = promBimNum !== null
+                    ? (window.ShidellGrades?.isLiteral() ? window.ShidellGrades.toLiteral(promBimNum) : `${promBimNum.toFixed(1)} / 20`)
+                    : null;
+                const statusBadge = promBimTxt !== null
+                    ? `<span class="cd-week-tag-status done">Promedio: ${promBimTxt}</span>`
                     : `<span class="cd-week-tag-status current">Programado</span>`;
 
                 const rowsHtml = listaBim.length
                     ? listaBim.map(ex => {
                         const notaVal = ex.calificada && ex.nota20 != null ? Number(ex.nota20) : null;
-                        const notaHtml = notaVal !== null ? `${notaVal.toFixed(1)} <span>/ 20</span>` : `— <span>/ 20</span>`;
+                        const isLit = Boolean(window.ShidellGrades?.isLiteral());
+                        const notaHtml = notaVal !== null
+                            ? (isLit ? window.ShidellGrades.toLiteral(notaVal) : `${notaVal.toFixed(1)} <span>/ 20</span>`)
+                            : (isLit ? '—' : `— <span>/ 20</span>`);
                         const pillCls = notaVal === null ? 'programado' : (notaVal >= 11 ? 'aprobado' : 'riesgo');
                         const pillTxt = notaVal === null ? 'Programado' : (notaVal >= 11 ? 'Aprobado' : 'En riesgo');
                         return `

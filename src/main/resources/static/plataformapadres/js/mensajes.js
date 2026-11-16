@@ -416,7 +416,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         contactsMod.appendChild(row);
                     });
                 } catch (e) {
-                    contactsMod.innerHTML = '<p style="color:#ef4444; padding:20px; text-align:center;">Error.</p>';
+                    if (window.ShidellErrors?.renderCard) {
+                        window.ShidellErrors.renderCard(contactsMod, {
+                            portal: 'PADRE',
+                            compact: true,
+                            hideHome: true,
+                            title: 'No pudimos cargar los contactos',
+                            message: e?.message || 'Intenta abrir esta lista nuevamente en unos segundos.'
+                        });
+                    } else {
+                        contactsMod.innerHTML = '<p style="color:#0d9488; padding:20px; text-align:center;">No pudimos cargar la lista de contactos en este momento.</p>';
+                    }
                 }
             };
         }

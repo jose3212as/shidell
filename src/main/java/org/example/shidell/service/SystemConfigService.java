@@ -4,7 +4,10 @@ import org.example.shidell.exception.BadRequestException;
 import org.example.shidell.model.entity.SystemConfig;
 import org.example.shidell.repository.SystemConfigRepository;
 import org.example.shidell.util.FileUploadUtil;
+import org.example.shidell.util.GradeCalculationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -50,11 +53,13 @@ public class SystemConfigService {
                     if (cfg.getTabTitle() == null || cfg.getTabTitle().isBlank()) {
                         cfg.setTabTitle(SystemConfig.DEFAULT_TAB_TITLE);
                     }
+                    cfg.setGradeScale(safeGradeScale(cfg.getGradeScale()));
                     return cfg;
                 })
                 .orElseGet(() -> new SystemConfig(SystemConfig.SINGLETON_ID, SystemConfig.DEFAULT_TAB_TITLE, null, null));
     }
 
+    @Cacheable("systemConfig")
     public Map<String, Object> toPublicConfigMap() {
         SystemConfig cfg = getConfig();
         String tabTitle = (cfg.getTabTitle() == null || cfg.getTabTitle().isBlank())
@@ -63,12 +68,14 @@ public class SystemConfigService {
         String iconUrl = (cfg.getIconUrl() != null && !cfg.getIconUrl().isBlank())
                 ? cfg.getIconUrl()
                 : null;
+        String gradeScale = safeGradeScale(cfg.getGradeScale());
 
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("año", 2026);
         map.put("nombreInstitucion", tabTitle);
         map.put("tabTitle", tabTitle);
         map.put("defaultTabTitle", SystemConfig.DEFAULT_TAB_TITLE);
+        map.put("gradeScale", gradeScale);
         map.put("iconUrl", iconUrl);
         map.put("effectiveIconUrl", iconUrl != null ? iconUrl : "/favicon.ico");
         map.put("updatedAt", cfg.getUpdatedAt());
@@ -77,6 +84,7 @@ public class SystemConfigService {
         return map;
     }
 
+    @CacheEvict(value = {"systemConfig", "faviconPayload"}, allEntries = true)
     public SystemConfig updateTabTitle(String rawTabTitle) {
         String normalized = sanitizeTabTitle(rawTabTitle);
         SystemConfig cfg = getOrCreateRow();
@@ -85,6 +93,24 @@ public class SystemConfigService {
         return systemConfigRepository.save(cfg);
     }
 
+    @CacheEvict(value = {"systemConfig", "faviconPayload"}, allEntries = true)
+    public SystemConfig updateGradeScale(String rawGradeScale) {
+        if (rawGradeScale == null || rawGradeScale.isBlank()) {
+            throw new BadRequestException("Debes indicar una escala válida (NUMERICO o LITERAL).");
+        }
+        String normalized;
+        try {
+            normalized = GradeCalculationHelper.normalizeScale(rawGradeScale);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(e.getMessage());
+        }
+        SystemConfig cfg = getOrCreateRow();
+        cfg.setGradeScale(normalized);
+        cfg.setUpdatedAt(LocalDateTime.now());
+        return systemConfigRepository.save(cfg);
+    }
+
+    @CacheEvict(value = {"systemConfig", "faviconPayload"}, allEntries = true)
     public SystemConfig updateIcon(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new BadRequestException("Debes seleccionar una imagen para el ícono.");
@@ -112,6 +138,7 @@ public class SystemConfigService {
         return saved;
     }
 
+    @CacheEvict(value = {"systemConfig", "faviconPayload"}, allEntries = true)
     public SystemConfig resetIcon() {
         SystemConfig cfg = getOrCreateRow();
         String previousUrl = cfg.getIconUrl();
@@ -122,6 +149,7 @@ public class SystemConfigService {
         return saved;
     }
 
+    @Cacheable("faviconPayload")
     public FaviconPayload resolveFavicon() {
         SystemConfig cfg = getConfig();
         Path filePath = resolveBrandingFilePath(cfg.getIconUrl());
@@ -144,8 +172,16 @@ public class SystemConfigService {
                     SystemConfig created = new SystemConfig();
                     created.setId(SystemConfig.SINGLETON_ID);
                     created.setTabTitle(SystemConfig.DEFAULT_TAB_TITLE);
+                    created.setGradeScale(SystemConfig.DEFAULT_GRADE_SCALE);
                     return created;
                 });
+    }
+
+    private String safeGradeScale(String raw) {
+        if (GradeCalculationHelper.ESCALA_LITERAL.equalsIgnoreCase(raw != null ? raw.trim() : "")) {
+            return GradeCalculationHelper.ESCALA_LITERAL;
+        }
+        return GradeCalculationHelper.ESCALA_NUMERICA;
     }
 
     private String sanitizeTabTitle(String rawTabTitle) {

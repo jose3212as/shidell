@@ -106,8 +106,11 @@
             data = null;
         }
         if (!res.ok) {
-            const msg = data?.error || data?.message || `Error HTTP ${res.status}`;
-            throw new Error(msg);
+            const rawMsg = data?.error || data?.message || `HTTP ${res.status}`;
+            const friendly = window.ShidellErrors
+                ? window.ShidellErrors.humanizar(rawMsg, 'No pudimos actualizar esta información. Intenta nuevamente.')
+                : rawMsg;
+            throw new Error(friendly);
         }
         return data;
     }

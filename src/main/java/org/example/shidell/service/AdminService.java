@@ -13,6 +13,8 @@ import org.example.shidell.model.entity.UserEntity;
 import org.example.shidell.repository.*;
 import org.example.shidell.util.AcademicGroupHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +49,7 @@ public class AdminService {
     @Autowired
     private EntityMapper mapper;
 
+    @Cacheable("adminStats")
     public Map<String, Object> getStats() {
         Map<String, Object> res = new HashMap<>();
 
@@ -87,6 +90,7 @@ public class AdminService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado")));
     }
 
+    @CacheEvict(value = "adminStats", allEntries = true)
     public UserDTO createUsuario(UserEntity user) {
         if (user == null || user.getEmail() == null || user.getEmail().isBlank()) {
             throw new BadRequestException("El correo electrónico es obligatorio.");
@@ -118,6 +122,7 @@ public class AdminService {
         return mapper.toDTO(savedUser);
     }
 
+    @CacheEvict(value = "adminStats", allEntries = true)
     public UserDTO updateUsuario(Long id, UserEntity datos) {
         UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
@@ -169,11 +174,13 @@ public class AdminService {
     }
 
     @Transactional
+    @CacheEvict(value = "adminStats", allEntries = true)
     public void deleteUsuario(Long id) {
         deleteUsuario(id, null);
     }
 
     @Transactional
+    @CacheEvict(value = "adminStats", allEntries = true)
     public void deleteUsuario(Long id, UserEntity authUser) {
         if (authUser != null && Objects.equals(authUser.getId(), id)) {
             throw new BadRequestException("No puedes eliminar tu propia cuenta administrativa.");
@@ -192,6 +199,7 @@ public class AdminService {
         userRepository.deleteById(id);
     }
 
+    @Cacheable(value = "cursosCatalogo", key = "'admin'")
     public List<CursoDTO> getAllCursos() {
         return cursoRepository.findAll().stream()
                 .filter(this::esCursoActivo)
@@ -199,6 +207,7 @@ public class AdminService {
                 .toList();
     }
 
+    @CacheEvict(value = {"adminStats", "cursosCatalogo"}, allEntries = true)
     public CursoDTO updateCurso(Long id, Curso datos) {
         Curso curso = cursoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado"));
@@ -225,6 +234,7 @@ public class AdminService {
         return mapper.toDTO(cursoRepository.save(curso));
     }
 
+    @CacheEvict(value = {"adminStats", "cursosCatalogo"}, allEntries = true)
     public List<CursoDTO> clonarCursos(String nivel, String grado, String turno, String seccionOrigen, String seccionDestino) {
         if (nivel == null || grado == null || turno == null || seccionOrigen == null || seccionDestino == null) {
             throw new BadRequestException("Todos los campos son obligatorios.");

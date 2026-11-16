@@ -218,7 +218,36 @@
         };
     }
 
+    let gradeScaleHooked = false;
+    function hookGradeScaleListener() {
+        if (gradeScaleHooked) return;
+        gradeScaleHooked = true;
+        window.addEventListener('shidell:grade-scale-changed', () => {
+            renderVistaEspecifica(vistaActiva);
+        });
+    }
+
+    function formatNotaHtml(nota20, hasGrades = true, includeSuffix = true) {
+        if (window.ShidellGrades?.isLiteral()) {
+            if (!hasGrades || nota20 === null || nota20 === undefined || Number.isNaN(Number(nota20))) return '—';
+            return window.ShidellGrades.toLiteral(nota20);
+        }
+        const val = (!hasGrades || nota20 === null || nota20 === undefined || Number.isNaN(Number(nota20)))
+            ? '0.0'
+            : Number(nota20).toFixed(1);
+        return includeSuffix ? `${val} <span>/ 20</span>` : val;
+    }
+
+    function formatNotaPairHtml(nota, max = 20, nota20 = null) {
+        if (window.ShidellGrades?.isLiteral()) {
+            const norm20 = nota20 != null ? Number(nota20) : ((Number(nota) / (Number(max) || 20)) * 20);
+            return window.ShidellGrades.toLiteral(norm20);
+        }
+        return `${Number(nota).toFixed(1)} <span>/ ${Number(max).toFixed(0)}</span>`;
+    }
+
     function renderVistaEspecifica(vista) {
+        hookGradeScaleListener();
         vistaActiva = vista || 'resumen';
         if (vista === 'resumen') {
             renderStats();
@@ -259,7 +288,8 @@
             : Number(payload?.evaluacionesTotales || calificaciones.length || 0);
         const estado = estadoNota(promedio);
 
-        setValue('#stat-promedio', `${promedio.toFixed(1)} <span>/ 20</span>`, true);
+        const hasAnyGrades = totalEvaluaciones > 0 || promedio > 0;
+        setValue('#stat-promedio', formatNotaHtml(promedio, hasAnyGrades, true), true);
         const badge = document.getElementById('stat-promedio-badge');
         if (badge) {
             badge.textContent = estado.texto;
@@ -294,7 +324,7 @@
                             <p>${escapeHtml(curso.profesor)}</p>
                         </div>
                     </div>
-                    <div class="cal-score">${curso.promedio.toFixed(1)} <span>/ 20</span></div>
+                    <div class="cal-score">${formatNotaHtml(curso.promedio, curso.evaluaciones > 0, true)}</div>
                     <div><span class="cal-status-tag ${estado.clase}">${estado.texto}</span></div>
                     <div class="cal-arrow"><img src="../icons/regular/caret-right.svg" class="icon-img" alt="caret-right"></div>
                 </button>`;
@@ -338,7 +368,7 @@
 
         contenedor.innerHTML = lista.map(cal => {
             const notaHtml = cal.calificada
-                ? `<div class="score">${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span></div>`
+                ? `<div class="score">${formatNotaPairHtml(cal.nota, cal.notaMaxima, cal.nota20)}</div>`
                 : `<div class="score" style="color:var(--text-secondary);">Prog.</div>`;
             return `
             <div class="eval-item">
@@ -402,7 +432,7 @@
         }
 
         contenedor.innerHTML = cursosResumen.map(curso => {
-            const promedioStr = curso.evaluaciones ? curso.promedio.toFixed(1) : '0.0';
+            const promedioStr = formatNotaHtml(curso.promedio, curso.evaluaciones > 0, false);
             return `
                 <button class="course-select-btn" data-select-course-id="${escapeHtml(curso.id)}">
                     <div class="course-select-info">
@@ -448,7 +478,7 @@
         
         document.getElementById('course-detail-name').textContent = curso.nombre;
         document.getElementById('course-detail-teacher').textContent = curso.profesor;
-        document.getElementById('course-detail-average').textContent = curso.evaluaciones ? curso.promedio.toFixed(1) : '0.0';
+        document.getElementById('course-detail-average').textContent = formatNotaHtml(curso.promedio, curso.evaluaciones > 0, false);
         
         const statusEl = document.getElementById('course-detail-status');
         if (statusEl) {
@@ -477,8 +507,8 @@
         listContainer.innerHTML = evals.map(cal => {
             const estado = cal.calificada ? estadoNota(cal.nota20) : { texto: 'Programado', clase: 'programado' };
             const notaCell = cal.calificada
-                ? `${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span>`
-                : `— <span>/ ${cal.notaMaxima.toFixed(0)}</span>`;
+                ? formatNotaPairHtml(cal.nota, cal.notaMaxima, cal.nota20)
+                : (window.ShidellGrades?.isLiteral() ? '—' : `— <span>/ ${cal.notaMaxima.toFixed(0)}</span>`);
             const subMeta = `${etiquetaBimestre(cal.bimestre)} · Peso ×${Number(cal.peso || 1).toFixed(1)}`;
             return `
                 <div class="detail-row">
@@ -522,9 +552,11 @@
         contenedor.innerHTML = listaFiltrada.map(cal => {
             const estado = cal.calificada ? estadoNota(cal.nota20) : { texto: 'Programado', clase: 'programado' };
             const notaCell = cal.calificada
-                ? `${cal.nota.toFixed(1)} <span>/ ${cal.notaMaxima.toFixed(0)}</span>`
-                : `— <span>/ ${cal.notaMaxima.toFixed(0)}</span>`;
-            const escalaTexto = cal.calificada ? `Escala 20: ${cal.nota20.toFixed(1)}` : 'Pendiente de rendir';
+                ? formatNotaPairHtml(cal.nota, cal.notaMaxima, cal.nota20)
+                : (window.ShidellGrades?.isLiteral() ? '—' : `— <span>/ ${cal.notaMaxima.toFixed(0)}</span>`);
+            const escalaTexto = cal.calificada
+                ? (window.ShidellGrades?.isLiteral() ? `Escala CNEB: ${window.ShidellGrades.toLiteral(cal.nota20)}` : `Escala 20: ${cal.nota20.toFixed(1)}`)
+                : 'Pendiente de rendir';
             return `
                 <div class="detail-row">
                     <div class="detail-main">
@@ -557,7 +589,8 @@
         const aprobados = cursosResumen.filter(c => c.evaluaciones && c.promedio >= 11).length;
         const eficiencia = totalCursos ? Math.round((aprobados / totalCursos) * 100) : 0;
 
-        setValue('#history-overall-avg', promedioGeneral.toFixed(1));
+        const hasAny = promedioGeneral > 0 || cursosResumen.some(c => c.evaluaciones > 0);
+        setValue('#history-overall-avg', formatNotaHtml(promedioGeneral, hasAny, false));
         setValue('#history-total-courses', totalCursos);
         setValue('#history-approved-courses', aprobados);
         setValue('#history-efficiency', `${eficiencia}%`);
@@ -569,7 +602,7 @@
 
         contenedor.innerHTML = cursosResumen.map(curso => {
             const estado = curso.evaluaciones ? estadoNota(curso.promedio) : { texto: 'Sin notas', clase: 'sin-notas' };
-            const promedioFinal = curso.evaluaciones ? curso.promedio.toFixed(1) : '0.0';
+            const promedioHtml = formatNotaHtml(curso.promedio, curso.evaluaciones > 0, true);
             return `
                 <div class="detail-row">
                     <div class="detail-main">
@@ -582,7 +615,7 @@
                     <div style="font-size: 13px; color: var(--text-secondary); font-weight: 500;">
                         ${curso.evaluaciones} ${curso.evaluaciones === 1 ? 'evaluación' : 'evaluaciones'}
                     </div>
-                    <div class="detail-grade">${promedioFinal} <span>/ 20</span></div>
+                    <div class="detail-grade">${promedioHtml}</div>
                     <div><span class="cal-status-tag ${estado.clase}">${estado.texto}</span></div>
                 </div>`;
         }).join('');

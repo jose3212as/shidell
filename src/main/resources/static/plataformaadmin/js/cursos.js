@@ -389,10 +389,10 @@ document.getElementById('clone-form').addEventListener('submit', async (e) => {
 
   try {
     const res = await window.API.admin.cursos.clonar(data);
-    alert('Malla clonada exitosamente con ' + res.length + ' cursos. Se han guardado sin profesor para evitar choques.');
+    Toast.success(`Se copiaron ${res.length} cursos sin choques de horario.`);
     closeCloneModal();
     loadCourses();
   } catch (err) {
-    alert(err.message || 'Error al clonar malla');
+    Toast.error(err?.message || 'No pudimos copiar esta malla ahora. Revisa los datos e intenta otra vez.');
   }
 });

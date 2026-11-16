@@ -59,6 +59,14 @@
 
     async function obtenerUsuarioApi() {
         if (usuarioCache) return usuarioCache;
+        try {
+            const meTs = Number(sessionStorage.getItem('shidell_me_ts') || '0');
+            const localUser = leerUsuarioLocal();
+            if (localUser && localUser.id && meTs && (Date.now() - meTs) < 15000) {
+                usuarioCache = localUser;
+                return usuarioCache;
+            }
+        } catch (_) {}
         if (!usuarioPromise) {
             usuarioPromise = fetch('/api/auth/me', { credentials: 'same-origin' })
                 .then(async response => {
@@ -70,6 +78,7 @@
                     const localUser = leerUsuarioLocal();
                     usuarioCache = { ...localUser, ...apiUser, sessionToken: localUser?.sessionToken || apiUser.sessionToken };
                     guardarUsuarioLocal(usuarioCache);
+                    try { sessionStorage.setItem('shidell_me_ts', String(Date.now())); } catch (_) {}
                     return usuarioCache;
                 })
                 .catch(() => {

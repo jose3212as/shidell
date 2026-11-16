@@ -27,10 +27,8 @@ public class StaticNoCacheFilter extends OncePerRequestFilter {
         response.setHeader("X-XSS-Protection", "1; mode=block");
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
 
-        if (isNoCacheAsset(path)) {
-            response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-            response.setHeader("Pragma", "no-cache");
-            response.setDateHeader("Expires", 0);
+        if (isRevalidateAsset(path)) {
+            response.setHeader("Cache-Control", "no-cache, must-revalidate");
 
             HttpServletResponse wrapped = new HttpServletResponseWrapper(response) {
                 @Override
@@ -60,10 +58,23 @@ public class StaticNoCacheFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, wrapped);
             return;
         }
+        if (isLongCacheAsset(path)) {
+            response.setHeader("Cache-Control", "public, max-age=604800");
+        }
         filterChain.doFilter(request, response);
     }
 
-    private boolean isNoCacheAsset(String path) {
+    private boolean isRevalidateAsset(String path) {
         return path.endsWith(".html") || path.endsWith(".js") || path.endsWith(".css");
+    }
+
+    private boolean isLongCacheAsset(String path) {
+        return path.startsWith("/assets/")
+                || path.endsWith(".png")
+                || path.endsWith(".jpg")
+                || path.endsWith(".jpeg")
+                || path.endsWith(".webp")
+                || path.endsWith(".svg")
+                || path.endsWith(".woff2");
     }
 }

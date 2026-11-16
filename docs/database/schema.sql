@@ -2,6 +2,8 @@
 -- PostgreSQL database dump
 --
 
+\restrict w9xgyRTcahVFuXPDAfKoI3fCCrqHM5WeK63qJUok6lPQQpKbnF4ddmbPhNoI2g2
+
 -- Dumped from database version 18.0
 -- Dumped by pg_dump version 18.0
 
@@ -415,7 +417,8 @@ CREATE TABLE public.system_config (
     id bigint NOT NULL,
     icon_url character varying(512),
     tab_title character varying(100) NOT NULL,
-    updated_at timestamp(6) without time zone
+    updated_at timestamp(6) without time zone,
+    grade_scale character varying(20)
 );
 
 
@@ -847,4 +850,5 @@ ALTER TABLE ONLY public.matriculas
 -- PostgreSQL database dump complete
 --
 
+\unrestrict w9xgyRTcahVFuXPDAfKoI3fCCrqHM5WeK63qJUok6lPQQpKbnF4ddmbPhNoI2g2
 

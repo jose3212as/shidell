@@ -14,6 +14,9 @@ public final class GradeCalculationHelper {
     public static final double NOTA_MAXIMA_VIGESIMAL = 20.0;
     public static final double NOTA_APROBATORIA = 11.0;
 
+    public static final String ESCALA_NUMERICA = "NUMERICO";
+    public static final String ESCALA_LITERAL = "LITERAL";
+
     private GradeCalculationHelper() {}
 
     /** Escala una calificación individual a la escala vigesimal [0, 20]. */
@@ -56,5 +59,84 @@ public final class GradeCalculationHelper {
 
     public static double redondear2(double v) {
         return Math.round(v * 100.0) / 100.0;
+    }
+
+    /** Normaliza la escala solicitada al valor canónico ("NUMERICO" o "LITERAL"). */
+    public static String normalizeScale(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return ESCALA_NUMERICA;
+        }
+        String norm = raw.trim().toUpperCase(java.util.Locale.ROOT);
+        if (ESCALA_LITERAL.equals(norm) || ESCALA_NUMERICA.equals(norm)) {
+            return norm;
+        }
+        throw new IllegalArgumentException("Escala de calificación inválida. Usa NUMERICO o LITERAL.");
+    }
+
+    /** Convierte una nota vigesimal [0, 20] al equivalente literal CNEB (AD, A, B, C). */
+    public static String toLiteral(double nota20) {
+        if (Double.isNaN(nota20) || Double.isInfinite(nota20)) {
+            return "—";
+        }
+        if (nota20 >= 18.0) return "AD";
+        if (nota20 >= 14.0) return "A";
+        if (nota20 >= 11.0) return "B";
+        return "C";
+    }
+
+    /** Mapea una calificación literal CNEB (AD, A, B, C) a su nota representativa sobre 20. */
+    public static Double literalToNota20(String raw) {
+        if (raw == null || raw.isBlank()) {
+            return null;
+        }
+        return switch (raw.trim().toUpperCase(java.util.Locale.ROOT)) {
+            case "AD" -> 19.0;
+            case "A" -> 16.0;
+            case "B" -> 12.5;
+            case "C" -> 9.0;
+            default -> null;
+        };
+    }
+
+    /**
+     * Interpreta una nota ingresada como número o como literal (AD, A, B, C) y valida rango [0, notaMaxima].
+     * Retorna null cuando el valor es nulo o en blanco.
+     */
+    public static Double parseNotaInput(Object raw, double notaMaxima) {
+        if (raw == null) {
+            return null;
+        }
+        String text = raw.toString().trim();
+        if (text.isEmpty()) {
+            return null;
+        }
+        double max = notaMaxima > 0.0 ? notaMaxima : NOTA_MAXIMA_VIGESIMAL;
+        Double literalNota20 = literalToNota20(text);
+        if (literalNota20 != null) {
+            return redondear2((literalNota20 / NOTA_MAXIMA_VIGESIMAL) * max);
+        }
+        double numeric;
+        try {
+            numeric = Double.parseDouble(text.replace(',', '.'));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Valor de nota inválido: " + text);
+        }
+        if (Double.isNaN(numeric) || Double.isInfinite(numeric) || numeric < NOTA_MINIMA || numeric > max) {
+            throw new IllegalArgumentException("Cada nota debe estar entre 0 y " + (max == Math.floor(max) ? String.valueOf((int) max) : max) + ".");
+        }
+        return numeric;
+    }
+
+    /** Igual a parseNotaInput pero exigiendo que el valor exista y lanzando BadRequestException si falla. */
+    public static double parseRequiredNota20(Object raw) {
+        try {
+            Double parsed = parseNotaInput(raw, NOTA_MAXIMA_VIGESIMAL);
+            if (parsed == null) {
+                throw new org.example.shidell.exception.BadRequestException("Debes ingresar una calificación válida.");
+            }
+            return parsed;
+        } catch (IllegalArgumentException e) {
+            throw new org.example.shidell.exception.BadRequestException(e.getMessage());
+        }
     }
 }

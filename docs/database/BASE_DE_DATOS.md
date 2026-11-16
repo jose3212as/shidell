@@ -20,9 +20,9 @@ Documentación técnica de la base de datos relacional del sistema **Shidell**, 
 | **Monitoreo externo** | [`docker-compose.yml`](../../docker-compose.yml) solo levanta Prometheus (`9090`) y Grafana (`3000`); PostgreSQL corre de forma local en `5432` |
 
 ### Por qué no se incluye un `data.sql` masivo en Git
-1. En ejecución, `demo1` supera las `22 600` filas generadas (`14 580` tareas semanales, `3 243` evaluaciones, `1 536` bloques de curso, `478` usuarios) e incluye `foto_perfil` en texto Base64 y hashes de contraseña.
+1. En ejecución, `demo1` supera las `22 800` filas generadas (`14 580` tareas semanales, `3 243` evaluaciones, `1 536` bloques de curso, `632` entregas, `478` usuarios) e incluye `foto_perfil` en texto Base64 y hashes de contraseña.
 2. **Todo el catálogo base es auto-reproducible:** creando una base vacía `demo1` en PostgreSQL y arrancando `ShidellApplication`, `DataSeeder` + `AcademicCurriculumInitializer` siembran automáticamente usuarios, aulas, matrículas, cursos, 36 tareas por curso y 8 exámenes bimestrales sin intervención manual.
-3. Para inspeccionar o pre-crear la estructura exacta sin arrancar la app, basta ejecutar [`schema.sql`](./schema.sql).
+3. Para inspeccionar o pre-crear la estructura exacta sin arrancar la app, basta ejecutar [`schema.sql`](./schema.sql). *(Nota sobre `pg_dump 18`: si ejecutas `schema.sql` en clientes antiguos distintos a `psql 18`, omite `SET transaction_timeout` y `\restrict`/`\unrestrict`).*
 
 ---
 
@@ -176,6 +176,7 @@ erDiagram
     system_config {
         bigint id PK
         varchar tab_title
+        varchar grade_scale
         varchar icon_url
         timestamp updated_at
     }
@@ -220,8 +221,8 @@ Conteo real capturado de PostgreSQL `demo1` antes de exportar [`schema.sql`](./s
 | `cursos` | `1536` | `id` | `aula_id -> aulas.id`, `docente_id -> usuarios.id` | `1170` bloques activos (`39 aulas × 30 bloques semanales/aula`) + `366` registros heredados con `turno = 'ARCHIVADO'`. |
 | `tareas` | `14580` | `id` | `curso_id -> cursos.id` | Actividades semanales (`36` semanas lectivas × curso canónico/sección). |
 | `evaluaciones` | `3243` | `id` | `curso_id -> cursos.id` | Plan bimestral de exámenes (`Examen Parcial` + `Examen Bimestral` por cada bimestre `1..4`, tipos `EXAMEN` / `PRACTICA`). |
-| `entregas` | `611` | `id` | `tarea_id -> tareas.id`, `estudiante_id -> usuarios.id` | Envíos de estudiantes por tarea (`estado`, `archivo_url`, `comentario_estudiante`, `comentario_profesor`, `nota`). |
-| `calificaciones` | `129` | `id` | `curso_id -> cursos.id`, `estudiante_id -> usuarios.id`, `evaluacion_id -> evaluaciones.id` | Notas vigesimales (`0..20`) vinculadas a evaluaciones o actividades. |
+| `entregas` | `632` | `id` | `tarea_id -> tareas.id`, `estudiante_id -> usuarios.id` | Envíos de estudiantes por tarea (`estado`, `archivo_url`, `comentario_estudiante`, `comentario_profesor`, `nota`). |
+| `calificaciones` | `135` | `id` | `curso_id -> cursos.id`, `estudiante_id -> usuarios.id`, `evaluacion_id -> evaluaciones.id` | Notas vigesimales (`0..20`) vinculadas a evaluaciones o actividades. |
 | `asistencias` | `3` | `id` | `curso_id -> cursos.id`, `estudiante_id -> usuarios.id` | Registro **disperso** por `(curso_id, estudiante_id, fecha)` con `estado` (`PRESENTE`, `TARDE`, `AUSENTE`, `JUSTIFICADO`). |
 | `eventos` | `852` | `id` | `usuario_id -> usuarios.id` | Eventos de calendario académico/personal por usuario (`fecha_inicio`, `fecha_fin`, `tipo`, `color`). |
 | `notificaciones` | `358` | `id` | `usuario_id -> usuarios.id` | Alertas internas (ej. avisos al apoderado por `AUSENTE`/`TARDE` o entregas/calificaciones). |
@@ -229,7 +230,7 @@ Conteo real capturado de PostgreSQL `demo1` antes de exportar [`schema.sql`](./s
 | `foro_semana_mensajes` | `1` | `id` | `curso_id -> cursos.id` | Participaciones en foros por curso y número de `semana` (`autor_id`, `autor_nombre`, `contenido`, `fecha`). |
 | `materiales_curso` | `0` | `id` | `curso_id -> cursos.id`, `docente_id -> usuarios.id` | Materiales descargables subidos por docentes (`titulo`, `descripcion`, `archivo_nombre`, `archivo_url`). |
 | `horarios` | `558` | `id` | `curso_id -> cursos.id`, `docente_id -> usuarios.id` | **Tabla heredada/sin uso activo:** el horario vigente se consulta desde `cursos` (`dia_semana`, `hora_inicio`, `hora_fin`). |
-| `system_config` | `1` | `id` (singleton `1`) | — | Marca global del sistema editable en Admin: `tab_title` (máx. `100`, default `'Shidell'`), `icon_url` (máx. `512`) y `updated_at`. |
+| `system_config` | `1` | `id` (singleton `1`) | — | Marca y parámetros globales editables en Admin: `tab_title` (default `'Shidell'`), `grade_scale` (`'NUMERICO'` o `'LITERAL'`), `icon_url` (máx. `512`) y `updated_at`. |
 
 ---
 
@@ -253,13 +254,13 @@ Conteo real capturado de PostgreSQL `demo1` antes de exportar [`schema.sql`](./s
      - En porcentaje de asistencia (`ProgresoService`, `StudentProfileHelper`, portal Admin), cuentan como asistencia efectiva `PRESENTE`, `TARDE` y `JUSTIFICADO`.
      - Marcar `AUSENTE` o `TARDE` genera notificación automática (`notificaciones`) al apoderado (`padre_id`).
      - El rol `DOCENTE` está restringido a la ventana horaria del bloque (`hora_inicio`–`hora_fin`); los roles `ADMIN` / `ADMINISTRADOR` tienen override para registrar o regularizar el día actual o fechas pasadas, rechazándose siempre fechas futuras.
-4. **Estructura curricular peruana (MINEDU EBR) y escala vigesimal (`0..20`):**
+4. **Estructura curricular peruana (MINEDU EBR) y adaptador dual Numérico (`0..20`) ↔ Literal CNEB (`AD`, `A`, `B`, `C`):**
    - El año lectivo se organiza en `4` bimestres de `9` semanas (`36` semanas).
    - [`AcademicCurriculumInitializer`](../../src/main/java/org/example/shidell/service/AcademicCurriculumInitializer.java) garantiza `1` tarea por semana lectiva (`36` por curso, `tareas.pdf_url = NULL` en generación base) y `2` exámenes formales por bimestre (`Examen Parcial` y `Examen Bimestral`, `8` exámenes/año).
-   - Las notas en `calificaciones` y `entregas` usan escala vigesimal peruana (`nota_maxima = 20.0`). En cuentas demo se generan notas deterministas `[10.5 .. 19.0]` para evaluaciones ya pasadas sin PDFs simulados en blanco.
-5. **Presencia en línea (`ultima_conexion`) y Branding Global (`system_config`):**
+   - **Persistencia numérica invariante + conversión dinámica:** En PostgreSQL, `calificaciones.nota` y `entregas.nota` **siempre se almacenan como `double precision` sobre `nota_maxima` (`20.0` por defecto)** para preservar promedios ponderados e historial al alternar escalas. El modo de visualización e ingreso se gobierna globalmente con `system_config.grade_scale` (`'NUMERICO'` o `'LITERAL'`), aplicando las bandas CNEB en [`GradeCalculationHelper`](../../src/main/java/org/example/shidell/util/GradeCalculationHelper.java) (`AD`: `18–20` ↔ `19.0`, `A`: `14–17.9` ↔ `16.0`, `B`: `11–13.9` ↔ `12.5`, `C`: `0–10.9` ↔ `9.0`), expuestas en `CalificacionDTO.notaLiteral` y `window.ShidellGrades`.
+5. **Presencia en línea (`ultima_conexion`), Branding Global (`system_config`) y Caché Caffeine:**
    - `usuarios.ultima_conexion` se actualiza con pings autenticados (`/vendor/shidell-presence.js`) para mostrar estado **En línea / Desconectado** en mensajería.
-   - `system_config` mantiene una sola fila (`id = 1`) con `tab_title` e `icon_url` editables desde `plataformaadmin/html/configuracion.html` y propagados a todos los portales + `/favicon.ico`.
+   - `system_config` mantiene una sola fila (`id = 1`) con `tab_title`, `grade_scale` e `icon_url` editables desde `plataformaadmin/html/configuracion.html` y propagados a todos los portales vía `/api/config` (`CacheConfig` con Caffeine + `ShallowEtagHeaderFilter` HTTP `304`, invalidado con `@CacheEvict` en `SystemConfigService` y sincronizado en cliente vía `BroadcastChannel`).
 6. **Datos sensibles en `usuarios`:**
    - `usuarios.foto_perfil` acepta cadenas Base64 (`text`), por lo que sus registros pueden ser extensos.
 
@@ -294,4 +295,46 @@ Si deseas inspeccionar o pre-crear la estructura antes de levantar Java (por eje
 ```bash
 psql -U postgres -d demo1 -f docs/database/schema.sql
 ```
-*(Nota: [`schema.sql`](./schema.sql) fue generado con `pg_dump 18.0 --schema-only --no-owner --no-privileges`. Si restauras en PostgreSQL `16` o inferior, elimina la línea `SET transaction_timeout = 0;` al inicio del archivo).*
+*(Nota: [`schema.sql`](./schema.sql) fue generado con `pg_dump 18.0 --schema-only --no-owner --no-privileges`. Si restauras en PostgreSQL `16` o inferior, elimina `SET transaction_timeout = 0;` y las líneas `\restrict`/`\unrestrict`).*
+
+---
+
+## 7. Consultas SQL Útiles para Diagnóstico e Integración (IA / Dev)
+
+```sql
+-- 1. Consultar escala y branding global vigente
+SELECT id, tab_title, grade_scale, icon_url, updated_at
+FROM public.system_config
+WHERE id = 1;
+
+-- 2. Resolver aula vigente de un estudiante (vía matriculas -> aulas)
+SELECT u.id AS estudiante_id, u.email, a.id AS aula_id, a.nivel, a.grado, a.seccion, a.turno
+FROM public.usuarios u
+JOIN public.matriculas m ON m.estudiante_id = u.id
+JOIN public.aulas a ON a.id = m.aula_id
+WHERE u.rol = 'ESTUDIANTE'
+ORDER BY u.id
+LIMIT 20;
+
+-- 3. Cursos activos canónicos por aula (excluyendo ARCHIVADO y franjas duplicadas sin evaluaciones)
+SELECT MIN(c.id) AS curso_canonico_id, c.nombre, c.aula_id, a.nivel, a.grado, a.seccion
+FROM public.cursos c
+JOIN public.aulas a ON a.id = c.aula_id
+WHERE COALESCE(c.turno, '') <> 'ARCHIVADO'
+GROUP BY c.nombre, c.aula_id, a.nivel, a.grado, a.seccion
+ORDER BY a.nivel, a.grado, a.seccion, c.nombre;
+
+-- 4. Ver notas almacenadas (0..20) con su equivalencia literal CNEB
+SELECT cal.id, u.email AS estudiante, c.nombre AS curso, cal.actividad, cal.nota, cal.nota_maxima,
+       CASE
+           WHEN (cal.nota / COALESCE(NULLIF(cal.nota_maxima, 0), 20.0) * 20.0) >= 18 THEN 'AD'
+           WHEN (cal.nota / COALESCE(NULLIF(cal.nota_maxima, 0), 20.0) * 20.0) >= 14 THEN 'A'
+           WHEN (cal.nota / COALESCE(NULLIF(cal.nota_maxima, 0), 20.0) * 20.0) >= 11 THEN 'B'
+           ELSE 'C'
+       END AS nota_literal
+FROM public.calificaciones cal
+JOIN public.usuarios u ON u.id = cal.estudiante_id
+JOIN public.cursos c ON c.id = cal.curso_id
+ORDER BY cal.id DESC
+LIMIT 25;
+```
